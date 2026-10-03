@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="utf-8">
+<title>Dentro il computer — zoom tra i componenti</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;margin:0;background:#05060a;color:#e9ecf5;font-family:ui-monospace,Menlo,Consolas,monospace}
+body{display:flex;align-items:center;justify-content:center}
+#st{position:relative;aspect-ratio:16/9;width:min(100vw,177.78vh);min-width:240px;overflow:hidden;background:#000}
+canvas{display:block;width:100%!important;height:100%!important}
+#hud{position:absolute;left:3%;bottom:15%;padding:.8em 1em;background:rgba(5,6,10,.62);border:1px solid rgba(255,255,255,.18);border-radius:8px;backdrop-filter:blur(6px);font-size:clamp(10px,1.6vw,16px);min-width:14em}
+#hud b{display:block;font-size:1.25em}#hud span{color:#7cf2c9}#hud small{display:block;opacity:.65;margin-top:.3em}
+#zf{position:absolute;right:3%;top:5%;font-size:clamp(11px,2vw,22px);color:#7cf2c9;text-shadow:0 0 8px #000}
+#ctl{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:.9em;padding:.7em 3% 1em;background:linear-gradient(transparent,rgba(0,0,0,.7));font-size:clamp(10px,1.5vw,15px)}
+#pb{flex:none;width:2.6em;height:2.6em;border:0;border-radius:50%;background:#7cf2c9;color:#05060a;font:inherit;cursor:pointer}
+#slw{flex:1;position:relative;display:flex}
+.tk{position:absolute;top:50%;width:11px;height:11px;margin:-5px 0 0 -5px;border-radius:50%;background:#666;border:2px solid #05060a;pointer-events:none}.tk.ok{background:#7cf2c9}
+#sl{width:100%;accent-color:#7cf2c9;height:2em;cursor:pointer}
+#tm{flex:none;min-width:7.5em;text-align:right;opacity:.8}
+#lad{position:absolute;right:3%;bottom:17%;display:flex;flex-direction:column-reverse;gap:4px;font-size:clamp(9px,1.3vw,13px);max-height:38%;overflow:hidden}
+.rg{background:rgba(5,6,10,.7);border:1px solid #2c3a63;color:#8b93b0;border-radius:6px;padding:.35em .7em;text-align:center;white-space:nowrap;text-transform:uppercase;letter-spacing:.06em}
+.rg.cur{background:#facc15;color:#111;font-weight:800;border-color:#facc15;box-shadow:0 0 12px #facc15}
+.rg.done{background:#12372d;color:#7cf2c9;border-color:#7cf2c9}
+#qo button.reading{border-color:#facc15;box-shadow:0 0 10px #facc15}
+#qt .wkw.on,#qf .wkw.on{background:#facc15;color:#111;border-radius:4px;padding:0 .15em}
+#q{position:absolute;left:3%;top:8%;width:min(44%,27em);padding:1em 1.1em;background:rgba(5,6,10,.86);border:1px solid rgba(124,242,201,.5);border-radius:10px;backdrop-filter:blur(8px);font:clamp(10px,1.45vw,15px) system-ui,sans-serif}
+#q[hidden]{display:none}
+#qn{color:#7cf2c9;font-family:ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase}
+#qt{margin:.5em 0 .8em;font-size:1.15em;line-height:1.35}
+#qo button{display:block;width:100%;text-align:left;margin:.35em 0;padding:.6em .8em;background:#151926;color:#e9ecf5;border:1px solid #2c3350;border-radius:8px;font:inherit;cursor:pointer}
+#qo button:hover:not(:disabled){border-color:#7cf2c9}
+#qo button.ok{background:#12372d;border-color:#7cf2c9}
+#qo button.no{background:#3a1820;border-color:#ff6b6b;opacity:.7}
+#qf{margin:.6em 0 0;line-height:1.4}
+#qb{margin-top:.7em;background:#7cf2c9;color:#05060a;border:0;border-radius:6px;padding:.6em 1em;font:inherit;cursor:pointer}
+@media(max-width:640px){#q{left:3%;right:3%;width:auto;top:auto;bottom:16%}.asking #hud{display:none}}
+</style></head><body>
+<div id="st"><div id="hud"><small id="n"></small><b id="t"></b><span id="s"></span></div><div id="zf"></div>
+<div id="q" hidden><small id="qn"></small><p id="qt"></p><div id="qo"></div><p id="qf"></p><button id="qb" hidden></button></div>
+<div id="lad"></div><div id="ctl"><button id="pb" aria-label="Play / pausa">▶</button><div id="slw"><input id="sl" type="range" min="0" max="1000" value="0" step="1" aria-label="Scorri l’animazione"></div><span id="tm"></span><button id="mb" aria-label="Audio on/off" style="flex:none;width:2.6em;height:2.6em;border:0;border-radius:50%;background:#7cf2c9;color:#05060a;font:inherit;cursor:pointer">🔊</button></div></div>
+<audio id="q0" src="audio-dentro-computer/q0.mp3" preload="auto"></audio>
+<audio id="ok0" src="audio-dentro-computer/ok0.mp3" preload="auto"></audio>
+<audio id="h0" src="audio-dentro-computer/h0.mp3" preload="auto"></audio>
+<audio id="opt0_0" src="audio-dentro-computer/opt0_0.mp3" preload="auto"></audio>
+<audio id="opt0_1" src="audio-dentro-computer/opt0_1.mp3" preload="auto"></audio>
+<audio id="opt0_2" src="audio-dentro-computer/opt0_2.mp3" preload="auto"></audio>
+<audio id="opt0_3" src="audio-dentro-computer/opt0_3.mp3" preload="auto"></audio>
+<audio id="q1" src="audio-dentro-computer/q1.mp3" preload="auto"></audio>
+<audio id="ok1" src="audio-dentro-computer/ok1.mp3" preload="auto"></audio>
+<audio id="h1" src="audio-dentro-computer/h1.mp3" preload="auto"></audio>
+<audio id="opt1_0" src="audio-dentro-computer/opt1_0.mp3" preload="auto"></audio>
+<audio id="opt1_1" src="audio-dentro-computer/opt1_1.mp3" preload="auto"></audio>
+<audio id="opt1_2" src="audio-dentro-computer/opt1_2.mp3" preload="auto"></audio>
+<audio id="opt1_3" src="audio-dentro-computer/opt1_3.mp3" preload="auto"></audio>
+<audio id="q2" src="audio-dentro-computer/q2.mp3" preload="auto"></audio>
+<audio id="ok2" src="audio-dentro-computer/ok2.mp3" preload="auto"></audio>
+<audio id="h2" src="audio-dentro-computer/h2.mp3" preload="auto"></audio>
+<audio id="opt2_0" src="audio-dentro-computer/opt2_0.mp3" preload="auto"></audio>
+<audio id="opt2_1" src="audio-dentro-computer/opt2_1.mp3" preload="auto"></audio>
+<audio id="opt2_2" src="audio-dentro-computer/opt2_2.mp3" preload="auto"></audio>
+<audio id="opt2_3" src="audio-dentro-computer/opt2_3.mp3" preload="auto"></audio>
+<audio id="q3" src="audio-dentro-computer/q3.mp3" preload="auto"></audio>
+<audio id="ok3" src="audio-dentro-computer/ok3.mp3" preload="auto"></audio>
+<audio id="h3" src="audio-dentro-computer/h3.mp3" preload="auto"></audio>
+<audio id="opt3_0" src="audio-dentro-computer/opt3_0.mp3" preload="auto"></audio>
+<audio id="opt3_1" src="audio-dentro-computer/opt3_1.mp3" preload="auto"></audio>
+<audio id="opt3_2" src="audio-dentro-computer/opt3_2.mp3" preload="auto"></audio>
+<audio id="opt3_3" src="audio-dentro-computer/opt3_3.mp3" preload="auto"></audio>
+<audio id="q4" src="audio-dentro-computer/q4.mp3" preload="auto"></audio>
+<audio id="ok4" src="audio-dentro-computer/ok4.mp3" preload="auto"></audio>
+<audio id="h4" src="audio-dentro-computer/h4.mp3" preload="auto"></audio>
+<audio id="opt4_0" src="audio-dentro-computer/opt4_0.mp3" preload="auto"></audio>
+<audio id="opt4_1" src="audio-dentro-computer/opt4_1.mp3" preload="auto"></audio>
+<audio id="opt4_2" src="audio-dentro-computer/opt4_2.mp3" preload="auto"></audio>
+<audio id="opt4_3" src="audio-dentro-computer/opt4_3.mp3" preload="auto"></audio>
+<audio id="q5" src="audio-dentro-computer/q5.mp3" preload="auto"></audio>
+<audio id="ok5" src="audio-dentro-computer/ok5.mp3" preload="auto"></audio>
+<audio id="h5" src="audio-dentro-computer/h5.mp3" preload="auto"></audio>
+<audio id="opt5_0" src="audio-dentro-computer/opt5_0.mp3" preload="auto"></audio>
+<audio id="opt5_1" src="audio-dentro-computer/opt5_1.mp3" preload="auto"></audio>
+<audio id="opt5_2" src="audio-dentro-computer/opt5_2.mp3" preload="auto"></audio>
+<audio id="opt5_3" src="audio-dentro-computer/opt5_3.mp3" preload="auto"></audio>
+<audio id="q6" src="audio-dentro-computer/q6.mp3" preload="auto"></audio>
+<audio id="ok6" src="audio-dentro-computer/ok6.mp3" preload="auto"></audio>
+<audio id="h6" src="audio-dentro-computer/h6.mp3" preload="auto"></audio>
+<audio id="opt6_0" src="audio-dentro-computer/opt6_0.mp3" preload="auto"></audio>
+<audio id="opt6_1" src="audio-dentro-computer/opt6_1.mp3" preload="auto"></audio>
+<audio id="opt6_2" src="audio-dentro-computer/opt6_2.mp3" preload="auto"></audio>
+<audio id="opt6_3" src="audio-dentro-computer/opt6_3.mp3" preload="auto"></audio>
+<audio id="q7" src="audio-dentro-computer/q7.mp3" preload="auto"></audio>
+<audio id="ok7" src="audio-dentro-computer/ok7.mp3" preload="auto"></audio>
+<audio id="h7" src="audio-dentro-computer/h7.mp3" preload="auto"></audio>
+<audio id="opt7_0" src="audio-dentro-computer/opt7_0.mp3" preload="auto"></audio>
+<audio id="opt7_1" src="audio-dentro-computer/opt7_1.mp3" preload="auto"></audio>
+<audio id="opt7_2" src="audio-dentro-computer/opt7_2.mp3" preload="auto"></audio>
+<audio id="opt7_3" src="audio-dentro-computer/opt7_3.mp3" preload="auto"></audio>
+<audio id="ltr0" src="audio-letters/a.mp3" preload="auto"></audio>
+<audio id="ltr1" src="audio-letters/bi.mp3" preload="auto"></audio>
+<audio id="ltr2" src="audio-letters/ci.mp3" preload="auto"></audio>
+<audio id="ltr3" src="audio-letters/di.mp3" preload="auto"></audio>
+<audio id="fx-whoosh" src="audio-dentro-computer/whoosh.mp3" preload="auto"></audio>
+<audio id="fx-pop" src="audio-dentro-computer/pop.mp3" preload="auto"></audio>
+<audio id="fx-fan" src="audio-dentro-computer/fanfare.mp3" preload="auto"></audio>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const A=16/9,mk=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c};
+const rr=(c,x,y,w,h,r)=>{c.beginPath();c.roundRect?c.roundRect(x,y,w,h,r):c.rect(x,y,w,h)};
+const hs=(x,y)=>{const h=Math.sin(x*127.1+y*311.7)*43758.5;return h-Math.floor(h)};
+const reg=(W,x,y,w)=>{const H=W*9/16,h=w*9/16;return{x,y,w,h,k:w/W,c:[((x+w/2)/W-.5)*A,.5-(y+h/2)/H]}};
+const tx=(c,s,x,y,sz,col,al)=>{c.font='bold '+sz+'px ui-monospace,Menlo,Consolas,monospace';c.fillStyle=col;c.textAlign=al||'center';c.textBaseline='middle';c.fillText(s,x,y)};
+const put=(c,img,r)=>{c.drawImage(img,r.x,r.y,r.w,r.h);c.strokeStyle='rgba(255,255,255,.6)';c.lineWidth=Math.max(2,r.w/150);c.strokeRect(r.x,r.y,r.w,r.h)};
+const lin=(c,x0,y0,x1,y1,a,b)=>{const g=c.createLinearGradient(x0,y0,x1,y1);g.addColorStop(0,a);g.addColorStop(1,b);return g};
+// ---- 7 · Transistor
+const T=mk(1600,900),t=T.getContext('2d');t.fillStyle='#0a0e1a';t.fillRect(0,0,1600,900);
+t.fillStyle='#34436a';t.fillRect(150,540,1300,300);t.fillStyle='#e0813a';t.fillRect(300,480,300,120);t.fillRect(1000,480,300,120);
+t.fillStyle='#9fd8ff';t.fillRect(620,490,360,26);t.fillStyle='#f5c542';t.fillRect(620,410,360,80);
+t.strokeStyle='#ddd';t.lineWidth=10;[[450,480,450,340],[800,410,800,270],[1150,480,1150,340]].forEach(l=>{t.beginPath();t.moveTo(l[0],l[1]);t.lineTo(l[2],l[3]);t.stroke()});
+tx(t,'SORGENTE',450,310,34,'#e9ecf5');tx(t,'GATE',800,240,34,'#f5c542');tx(t,'DRENO',1150,310,34,'#e9ecf5');tx(t,'SUBSTRATO DI SILICIO',800,700,34,'#9db0dc');
+t.fillStyle='#7cc8ff';for(let x=330;x<1280;x+=80){t.beginPath();t.arc(x,552,12,0,7);t.fill()}tx(t,'→  →  →  corrente',800,600,28,'#7cc8ff');
+tx(t,'1',800,110,130,'#7cf2c9');tx(t,'gate acceso → la corrente passa → 1 (un bit)',800,860,32,'#e9ecf5');
+// ---- 6 · Die
+const Dd=mk(1600,900),d=Dd.getContext('2d');d.fillStyle=lin(d,0,0,1600,900,'#2c4a82','#16264a');d.fillRect(0,0,1600,900);
+[[60,60],[840,60],[60,480],[840,480]].forEach((p,i)=>{d.fillStyle='#3b5fa3';rr(d,p[0],p[1],700,360,16);d.fill();d.strokeStyle='rgba(160,190,240,.35)';d.lineWidth=2;
+ for(let k=0;k<700;k+=28){d.beginPath();d.moveTo(p[0]+k,p[1]);d.lineTo(p[0]+k,p[1]+360);d.stroke()}
+ tx(d,'CORE '+(i+1),p[0]+350,p[1]+330,34,'#e9ecf5');d.fillStyle='rgba(8,14,34,.5)';d.fillRect(p[0]+380,p[1]+50,280,110);d.fillRect(p[0]+380,p[1]+190,280,90);tx(d,'ALU',p[0]+520,p[1]+105,30,'#cfe0ff');tx(d,'cache L1',p[0]+520,p[1]+235,26,'#cfe0ff')});
+const rT=reg(1600,230,130,360);put(d,T,rT);tx(d,'un transistor',410,350,22,'#fff');
+// ---- 5 · CPU
+const C=mk(1600,900),c=C.getContext('2d');c.fillStyle='#161a22';c.fillRect(0,0,1600,900);c.fillStyle='#262c38';c.fillRect(300,40,1000,820);
+c.fillStyle='#b8962e';for(let y=70;y<840;y+=26)for(let x=330;x<1290;x+=26){c.fillRect(x,y,8,8)}
+c.fillStyle=lin(c,450,110,1150,810,'#e4e8ee','#8e97a6');rr(c,430,100,740,740,26);c.fill();c.strokeStyle='rgba(0,0,0,.25)';c.lineWidth=3;rr(c,450,120,700,700,20);c.stroke();
+tx(c,'CPU',800,190,46,'#3b4252');tx(c,'dissipatore di calore integrato',800,760,24,'#3b4252');
+const rD=reg(1600,560,325,480);put(c,Dd,rD);tx(c,'die di silicio',800,625,24,'#2b3140');
+// ---- 4 · GPU
+const Gp=mk(1600,900),g=Gp.getContext('2d');g.fillStyle='#12141a';g.fillRect(0,0,1600,900);g.fillStyle='#1c2230';g.fillRect(80,130,1440,580);g.fillStyle='#2b3140';rr(g,120,160,1360,520,30);g.fill();
+[520,1080].forEach(x=>{g.save();g.translate(x,420);g.fillStyle='#0c0e13';g.beginPath();g.arc(0,0,230,0,7);g.fill();for(let i=0;i<9;i++){g.rotate(Math.PI*2/9);g.fillStyle='#4a5266';g.beginPath();g.ellipse(100,0,95,34,.35,0,7);g.fill()}g.fillStyle='#7cf2c9';g.beginPath();g.arc(0,0,38,0,7);g.fill();g.restore()});
+g.fillStyle='#d4af37';for(let i=0;i<30;i++)g.fillRect(200+i*24,730,16,60);g.fillStyle='#111';g.fillRect(1250,95,200,50);tx(g,'SCHEDA VIDEO  ·  GPU',800,100,34,'#9db0dc');
+// ---- 3 · SSD
+const Sd=mk(1600,900),s=Sd.getContext('2d');s.fillStyle='#0f1620';s.fillRect(0,0,1600,900);s.fillStyle='#1f6b47';rr(s,100,260,1400,380,20);s.fill();
+s.fillStyle='#d4af37';for(let i=0;i<14;i++)s.fillRect(100,280+i*25,70,15);
+[[330,320,300,260,'NAND'],[680,320,300,260,'NAND'],[1030,360,230,180,'CTRL']].forEach(r=>{s.fillStyle='#0b0c10';rr(s,r[0],r[1],r[2],r[3],10);s.fill();tx(s,r[4],r[0]+r[2]/2,r[1]+r[3]/2,36,'#8a93a8')});
+s.fillStyle='#0f1620';s.beginPath();s.arc(1440,450,24,0,7);s.fill();tx(s,'SSD  ·  memoria flash',800,200,34,'#9db0dc');
+// ---- 2 · RAM
+const Rm=mk(1600,900),m=Rm.getContext('2d');m.fillStyle='#0f1620';m.fillRect(0,0,1600,900);
+[110,500].forEach(y=>{m.fillStyle='#1f6b47';rr(m,80,y,1440,290,14);m.fill();for(let i=0;i<8;i++){m.fillStyle='#0b0c10';rr(m,150+i*172,y+40,150,150,8);m.fill();tx(m,'DRAM',225+i*172,y+115,22,'#8a93a8')}
+ m.fillStyle='#d4af37';for(let i=0;i<40;i++)m.fillRect(100+i*35,y+245,22,45);tx(m,'DDR5',800,y+220,30,'#cfeedd')});
+// ---- 1 · Alimentatore
+const Ps=mk(1600,900),p=Ps.getContext('2d');p.fillStyle='#12141a';p.fillRect(0,0,1600,900);p.fillStyle=lin(p,200,100,1200,800,'#b9c0cc','#7d8696');rr(p,160,100,1000,700,24);p.fill();
+p.fillStyle='#10131a';p.beginPath();p.arc(660,450,290,0,7);p.fill();p.strokeStyle='#4a5266';p.lineWidth=8;for(let r=60;r<290;r+=46){p.beginPath();p.arc(660,450,r,0,7);p.stroke()}
+[['#e6c200',0],['#d33',1],['#e87a1c',2],['#222',3]].forEach(k=>{p.strokeStyle=k[0];p.lineWidth=14;p.beginPath();p.moveTo(1160,330+k[1]*28);p.bezierCurveTo(1300,330+k[1]*28,1320,430+k[1]*30,1470,430+k[1]*30);p.stroke()});
+p.fillStyle='#e8e8e8';p.fillRect(1470,410,100,140);tx(p,'230 V ~  →  12 V · 5 V · 3,3 V',800,860,34,'#9db0dc');tx(p,'ALIMENTATORE',660,150,30,'#2b3140');
+// ---- 0 · Scheda madre
+const B=mk(2048,1152),b=B.getContext('2d');b.fillStyle='#0c0f16';b.fillRect(0,0,2048,1152);
+b.fillStyle='#0e3a2c';rr(b,100,60,1400,1020,24);b.fill();b.strokeStyle='#1d7a5a';b.lineWidth=3;
+for(let i=0;i<70;i++){const x=120+hs(i,1)*1340,y=80+hs(i,2)*960,l=60+hs(i,3)*220;b.beginPath();b.moveTo(x,y);b.lineTo(x+l,y);b.lineTo(x+l,y+l*.6);b.stroke()}
+b.fillStyle='#c9a227';for(let i=0;i<22;i++){b.beginPath();b.arc(300+(i%11)*42,350+(i>10?260:0)*.0,12,0,7);b.fill()}
+b.fillStyle='#111';rr(b,150,120,170,230,8);b.fill();b.fillStyle='#e8e8e8';b.fillRect(1440,520,70,200);
+const rP=reg(2048,1560,100,440),rR=reg(2048,860,110,520),rS=reg(2048,920,480,440),rG=reg(2048,420,745,560),rC=reg(2048,360,400,420);
+[['#e6c200',0],['#d33',1],['#e87a1c',2],['#222',3]].forEach(k=>{b.strokeStyle=k[0];b.lineWidth=8;b.beginPath();b.moveTo(1560,190+k[1]*18);b.bezierCurveTo(1520,190+k[1]*18,1530,520+k[1]*22,1500,540+k[1]*22);b.stroke()});
+[[rP,'ALIMENTATORE'],[rR,'RAM'],[rS,'SSD'],[rG,'SCHEDA VIDEO'],[rC,'CPU']].forEach(a=>{put(b,[Ps,Rm,Sd,Gp,C][[rP,rR,rS,rG,rC].indexOf(a[0])],a[0]);tx(b,a[1],a[0].x+a[0].w/2,a[0].y-24,30,'#e9ecf5')});
+tx(b,'SCHEDA MADRE',800,1050,34,'#7cf2c9');
+// ---- nodi e gerarchia
+const NODE=[{cv:B,par:-1},{cv:Ps,par:0,r:rP},{cv:Rm,par:0,r:rR},{cv:Sd,par:0,r:rS},{cv:Gp,par:0,r:rG},{cv:C,par:0,r:rC},{cv:Dd,par:5,r:rD},{cv:T,par:6,r:rT}],N=8,depth=[0,1,1,1,1,1,2,3];
+const ren=new THREE.WebGLRenderer({antialias:true}),st=document.getElementById('st');st.prepend(ren.domElement);
+const sc=new THREE.Scene(),cam=new THREE.OrthographicCamera(-A/2,A/2,.5,-.5,-10,10),aniso=ren.capabilities.getMaxAnisotropy(),grp=[],Sx=[1],Cx=[[0,0]];
+NODE.forEach((n,j)=>{const tex=new THREE.CanvasTexture(n.cv);tex.anisotropy=aniso;
+ const mesh=new THREE.Mesh(new THREE.PlaneGeometry(A,1),new THREE.MeshBasicMaterial({map:tex,depthTest:false,depthWrite:false}));mesh.renderOrder=depth[j];mesh.frustumCulled=false;
+ const gp=new THREE.Group();gp.add(mesh);grp.push(gp);
+ if(j){const P=NODE[j].par;grp[P].add(gp);gp.position.set(n.r.c[0],n.r.c[1],0);gp.scale.setScalar(n.r.k);Sx[j]=Sx[P]*n.r.k;Cx[j]=[Cx[P][0]+Sx[P]*n.r.c[0],Cx[P][1]+Sx[P]*n.r.c[1]]}});
+sc.add(grp[0]);
+// ---- trajet continu (zoom/pan à la van Wijk)
+const RHO=1.41;
+function vw(c0,w0,c1,w1,g){const dx=c1[0]-c0[0],dy=c1[1]-c0[1],d=Math.hypot(dx,dy);
+ if(d<1e-12)return[c0,w0*Math.pow(w1/w0,g),Math.abs(Math.log(w1/w0))/RHO];
+ const q=RHO*RHO,b0=(w1*w1-w0*w0+q*q*d*d)/(2*w0*q*d),b1=(w1*w1-w0*w0-q*q*d*d)/(2*w1*q*d),r0=Math.log(Math.sqrt(b0*b0+1)-b0),r1=Math.log(Math.sqrt(b1*b1+1)-b1),S=(r1-r0)/RHO,s=g*S;
+ const u=w0/q*Math.cosh(r0)*Math.tanh(RHO*s+r0)-w0/q*Math.sinh(r0),w=w0*Math.cosh(r0)/Math.cosh(RHO*s+r0),f=u/d;return[[c0[0]+dx*f,c0[1]+dy*f],w,S]}
+const W=Sx.map(x=>x*A),DU=[],T0=[0];
+for(let j=0;j<N-1;j++){const S=vw(Cx[j],W[j],Cx[j+1],W[j+1],1)[2];DU.push(Math.max(2.6,Math.min(5.2,1.6+1.4*S)));T0.push(T0[j]+DU[j])}
+const DUR=T0[N-1],sm=x=>x*x*(3-2*x),$=i=>document.getElementById(i);
+const PRIZES=['CASE','SCHEDA','CORRENTE','RAM','SSD','GPU','CPU','TRANSISTOR'];
+PRIZES.forEach(p=>{const d=document.createElement('div');d.className='rg';d.textContent=p;$('lad').appendChild(d)});
+let audioOn=true,audioUnlocked=false,qdPlayed={},lastCtx=null,karTimer=null;
+addEventListener('pointerdown',()=>{audioUnlocked=true},{once:false});
+function paintLad(){const n=a;document.querySelectorAll('.rg').forEach((r,i)=>{r.className='rg'+(i<n?' done':i===n?' cur':'')})}
+function stopKar(){if(karTimer){clearInterval(karTimer);karTimer=null}document.querySelectorAll('.wkw.on').forEach(x=>x.classList.remove('on'))}
+function wrapWords(el){const t=el.textContent;el.innerHTML='';t.split(/(\s+)/).forEach(w=>{if(!w)return;const s=document.createElement('span');if(/^\s+$/.test(w)){s.textContent=w}else{s.className='wkw';s.textContent=w}el.appendChild(s)})}
+function startKar(el,audio){stopKar();if(!el||!audio)return;wrapWords(el);const words=[...el.querySelectorAll('.wkw')];if(!words.length)return;karTimer=setInterval(()=>{const d=audio.duration;if(!d||!isFinite(d)||audio.paused||audio.ended)return;const i=Math.min(words.length-1,Math.floor(audio.currentTime/d*words.length));words.forEach((w,j)=>w.classList.toggle('on',j<=i))},120)}
+function stopAllQ(){stopKar();for(let i=0;i<N;i++){['q','ok','h'].forEach(p=>{const a2=$(p+i);if(a2)a2.pause()});for(let j=0;j<4;j++){const o2=$('opt'+i+'_'+j);if(o2)o2.pause()}}stopSeq()}
+let seqOn=false;
+function stopSeq(){seqOn=false;for(let i=0;i<4;i++){const l=$('ltr'+i);if(l){l.onended=null;try{l.pause()}catch(e){}}}document.querySelectorAll('#qo button.reading').forEach(x=>x.classList.remove('reading'))}
+function playSeq(id,order,btns){stopSeq();if(!audioOn||!audioUnlocked)return;seqOn=true;const items=[];order.forEach((o,bi)=>{items.push({el:$('ltr'+bi),btn:btns[bi]});items.push({el:$('opt'+id+'_'+o.oi),btn:btns[bi]})});let k=0;const next=()=>{if(!seqOn||!audioOn||k>=items.length)return;const it=items[k++];if(!it.el){next();return}it.btn.classList.add('reading');it.el.onended=()=>{it.btn.classList.remove('reading');next()};try{it.el.currentTime=0;it.el.play().catch(()=>{next()})}catch(e){next()}};next()}
+function speak(i){if(!audioOn||!audioUnlocked||i===0)return;const a3=$('fx-whoosh');if(!a3)return;try{a3.currentTime=0;a3.play().catch(()=>{})}catch(e){}}
+function speakQ(p,i){if(!audioOn||!audioUnlocked)return;stopAllQ();if(p==='q'){const f=$('fx-pop');if(f){try{f.currentTime=0;f.play().catch(()=>{})}catch(e){}}}const a4=$(p+i);if(!a4)return;try{a4.currentTime=0;a4.play().catch(()=>{})}catch(e){}}
+function replayQ(){if(!lastCtx||shown<0||shown>=N||lastCtx.id!==shown)return;stopAllQ();stopSeq();qdPlayed[shown]=true;speakQ('q',shown);startKar($('qt'),$('q'+shown));const qel=$('q'+shown);if(qel)qel.onended=()=>playSeq(shown,lastCtx.order,lastCtx.btns)}
+$('mb').onclick=()=>{audioOn=!audioOn;$('mb').textContent=audioOn?'🔊':'🔇';if(!audioOn){stopAllQ();stopSeq();['fx-whoosh','fx-pop','fx-fan'].forEach(f=>{const w=$(f);if(w)w.pause()})}};
+const labs=[['Scheda madre','≈ 30 cm'],['Alimentatore (PSU)','≈ 15 cm'],['Memoria RAM','≈ 13 cm'],['SSD, memoria di massa','≈ 8 cm'],['Scheda video (GPU)','≈ 25 cm'],['Processore (CPU)','≈ 4 cm'],['Il die di silicio','≈ 1 cm'],['Un transistor','pochi nanometri']];
+let last=-1;
+function frame(tm){let j=0;while(j<N-2&&tm>=T0[j+1])j++;const tau=Math.max(0,Math.min(1,(tm-T0[j])/DU[j])),r=vw(Cx[j],W[j],Cx[j+1],W[j+1],sm(tau)),s=A/r[1];
+ grp[0].scale.setScalar(s);grp[0].position.set(-r[0][0]*s,-r[0][1]*s,0);ren.render(sc,cam);
+ const idx=tau<.5?j:j+1;if(idx!==last){last=idx;$('n').textContent='0'+(idx+1)+' / 0'+N;$('t').textContent=labs[idx][0];$('s').textContent='Dimensione '+labs[idx][1];speak(idx)}
+ $('zf').textContent='×'+s.toLocaleString('it-IT',{maximumFractionDigits:s<10?1:0})}
+function size(){const w=Math.max(2,st.clientWidth);ren.setPixelRatio(Math.min(devicePixelRatio||1,2));ren.setSize(w,Math.round(w*9/16),false)}
+addEventListener('resize',size);size();new ResizeObserver(size).observe(st);
+// ---- quiz
+const QS=[
+{q:'Senza il case vediamo tutti i componenti. Qual è il compito della scheda madre?',o:['Collegare tra loro i componenti e farli comunicare','Conservare i file per sempre','Fornire la corrente elettrica','Disegnare le immagini sullo schermo'],why:'Ospita CPU e RAM e collega con piste e connettori anche SSD, scheda video e alimentazione.',h:'Guarda quante piste e connettori ha.'},
+{q:'Che cosa fa l’alimentatore?',o:['Trasforma la corrente di casa (230 V alternata) in tensioni continue più basse','Aumenta la velocità del processore','Memorizza i programmi aperti','Raffredda il computer'],why:'Fornisce 12 V, 5 V e 3,3 V in corrente continua: i chip funzionano solo con queste tensioni.',h:'Guarda i cavi colorati che escono da lui.'},
+{q:'Spegni il computer: che cosa succede ai dati nella RAM?',o:['Si cancellano: la RAM è una memoria temporanea e veloce','Restano salvati per anni','Si copiano da soli sull’SSD','Si trasformano in file'],why:'La RAM tiene i dati dei programmi aperti, ma ha bisogno di corrente per conservarli.',h:'Serve corrente per mantenerli?'},
+{q:'A che cosa serve l’SSD?',o:['A conservare sistema operativo, programmi e file anche a computer spento','A calcolare le immagini 3D','A trasformare la corrente','A far girare le ventole'],why:'Le memorie flash (NAND) mantengono i dati senza corrente, ma sono più lente della RAM.',h:'È una memoria di massa.'},
+{q:'Perché una scheda video ha migliaia di piccole unità di calcolo?',o:['Per fare moltissimi calcoli semplici contemporaneamente, ad esempio sui pixel','Per immagazzinare più file','Per ridurre la tensione','Per collegare la tastiera'],why:'Colorare milioni di pixel è un lavoro parallelo: la GPU lo divide fra tante unità.',h:'Pensa ai milioni di pixel di uno schermo.'},
+{q:'Che cosa fa la CPU?',o:['Esegue le istruzioni dei programmi, una dopo l’altra, molto velocemente','Conserva le foto','Trasforma la corrente','Mostra le immagini sul monitor'],why:'È il «cervello»: prende le istruzioni dalla RAM, le decodifica e le esegue, miliardi di volte al secondo.',h:'È il processore.'},
+{q:'Quanti transistor contiene un processore moderno?',o:['Decine di miliardi','Poche centinaia','Alcune migliaia','Circa un milione'],why:'Un chip moderno ne ha decine di miliardi, ciascuno grande pochi nanometri.',h:'Sono microscopici e numerosissimi.'},
+{q:'Che cosa rappresenta un transistor nel computer?',o:['Un interruttore microscopico: acceso = 1, spento = 0 (un bit)','Un cavo che trasporta il suono','Una memoria permanente','Una piccola ventola'],why:'Miliardi di interruttori che si accendono e si spengono formano i bit: da qui nasce tutta l’informazione digitale.',h:'Pensa ai bit.'}];
+QS.forEach(q=>{q.o=q.o.map((x,i)=>({x,ok:i===0,oi:i}));for(let i=q.o.length-1;i>0;i--){const k=Math.random()*(i+1)|0;[q.o[i],q.o[k]]=[q.o[k],q.o[i]]}});
+let tm=0,playing=false,prev=null,a=0,first=[],shown=-2;
+const sl=$('sl'),pb=$('pb'),tmx=$('tm'),qd=$('q'),qn=$('qn'),qt=$('qt'),qo=$('qo'),qf=$('qf'),qb=$('qb');
+T0.forEach(v=>{const e=document.createElement('i');e.className='tk';e.style.left=v/DUR*100+'%';$('slw').appendChild(e)});
+const paintTicks=()=>document.querySelectorAll('.tk').forEach((e,j)=>e.classList.toggle('ok',j<a));
+const lim=()=>a<N?T0[a]:DUR,fmt=x=>x.toFixed(1).replace('.',',');
+const setPb=()=>pb.textContent=playing?'❚❚':(a===N&&tm>=DUR-.01?'↻':'▶');
+function card(){const vis=!playing&&tm>=lim()-.01,id=vis?a:-1;if(id===shown)return;shown=id;qd.hidden=id<0;st.classList.toggle('asking',id>=0);if(id<0)return;
+ qf.textContent='';qb.hidden=true;qo.innerHTML='';
+ function ciiModal(e,n){if(document.getElementById('ciimov'))return;const st=document.createElement('style');st.textContent='#ciimov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);z-index:99}#ciibox{background:#fffbeb;border:5px solid #b98a1d;border-radius:20px;padding:44px 52px;text-align:center;max-width:82%;animation:ciipop .5s cubic-bezier(.2,1.6,.4,1);font-family:system-ui,sans-serif;color:#1c1917}@keyframes ciipop{from{transform:scale(.4) rotate(-6deg);opacity:0}}#ciibox .em{font-size:84px}#ciibox h2{margin:10px 0 4px;font-size:34px;letter-spacing:.06em}#ciibox p{margin:0 0 20px;font-size:19px}#ciigo{background:#1c1917;color:#f4efe4;border:0;border-radius:12px;padding:14px 40px;font-size:20px;font-weight:800;cursor:pointer}';document.head.appendChild(st);const m=document.createElement('div');m.id='ciimov';m.innerHTML='<div id="ciibox"><div class="em">'+e+'</div><h2>TROFEO SBLOCCATO!</h2><p>'+n+'</p><button id="ciigo">Continua →</button></div>';document.getElementById('st').appendChild(m);document.getElementById('ciigo').onclick=()=>{location.href='index.html'}}
+const CIIBADGES={m_inglesi:['🎓','DIZIONARIO VIVENTE'],m_chifacosa:['🏠','PADRONE DI CASA'],m_testo:['✍️','SCRIBA DIGITALE'],m_pixel:['👑','RE DEI PIXEL'],m_suono:['🎵','MAESTRO D\u2019ONDA'],m_memoria:['🐘','MEMORIA DI FERRO'],m_file:['🗂️','ARCHIVISTA SUPREMO'],m_dentro:['🔧','CHIRURGO DEI CHIP'],m_componenti:['🔤','CACCIATORE DI SIGLE'],m_internet:['🌐','NAVIGATORE ESPERTO'],m_click:['🍕','PIZZAIOLO DEL CODICE'],m_variabili:['📦','MAGO DELLE SCATOLE'],m_condizioni:['🔀','GIUDICE SUPREMO'],m_cicli:['🔁','RE DELLA RIPETIZIONE'],m_ordinare:['🫧','DOMATORE DI BOLLE']};
+function ciiWin(k){try{const w=JSON.parse(localStorage.getItem('cii_badges')||'{}');w[k]=1;localStorage.setItem('cii_badges',JSON.stringify(w));const b=CIIBADGES[k];if(b)ciiModal(b[0],b[1])}catch(e){console.error('[ciiWin] ERROR:',e)}}
+ if(id===N){ciiWin('m_dentro');qn.textContent='Completato · 🎰 HAI VINTO: '+PRIZES[Math.max(0,a-1)]+'!';qt.textContent='Hai risposto bene al primo tentativo a '+first.filter(Boolean).length+' domande su '+N+'. Ora sai che cosa c’è dentro un computer, dalla scheda madre fino al transistor.';qb.textContent='↻ Ricomincia il quiz';qb.hidden=false;const fw=$('fx-fan');if(fw&&audioOn&&audioUnlocked){try{fw.currentTime=0;fw.play().catch(()=>{})}catch(e){}}qb.onclick=()=>{a=0;first=[];tm=0;shown=-2;qdPlayed={};lastCtx=null;paintLad();paintTicks();sl.value=0};return}
+ const q=QS[id];let tries=0;qn.textContent='Domanda '+(id+1)+' / '+N;qt.textContent=q.q;
+ const btns=[];q.o.forEach((o,bi)=>{const bt=document.createElement('button');bt.textContent='ABCD'[bi]+' - '+o.x;btns.push({b:bt,o});bt.onclick=()=>{tries++;stopSeq();stopKar();
+  if(o.ok){bt.className='ok';qo.querySelectorAll('button').forEach(x=>x.disabled=true);qf.textContent='✔ Esatto! '+q.why;first[id]=tries===1;speakQ('ok',id);startKar($('qf'),$('ok'+id));qb.textContent=id<N-1?'Continua ▶':'Concludi';qb.hidden=false;
+   qb.onclick=()=>{stopAllQ();stopSeq();a++;paintLad();paintTicks();if(id<N-1)playing=true;setPb()}}
+  else{bt.className='no';bt.disabled=true;qf.textContent='✘ Non proprio. '+q.h+' Riprova.';if(tries===1){speakQ('h',id);startKar($('qf'),$('h'+id))}}};qo.appendChild(bt)});lastCtx={id,order:q.o,btns:btns.map(x=>x.b)};if(!qdPlayed[id]){qdPlayed[id]=true;speakQ('q',id);startKar($('qt'),$('q'+id));const qel=$('q'+id);if(qel)qel.onended=()=>playSeq(id,q.o,btns.map(x=>x.b))}}
+function loop(now){if(prev===null)prev=now;const dt=Math.min(.1,(now-prev)/1000);prev=now;
+ if(playing){tm+=dt;const L=lim();if(tm>=L){tm=L;playing=false}sl.value=tm/DUR*1000}
+ setPb();card();
+ try{frame(tm)}catch(e){document.body.insertAdjacentHTML('beforeend','<pre style="position:fixed;top:0;left:0;color:#f88;font-size:12px;white-space:pre-wrap">Errore: '+e.message+'</pre>');return}
+ tmx.textContent=fmt(tm)+' s / '+fmt(DUR)+' s';requestAnimationFrame(loop)}
+sl.addEventListener('input',()=>{audioUnlocked=true;playing=false;tm=Math.min(sl.value/1000*DUR,lim());sl.value=tm/DUR*1000});
+pb.onclick=()=>{audioUnlocked=true;if(shown>=0&&shown<N){replayQ();return}if(a<N&&tm>=lim()-.01)return;if(a===N&&tm>=DUR-.01)tm=0;playing=!playing;setPb()};
+addEventListener('keydown',e=>{if(e.code==='Space'&&e.target!==sl&&e.target.tagName!=='BUTTON'){e.preventDefault();pb.click()}});
+paintTicks();paintLad();requestAnimationFrame(loop);
+</script></body></html>

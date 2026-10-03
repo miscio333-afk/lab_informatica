@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula Informatica — Zoom Infinito</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#0b0e14;font-family:'Segoe UI',system-ui,sans-serif}
+  #c{position:fixed;inset:0;display:block}
+  #vignette{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55) 100%)}
+  #grain{position:fixed;inset:0;pointer-events:none;opacity:.06}
+  .label{position:fixed;left:50%;bottom:48px;transform:translateX(-50%) translateY(10px);background:rgba(10,14,22,.72);border:1px solid rgba(120,200,255,.35);color:#dff1ff;padding:10px 22px;border-radius:999px;font-size:15px;letter-spacing:.12em;text-transform:uppercase;opacity:0;transition:opacity .5s,transform .5s;white-space:nowrap;backdrop-filter:blur(6px)}
+  .label.on{opacity:1;transform:translateX(-50%) translateY(0)}
+  .label b{color:#7fd8ff}
+  #hud{position:fixed;top:18px;left:50%;transform:translateX(-50%);color:#9fb6cc;font-size:12px;letter-spacing:.25em;text-transform:uppercase;opacity:.8}
+  #bar{position:fixed;bottom:0;left:0;height:3px;background:linear-gradient(90deg,#38e1ff,#7c5cff);width:0%}
+  #replay{position:fixed;right:20px;bottom:20px;background:#16202e;color:#dff1ff;border:1px solid #38e1ff55;border-radius:10px;padding:10px 16px;cursor:pointer;font-size:14px}
+  #scrub{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;width:min(560px,70vw);accent-color:#38e1ff;cursor:pointer}
+</style>
+<script type="importmap">{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}</script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="vignette"></div>
+<canvas id="grain" width="160" height="160"></canvas>
+<div id="hud">zoom continuo · nessun taglio · 20s</div>
+<div class="label" id="label"><b id="lvn">Livello 1</b> · <span id="ltx"></span></div>
+<div id="bar"></div>
+<input id="scrub" type="range" min="0" max="1000" value="0" step="1" title="Scrub animazione">
+<button id="replay">↻ Replay</button>
+<script type="module">
+import * as THREE from 'three';
+const canvas=document.getElementById('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth,innerHeight);
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x0b0e14);
+scene.fog=new THREE.FogExp2(0x0b0e14,0.012);
+const camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,0.001,5000);
+scene.add(new THREE.HemisphereLight(0xdff2ff,0x223344,1.0));
+const sun=new THREE.DirectionalLight(0xfff2d9,1.6); sun.position.set(8,14,6); scene.add(sun);
+const neon1=new THREE.PointLight(0x9fe8ff,0.8,60); neon1.position.set(0,4.5,0); scene.add(neon1);
+
+// ---------- helpers ----------
+function ctex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t;}
+function box(w,h,d,color,x=0,y=0,z=0,parent=scene){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshStandardMaterial({color,roughness:.8}));m.position.set(x,y,z);parent.add(m);return m;}
+
+// ---------- LIVELLO 1: aula laboratorio ----------
+const aula=new THREE.Group(); scene.add(aula);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(40,30),new THREE.MeshStandardMaterial({color:0x2a3340,roughness:.95}));
+floor.rotation.x=-Math.PI/2; aula.add(floor);
+box(40,6,0.4,0x1b2431,0,3,-12,aula); // parete fondo con LIM
+const limTex=ctex(512,256,(g,w,h)=>{g.fillStyle='#0d2b45';g.fillRect(0,0,w,h);g.fillStyle='#bfe9ff';g.font='bold 44px sans-serif';g.fillText('LIM · PROGETTO DI SARA',30,90);g.font='28px sans-serif';g.fillStyle='#8fd0ff';g.fillText('“paesaggio sognante” — generato con IA',30,140);g.fillStyle='#123';g.fillRect(30,170,200,50);});
+const lim=new THREE.Mesh(new THREE.PlaneGeometry(9,4.5),new THREE.MeshBasicMaterial({map:limTex}));lim.position.set(0,3,-11.7);aula.add(lim);
+// finestre luce
+for(let i=0;i<4;i++){const wnd=new THREE.Mesh(new THREE.PlaneGeometry(3,2.4),new THREE.MeshBasicMaterial({color:0xcfeaff}));wnd.position.set(-15,3.2,-6+i*4);wnd.rotation.y=Math.PI/2;aula.add(wnd);}
+// neon soffitto
+for(let i=-1;i<=1;i++) box(6,0.12,0.5,0xbfefff,i*7,5.4,-2,aula);
+// banchi con PC (instanced-ish, semplici loop)
+const deskMat=new THREE.MeshStandardMaterial({color:0x8a6b4a,roughness:.7});
+const heroDeskPos=new THREE.Vector3(0,0,2.5);
+for(let r=0;r<3;r++)for(let c=-2;c<=2;c++){
+  const x=c*3.2, z=-4+r*3.4;
+  const d=box(2.4,0.12,1.1,0x8a6b4a,x,1.0,z,aula);
+  box(0.1,1.0,0.1,0x555555,x-1.1,0.5,z,aula);box(0.1,1.0,0.1,0x555555,x+1.1,0.5,z,aula);
+  box(0.9,0.6,0.08,0x11161d,x,1.6,z-0.3,aula); // monitor
+  const scr=new THREE.Mesh(new THREE.PlaneGeometry(0.8,0.5),new THREE.MeshBasicMaterial({color:(r===2&&c===0)?0xffffff:0x2e7fd9}));
+  scr.position.set(x,1.6,z-0.25);aula.add(scr);
+  box(0.9,0.05,0.35,0x222a33,x,1.08,z+0.25,aula); // tastiera
+  box(0.5,0.5,0.5,0x3a4a5c,x+0.4,0.35,z+0.9,aula); // sedia
+  if(r===2&&c===0) d.material=new THREE.MeshStandardMaterial({color:0xa88355,roughness:.6,emissive:0x221100});
+}
+
+// ---------- LIVELLO 2: schermo hero (UI progetto studente) ----------
+const screenTex=ctex(1024,640,(g,w,h)=>{
+  g.fillStyle='#f4f6f8';g.fillRect(0,0,w,h);
+  g.fillStyle='#1c2836';g.fillRect(0,0,w,64);
+  g.fillStyle='#fff';g.font='bold 30px sans-serif';g.fillText('💻  genera.immagini — progetto di Sara (3ªB)',24,42);
+  g.fillStyle='#ffffff';g.fillRect(40,100,w-80,300);
+  // griglia di colori iniziale (tavolozza pixel)
+  const gx=48,gy=108,gw=w-96,gh=284,nc=16,nr=8;
+  for(let r=0;r<nr;r++)for(let c=0;c<nc;c++){
+    g.fillStyle=`hsl(${(c*22+r*47)%360} 85% ${35+(r*7+c*2)%30}%)`;
+    g.fillRect(gx+c*(gw/nc)+1,gy+r*(gh/nr)+1,gw/nc-2,gh/nr-2);
+  }
+  g.fillStyle='#101722cc';g.fillRect(48,300,320,60);
+  g.fillStyle='#fff';g.font='22px sans-serif';g.fillText('tavolozza — scegli un colore',60,338);
+  g.fillStyle='#1c2836';g.fillRect(40,420,w-80,90);
+  g.fillStyle='#7fd8ff';g.font='24px sans-serif';g.fillText('prompt: “un lago al tramonto, stile sognante”   [ Genera ]',60,455);
+  g.fillStyle='#c8901a';g.font='bold 22px sans-serif';g.fillText('○ in attesa — premi Genera',60,490);
+  g.fillStyle='#33414f';for(let i=0;i<40;i++)g.fillRect(48+i*((w-96)/40),540,10,40);
+});
+const heroScreen=new THREE.Mesh(new THREE.PlaneGeometry(0.8,0.5),new THREE.MeshBasicMaterial({map:screenTex}));
+heroScreen.position.set(0,1.6,2.56); aula.add(heroScreen);
+
+// cella hero della tavolozza (col 10, riga 3): tutto lo zoom punta qui
+const HERO={c:10,r:3,hue:(10*22+3*47)%360,light:35+(3*7+10*2)%30};
+const heroColor=`hsl(${HERO.hue} 85% ${HERO.light}%)`;
+// posizione della cella sul piano schermo (plane 0.8x0.5, texture 1024x640, area griglia 48,108,928x284)
+const HERO_X=(48+(HERO.c+0.5)*(928/16))/1024, HERO_Y=1-(108+(HERO.r+0.5)*(284/8))/640;
+const HERO_POS=new THREE.Vector3((HERO_X-0.5)*0.8, 1.6+(HERO_Y-0.5)*0.5, 0);
+// ---------- LIVELLO 3: zoom dentro la cella hero (tinta unita + cornice) ----------
+const aiTex=ctex(512,512,(g,w,h)=>{
+  g.fillStyle=heroColor;g.fillRect(0,0,w,h);
+  // micro-texture del pixel: variazioni sottili della stessa tinta
+  for(let i=0;i<900;i++){g.fillStyle=`hsla(${HERO.hue},85%,${HERO.light+(Math.random()*10-5)}%,.35)`;g.fillRect(Math.random()*w,Math.random()*h,8,8);}
+  g.strokeStyle='#ffffffcc';g.lineWidth=10;g.strokeRect(8,8,w-16,h-16);
+  g.fillStyle='#fff';g.font='bold 34px sans-serif';g.fillText(`cella [${HERO.c},${HERO.r}]`,28,h-30);
+});
+const imgPlane=new THREE.Mesh(new THREE.PlaneGeometry(0.09,0.09),new THREE.MeshBasicMaterial({map:aiTex,transparent:true,opacity:0}));
+imgPlane.position.set(HERO_POS.x,HERO_POS.y,2.566); aula.add(imgPlane); // appare in dissolvenza durante lo zoom
+
+// ---------- LIVELLO 4: il pixel (cubo RGB dentro l'immagine) ----------
+const pixelGroup=new THREE.Group(); pixelGroup.position.set(HERO_POS.x,HERO_POS.y,2.572); aula.add(pixelGroup);
+const pxTex=ctex(512,512,(g,w,h)=>{g.fillStyle=heroColor;g.fillRect(0,0,w,h);g.fillStyle='rgba(0,0,0,.55)';g.fillRect(24,h/2-110,w-48,220);g.fillStyle='#fff';g.font='bold 64px monospace';g.textAlign='center';g.fillText('R:217',w/2,h/2-38);g.fillText('G:21',w/2,h/2+32);g.fillText('B:18',w/2,h/2+102);});
+const pxCube=new THREE.Mesh(new THREE.PlaneGeometry(0.03,0.03),new THREE.MeshBasicMaterial({map:pxTex}));
+pixelGroup.add(pxCube);
+// targhetta RGB sotto il pixel finale (resta 2D, frontale)
+const rgbTex=ctex(512,128,(g,w,h)=>{
+  g.fillStyle='rgba(5,8,12,.92)';g.fillRect(0,0,w,h);
+  g.strokeStyle='#ff4d4d';g.lineWidth=4;g.strokeRect(4,4,w-8,h-8);
+  g.fillStyle='#ff6b6b';g.font='bold 44px monospace';g.fillText('R:217  G:21  B:18',36,84);
+});
+const rgbTag=new THREE.Mesh(new THREE.PlaneGeometry(0.03,0.0075),new THREE.MeshBasicMaterial({map:rgbTex,transparent:true}));
+rgbTag.position.set(0,-0.022,0.001); pixelGroup.add(rgbTag);
+// alone RGB attorno
+const glow=new THREE.Mesh(new THREE.PlaneGeometry(0.045,0.045),new THREE.MeshBasicMaterial({color:0xff5f9e,transparent:true,opacity:.18}));
+glow.position.z=-0.001;
+pixelGroup.add(glow);
+
+// ---------- LIVELLO 5: griglia di numeri (dentro il pixel) ----------
+const numTex=ctex(1024,512,(g,w,h)=>{
+  g.fillStyle='#020608';g.fillRect(0,0,w,h);
+  g.font='20px monospace';
+  const rows=16,cols=24;
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    const v=(r*37+c*53+120)%256;
+    const hot=(r===8&&c>=10&&c<=13);
+    if(hot){g.fillStyle=heroColor;g.fillRect(c*(w/cols),r*(h/rows),w/cols,h/rows);}
+    g.fillStyle=hot?'#fff':'#9fd8ef';
+    // le 4 celle centrali mostrano R · G · B · A della cella hero
+    const rgba=['R217','G18','B30','A255'];
+    g.fillText(hot?rgba[c-10]:String(v).padStart(3,'0'),c*(w/cols)+6,r*(h/rows)+22);
+  }
+  g.strokeStyle='#38e1ff55';for(let c=0;c<=cols;c++){g.beginPath();g.moveTo(c*(w/cols),0);g.lineTo(c*(w/cols),h);g.stroke();}
+});
+const gridPlane=new THREE.Mesh(new THREE.PlaneGeometry(0.028,0.014),new THREE.MeshBasicMaterial({map:numTex,transparent:true,opacity:0}));
+gridPlane.position.set(0,0,0.0165); gridPlane.visible=false; pixelGroup.add(gridPlane);
+
+// ---------- camera path: zoom continuo 20s ----------
+const DUR=20;
+const camStart=new THREE.Vector3(HERO_POS.x,HERO_POS.y,10.5);
+const camEnd=new THREE.Vector3(HERO_POS.x,HERO_POS.y,2.572+0.004);
+const lookStart=new THREE.Vector3(HERO_POS.x,HERO_POS.y,2.5);
+const lookEnd=new THREE.Vector3(HERO_POS.x,HERO_POS.y,2.572);
+let t0=null, running=true, manual=null;
+const scrub=document.getElementById('scrub');
+scrub.addEventListener('input',()=>{manual=scrub.value/1000;});
+// doppio click sullo slider = riprendi play
+scrub.addEventListener('dblclick',()=>{manual=null;t0=null;cur=-1;running=true;});
+const levels=[
+  {t:0.00,lv:'Livello 1',tx:'Aula informatica · scala 10¹ m'},
+  {t:0.24,lv:'Livello 2',tx:'Schermo del PC · progetto di Sara · 10⁰ m'},
+  {t:0.46,lv:'Livello 3',tx:'Dentro la cella [10,3] · 10⁻¹ m'},
+  {t:0.68,lv:'Livello 4 · finale',tx:'Pixel rosso · R:217 G:21 B:18'},
+];
+const label=document.getElementById('label'),lvn=document.getElementById('lvn'),ltx=document.getElementById('ltx'),bar=document.getElementById('bar');
+let cur=-1;
+function ease(p){return p;} // lineare in log-space = velocità percepita costante
+function frame(ts){
+  if(t0===null)t0=ts;
+  let p=manual!==null?manual:((ts-t0)/1000)/DUR;
+  if(p>=1){p=1;running=false;}
+  if(manual===null) scrub.value=Math.round(p*1000);
+  const e=ease(p);
+  // interpolazione esponenziale della distanza
+  const d0=camStart.distanceTo(lookStart), d1=0.03;
+  const d=d0*Math.pow(d1/d0,e);
+  const dir=new THREE.Vector3().subVectors(camStart,lookStart).normalize();
+  // il look migra da aula -> punto pixel
+  const look=new THREE.Vector3().lerpVectors(lookStart,lookEnd,Math.min(1,e*1.15));
+  camera.position.copy(look).addScaledVector(dir,d);
+  camera.lookAt(look);
+  camera.near=Math.max(d*0.02,0.00005); camera.far=Math.max(100,d*50); camera.updateProjectionMatrix();
+  glow.material.opacity=0.12+0.08*Math.sin(ts*0.005);
+  // l'immagine IA appare solo quando lo zoom è dentro lo schermo (p 0.30 -> 0.46)
+  imgPlane.material.opacity=THREE.MathUtils.smoothstep(p,0.30,0.46);
+  imgPlane.visible=imgPlane.material.opacity>0.01;
+  let idx=levels.length-1; for(let i=0;i<levels.length;i++) if(p>=levels[i].t) idx=i;
+  if(idx!==cur){cur=idx;lvn.textContent=levels[idx].lv;ltx.textContent=levels[idx].tx;label.classList.add('on');}
+  bar.style.width=(p*100)+'%';
+  renderer.render(scene,camera);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+document.getElementById('replay').onclick=()=>{t0=null;cur=-1;running=true;manual=null;scrub.value=0;label.classList.remove('on');requestAnimationFrame(frame);};
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+// grain
+const gg=document.getElementById('grain').getContext('2d');
+setInterval(()=>{const d=gg.createImageData(160,160);for(let i=0;i<d.data.length;i+=4){const v=Math.random()*255;d.data[i]=d.data[i+1]=d.data[i+2]=v;d.data[i+3]=255;}gg.putImageData(d,0,0);},120);
+</script>
+</body>
+</html>

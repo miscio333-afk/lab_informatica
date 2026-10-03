@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="utf-8">
+<title>Master Class Informatica — Diploma</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#141210;font-family:Georgia,serif}
+#sheet{max-width:900px;margin:24px auto;background:#f4efe4;border:12px double #1c1917;border-radius:6px;padding:60px 56px;text-align:center;position:relative;box-shadow:0 0 60px #000}
+#seal{width:130px;height:130px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e3b83c,#b98a1d);display:flex;align-items:center;justify-content:center;font-size:64px;margin:0 auto;border:4px solid #1c1917}
+h1{font-size:clamp(30px,5vw,50px);margin:18px 0 4px;letter-spacing:.04em}
+.sub{font-family:'Courier New',monospace;color:#57534e;letter-spacing:.25em;font-size:14px}
+#name{font-size:clamp(28px,5vw,46px);margin:26px 0 6px;border-bottom:2px solid #1c1917;display:inline-block;padding:0 30px 6px;min-width:280px}
+#list{font-family:'Courier New',monospace;font-size:14px;color:#44403c;margin:22px 0;line-height:1.9}
+#back{display:inline-block;margin-top:18px;color:#1c1917;font-family:'Courier New',monospace}
+#cf{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+.cf{position:absolute;top:-20px;width:12px;height:18px;border-radius:3px}
+#nm{margin-top:16px;font-family:'Courier New',monospace;font-size:14px}
+#nm input{font:inherit;padding:8px 12px;border:2px solid #1c1917;border-radius:8px;background:#fff}
+#nm button{font:inherit;padding:8px 16px;border-radius:8px;border:0;background:#1c1917;color:#f4efe4;cursor:pointer}
+#lock{max-width:600px;margin:80px auto;text-align:center;color:#f4efe4;font-family:'Courier New',monospace}
+#lock a{color:#facc15}
+</style></head><body>
+<div id="lock" hidden>🔒 Completa i <b>15 moduli</b> per sbloccare il diploma.<br><br><a href="index.html">← Torna al corso</a></div>
+<div id="sheet" hidden>
+<div id="seal">🏆</div>
+<h1>MASTER CLASS<br>INFORMATICA</h1>
+<div class="sub">DIPLOMA DI COMPLETAMENTO · AULA INFORMATICA</div>
+<div id="name">Studente</div>
+<div id="list"></div>
+<div id="nm"><input id="inp" maxlength="30" placeholder="Scrivi il tuo nome"> <button id="set">Firma</button></div>
+<br><a id="back" href="index.html">← Torna alla bacheca</a>
+</div>
+<div id="cf"></div>
+<audio id="a-win" src="audio-milionario/win.mp3" preload="auto"></audio>
+<script>
+function won(){try{return JSON.parse(localStorage.getItem('cii_badges')||'{}')}catch(e){return{}}}
+const W=won(),n=Object.keys(W).length;
+if(n>=15){
+ document.getElementById('sheet').hidden=false;
+ const L={m_inglesi:'🎓 DIZIONARIO VIVENTE',m_chifacosa:'🏠 PADRONE DI CASA',m_testo:'✍️ SCRIBA DIGITALE',m_pixel:'👑 RE DEI PIXEL',m_suono:'🎵 MAESTRO D\u2019ONDA',m_memoria:'🐘 MEMORIA DI FERRO',m_file:'🗂️ ARCHIVISTA SUPREMO',m_dentro:'🔧 CHIRURGO DEI CHIP',m_componenti:'🔤 CACCIATORE DI SIGLE',m_internet:'🌐 NAVIGATORE ESPERTO',m_click:'🍕 PIZZAIOLO DEL CODICE',m_variabili:'📦 MAGO DELLE SCATOLE',m_condizioni:'🔀 GIUDICE SUPREMO',m_cicli:'🔁 RE DELLA RIPETIZIONE',m_ordinare:'🫧 DOMATORE DI BOLLE'};
+ document.getElementById('list').innerHTML=Object.keys(L).map(k=>'✓ '+L[k]).join('<br>');
+ const saved=localStorage.getItem('cii_name');if(saved)document.getElementById('name').textContent=saved;
+ document.getElementById('set').onclick=()=>{const v=document.getElementById('inp').value.trim();if(v){document.getElementById('name').textContent=v;localStorage.setItem('cii_name',v)}};
+ const a=document.getElementById('a-win');try{a.play().catch(()=>{})}catch(e){}
+ const c=document.getElementById('cf'),cols=['#facc15','#38e1ff','#f472b6','#4ade80','#fff'];
+ for(let i=0;i<120;i++){const d=document.createElement('div');d.className='cf';d.style.left=(Math.random()*100)+'%';d.style.background=cols[i%5];c.appendChild(d);
+  const f=d.animate([{transform:'translateY(0) rotate(0deg)',opacity:1},{transform:'translateY('+(innerHeight+60)+'px) rotate('+(540+Math.random()*540)+'deg)',opacity:.9}],{duration:2400+Math.random()*2200,easing:'cubic-bezier(.2,.6,.6,1)'});f.onfinish=()=>d.remove()}
+}else{document.getElementById('lock').hidden=false}
+</script></body></html>

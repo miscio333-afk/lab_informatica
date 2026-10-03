@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="utf-8">
+<title>Zoom senza fine — dalla scrivania ai numeri</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;margin:0;background:#05060a;color:#e9ecf5;font-family:ui-monospace,Menlo,Consolas,monospace}
+body{display:flex;align-items:center;justify-content:center}
+#st{position:relative;aspect-ratio:16/9;width:min(100vw,177.78vh);min-width:240px;overflow:hidden;background:#000}
+canvas{display:block;width:100%!important;height:100%!important}
+#hud{position:absolute;left:3%;bottom:15%;padding:.8em 1em;background:rgba(5,6,10,.62);border:1px solid rgba(255,255,255,.18);border-radius:8px;backdrop-filter:blur(6px);font-size:clamp(10px,1.6vw,16px);min-width:14em;transition:opacity .25s}
+#hud b{display:block;font-size:1.25em;letter-spacing:.02em}
+#hud span{color:#7cf2c9}
+#hud small{display:block;opacity:.65;margin-top:.3em}
+#zf{position:absolute;right:3%;top:5%;font-size:clamp(11px,2vw,22px);color:#7cf2c9;text-shadow:0 0 8px #000}
+#ctl{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:.9em;padding:.7em 3% 1em;background:linear-gradient(transparent,rgba(0,0,0,.7));font-size:clamp(10px,1.5vw,15px)}
+#pb{flex:none;width:2.6em;height:2.6em;border:0;border-radius:50%;background:#7cf2c9;color:#05060a;font:inherit;cursor:pointer}
+#sl{flex:1;accent-color:#7cf2c9;height:2em;cursor:pointer;touch-action:none}
+#tm{flex:none;min-width:7.5em;text-align:right;opacity:.8}
+</style></head><body>
+<div id="st"><div id="hud"><small id="n">01 / 06</small><b id="t"></b><span id="s"></span></div><div id="zf"></div><div id="ctl"><button id="pb" aria-label="Play / pausa">❚❚</button><input id="sl" type="range" min="0" max="1000" value="0" step="1" aria-label="Scorri l’animazione"><span id="tm">0,0 s / 20 s</span></div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const A=16/9,DUR=20,mk=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c};
+const rr=(c,x,y,w,h,r)=>{c.beginPath();c.roundRect?c.roundRect(x,y,w,h,r):c.rect(x,y,w,h)};
+// ---- 1. Image générée (256x144)
+const IW=256,IH=144,ic=mk(IW,IH),ix=ic.getContext('2d'),im=ix.createImageData(IW,IH),hy=Math.round(IH*.62);
+const mix=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*t),hash=(x,y)=>{const h=Math.sin(x*127.1+y*311.7)*43758.5;return h-Math.floor(h)};
+function sky(x,y){const t=y/hy;let c=t<.55?mix([24,14,70],[205,60,130],t/.55):mix([205,60,130],[255,175,95],(t-.55)/.45);
+ const d=Math.hypot(x-150,y-78);if(d<26)c=[255,236,176];else{const g=Math.exp(-(d-26)/22);c=mix(c,[255,170,110],g*.7)}return c}
+const ridge=(x,a,o)=>hy-a-(18*Math.sin(x*.045+o)+10*Math.sin(x*.11+o*2)+6*Math.sin(x*.23+o));
+for(let y=0;y<IH;y++)for(let x=0;x<IW;x++){let c;
+ if(y>=hy){c=mix(sky(x,2*hy-y-1),[20,12,50],.45);c[0]+=(hash(x>>1,y)-.5)*28}
+ else if(y>ridge(x,4,2.5)){c=mix([58,26,84],[120,48,110],(y-ridge(x,4,2.5))/40)}
+ else if(y>ridge(x,22,0)){c=[34,18,64]}
+ else c=sky(x,y);
+ if(y<50&&hash(x,y)>.992&&c[0]<120)c=[255,255,255];
+ const n=(hash(x+9,y+3)-.5)*8,i=(y*IW+x)*4;im.data.set([c[0]+n,c[1]+n,c[2]+n,255],i)}
+ix.putImageData(im,0,0);
+const PC=176,PR=52,px=ix.getImageData(PC,PR,1,1).data,col=[px[0],px[1],px[2]];
+// ---- 2. Grille de nombres
+const GW=3072,GH=1728,G=mk(GW,GH),g=G.getContext('2d');
+g.fillStyle=`rgb(${col.map(v=>v*.3|0)})`;g.fillRect(0,0,GW,GH);
+g.textAlign='center';g.textBaseline='middle';g.font='bold 190px ui-monospace,Menlo,Consolas,monospace';
+const CC=['#ff6b6b','#6bff9a','#6ba8ff'];
+for(let r=0;r<6;r++)for(let c=0;c<8;c++){const ch=c%3,v=Math.max(0,Math.min(255,Math.round(col[ch]+(hash(c,r)-.5)*14)));
+ g.strokeStyle='rgba(255,255,255,.12)';g.lineWidth=3;g.strokeRect(c*384+2,r*288+2,380,284);
+ g.fillStyle=CC[ch];g.fillText(String(v),c*384+192,r*288+150)}
+// ---- 3. Le pixel (carré)
+const P=mk(512,512),p=P.getContext('2d');
+p.fillStyle=`rgb(${col})`;p.fillRect(0,0,512,512);
+p.fillStyle='rgba(0,0,0,.08)';p.fillRect(0,0,512,512);p.fillStyle=`rgb(${col})`;p.fillRect(3,3,506,506);
+p.drawImage(G,256-136.5,256-77,273,154);
+// ---- 4. Écran (UI d'un générateur d'images)
+const S=mk(1600,900),s=S.getContext('2d');
+s.fillStyle='#10121a';s.fillRect(0,0,1600,900);s.fillStyle='#191c28';s.fillRect(0,0,1600,56);
+['#ff5f57','#febc2e','#28c840'].forEach((q,i)=>{s.fillStyle=q;s.beginPath();s.arc(36+i*30,28,9,0,7);s.fill()});
+s.fillStyle='#9aa3c0';s.font='22px sans-serif';s.fillText('Studio — generazione di immagini',150,35);
+s.fillStyle='#191c28';rr(s,40,100,570,360,14);s.fill();s.fillStyle='#7cf2c9';s.font='bold 20px sans-serif';s.fillText('PROMPT',64,140);
+s.fillStyle='#e9ecf5';s.font='28px sans-serif';['paesaggio onirico, tramonto','viola, montagne, riflesso sull’acqua,','stile cinematografico, molto dettagliato'].forEach((t,i)=>s.fillText(t,64,196+i*44));
+s.fillStyle='#7cf2c9';rr(s,64,370,200,56,28);s.fill();s.fillStyle='#06241b';s.font='bold 24px sans-serif';s.fillText('Genera',112,406);
+s.fillStyle='#2a2f44';for(let i=0;i<3;i++){rr(s,40,500+i*70,570,10,5);s.fill()}s.fillStyle='#7cf2c9';[.7,.4,.85].forEach((v,i)=>s.fillRect(40,500+i*70,570*v,10));
+s.imageSmoothingEnabled=false;s.drawImage(ic,652,243,800,450);s.strokeStyle='#2a2f44';s.lineWidth=3;s.strokeRect(652,243,800,450);
+s.fillStyle='#9aa3c0';s.font='22px sans-serif';s.fillText('seed 48213 · 256 × 144 px',652,735);
+// ---- 5. Bureau
+const D=mk(1920,1080),d=D.getContext('2d');
+let gr=d.createLinearGradient(0,0,0,760);gr.addColorStop(0,'#101528');gr.addColorStop(1,'#272240');d.fillStyle=gr;d.fillRect(0,0,1920,1080);
+d.fillStyle='#1b2240';d.fillRect(1400,140,300,380);gr=d.createLinearGradient(1400,140,1700,520);gr.addColorStop(0,'#ff6fa8');gr.addColorStop(1,'#5a4cff');d.fillStyle=gr;d.fillRect(1425,165,250,330);
+gr=d.createLinearGradient(0,760,0,1080);gr.addColorStop(0,'#5b3e2b');gr.addColorStop(1,'#2e1d13');d.fillStyle=gr;d.fillRect(0,760,1920,320);
+gr=d.createRadialGradient(960,760,20,960,760,620);gr.addColorStop(0,'rgba(120,200,255,.28)');gr.addColorStop(1,'rgba(120,200,255,0)');d.fillStyle=gr;d.fillRect(0,300,1920,780);
+d.fillStyle='#17181f';d.fillRect(930,634,60,130);d.beginPath();d.ellipse(960,770,150,18,0,0,7);d.fill();
+d.fillStyle='#0b0c11';rr(d,654,274,612,360,14);d.fill();d.drawImage(S,672,292,576,324);
+d.fillStyle='#222633';rr(d,740,830,440,110,10);d.fill();d.fillStyle='#363c52';for(let r=0;r<4;r++)for(let c=0;c<12;c++)d.fillRect(752+c*35,842+r*24,29,18);
+d.fillStyle='#2b3046';d.beginPath();d.ellipse(1290,890,34,48,0,0,7);d.fill();
+gr=d.createRadialGradient(330,520,10,330,560,320);gr.addColorStop(0,'rgba(255,190,110,.35)');gr.addColorStop(1,'rgba(255,190,110,0)');d.fillStyle=gr;d.fillRect(0,200,700,700);
+d.strokeStyle='#15161c';d.lineWidth=14;d.lineCap='round';d.beginPath();d.moveTo(300,780);d.lineTo(380,560);d.lineTo(450,470);d.stroke();
+d.fillStyle='#ffc77a';d.beginPath();d.moveTo(405,440);d.lineTo(500,470);d.lineTo(460,520);d.closePath();d.fill();
+d.fillStyle='#15161c';d.beginPath();d.ellipse(300,782,70,12,0,0,7);d.fill();
+d.fillStyle='#e8e2d4';rr(d,1500,730,90,80,10);d.fill();d.fillStyle='#4a2c1a';d.fillRect(1506,738,78,10);
+// ---- 6. Three.js : niveaux imbriqués
+const L=[{w:A,t:D,c:[0,.5-454/1080],k:.3},{w:A,t:S,c:[.28,-.02],k:.5},{w:A,t:ic,c:[((PC+.5)/IW-.5)*A,.5-(PR+.5)/IH],k:1/IH},
+ {w:1,t:P,c:[0,0],k:.3},{w:A,t:G,c:[((3.5)/8-.5)*A,.5-2.5/6],k:.25}];
+const ren=new THREE.WebGLRenderer({antialias:true}),st=document.getElementById('st');st.prepend(ren.domElement);
+const sc=new THREE.Scene(),cam=new THREE.OrthographicCamera(-A/2,A/2,.5,-.5,-10,10);
+const aniso=ren.capabilities.getMaxAnisotropy(),grp=[];
+L.forEach((l,j)=>{const tx=new THREE.CanvasTexture(l.t);tx.anisotropy=aniso;if(j===2)tx.magFilter=THREE.NearestFilter;
+ const m=new THREE.Mesh(new THREE.PlaneGeometry(l.w,1),new THREE.MeshBasicMaterial({map:tx,depthTest:false,depthWrite:false}));m.renderOrder=j;m.frustumCulled=false;
+ const gp=new THREE.Group();gp.add(m);grp.push(gp);if(j){const pr=L[j-1];grp[j-1].add(gp);gp.position.set(pr.c[0],pr.c[1],0);gp.scale.setScalar(pr.k)}});
+sc.add(grp[0]);
+const Sx=[1],C=[[0,0]],U=[0],ls=L.map(l=>-Math.log(l.k));
+L.forEach((l,j)=>{Sx.push(Sx[j]*l.k);C.push([C[j][0]+Sx[j]*l.c[0],C[j][1]+Sx[j]*l.c[1]]);U.push(U[j]+ls[j])});
+const UT=U[5];
+// profil de vitesse continu (pas de coupure, pas d'arrêt)
+const dur=[3.4,2.6,6,3.8,4.2];let tc=0;const mids=dur.map(x=>(tc+=x)-x/2);
+const N=2000,tab=[0];for(let i=1;i<=N;i++){const t=i/N*DUR;let v;
+ const a=ls.map((l,j)=>l/dur[j]);if(t<=mids[0])v=a[0];else if(t>=mids[4])v=a[4];else{let j=0;while(t>mids[j+1])j++;v=a[j]+(a[j+1]-a[j])*(t-mids[j])/(mids[j+1]-mids[j])}
+ v*=.12+.88*Math.min(1,t/1.2);tab.push(tab[i-1]+v*DUR/N)}
+const uAt=t=>{const f=Math.max(0,Math.min(1,t/DUR))*N,i=Math.min(N-1,f|0);return(tab[i]+(tab[i+1]-tab[i])*(f-i))*UT/tab[N]};
+const labs=[['Scrivania del creatore','≈ 2 m'],['Lo schermo','≈ 60 cm'],['Immagine generata dall’IA','≈ 25 cm'],['Un pixel','≈ 0,2 mm'],['Griglia di numeri','R · G · B  (0 – 255)'],['Un numero','8 bit']];
+const $=i=>document.getElementById(i),sm=x=>x*x*(3-2*x);let last=-1;
+function frame(u){u=Math.max(0,u);let j=4;while(j>0&&u<U[j])j--;const f=Math.min(1,(u-U[j])/ls[j]),s=Math.exp(u),w=sm(f);
+ const o=[(C[j+1][0]-C[j][0])*Math.exp(U[j]),(C[j+1][1]-C[j][1])*Math.exp(U[j])];
+ const F=[C[j+1][0]-o[0]*(1-w)/s,C[j+1][1]-o[1]*(1-w)/s];
+ grp[0].scale.setScalar(s);grp[0].position.set(-F[0]*s,-F[1]*s,0);ren.render(sc,cam);
+ const idx=f<.5?j:j+1;if(idx!==last){last=idx;$('n').textContent='0'+(idx+1)+' / 06';$('t').textContent=labs[idx][0];$('s').textContent='Scala '+labs[idx][1]}
+ $('zf').textContent='×'+Math.round(s).toLocaleString('it-IT')}
+function size(){const w=Math.max(2,st.clientWidth),hh=Math.round(w*9/16);ren.setPixelRatio(Math.min(devicePixelRatio||1,2));ren.setSize(w,hh,false)}
+addEventListener('resize',size);size();new ResizeObserver(size).observe(st);
+let t=0,playing=true,prev=null;const sl=$('sl'),pb=$('pb'),tm=$('tm');
+const fmt=x=>x.toFixed(1).replace('.',',');
+const setPb=()=>pb.textContent=playing?'❚❚':(t>=DUR?'↻':'▶');
+function loop(now){if(prev===null)prev=now;const dt=Math.min(.1,(now-prev)/1000);prev=now;
+ if(playing){t+=dt;if(t>=DUR){t=DUR;playing=false}setPb();sl.value=t/DUR*1000}
+ try{frame(uAt(t))}catch(e){document.body.insertAdjacentHTML('beforeend','<pre style="position:fixed;top:0;left:0;color:#f88;font-size:12px;white-space:pre-wrap">Errore: '+e.message+'</pre>');return}
+ tm.textContent=fmt(t)+' s / '+DUR+' s';requestAnimationFrame(loop)}
+sl.addEventListener('input',()=>{playing=false;t=sl.value/1000*DUR;setPb()});
+pb.onclick=()=>{if(t>=DUR)t=0;playing=!playing;setPb()};
+addEventListener('keydown',e=>{if(e.code==='Space'&&e.target!==sl){e.preventDefault();pb.click()}});
+requestAnimationFrame(loop);
+</script></body></html>

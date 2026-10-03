@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="utf-8">
+<title>File e cartelle — zoom con domande</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;margin:0;background:#05060a;color:#e9ecf5;font-family:ui-monospace,Menlo,Consolas,monospace}
+body{display:flex;align-items:center;justify-content:center}
+#st{position:relative;aspect-ratio:16/9;width:min(100vw,177.78vh);min-width:240px;overflow:hidden;background:#000}
+canvas{display:block;width:100%!important;height:100%!important}
+#hud{position:absolute;left:3%;bottom:15%;padding:.8em 1em;background:rgba(5,6,10,.62);border:1px solid rgba(255,255,255,.18);border-radius:8px;backdrop-filter:blur(6px);font-size:clamp(10px,1.6vw,16px);min-width:14em}
+#hud b{display:block;font-size:1.25em}#hud span{color:#7cf2c9}#hud small{display:block;opacity:.65;margin-top:.3em}
+#zf{position:absolute;right:3%;top:5%;font-size:clamp(11px,2vw,22px);color:#7cf2c9;text-shadow:0 0 8px #000}
+#ctl{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:.9em;padding:.7em 3% 1em;background:linear-gradient(transparent,rgba(0,0,0,.7));font-size:clamp(10px,1.5vw,15px)}
+#pb{flex:none;width:2.6em;height:2.6em;border:0;border-radius:50%;background:#7cf2c9;color:#05060a;font:inherit;cursor:pointer}
+#slw{flex:1;position:relative;display:flex}
+.tk{position:absolute;top:50%;width:11px;height:11px;margin:-5px 0 0 -5px;border-radius:50%;background:#666;border:2px solid #05060a;pointer-events:none}.tk.ok{background:#7cf2c9}
+#sl{width:100%;accent-color:#7cf2c9;height:2em;cursor:pointer}
+#tm{flex:none;min-width:7.5em;text-align:right;opacity:.8}
+#lad{position:absolute;right:3%;bottom:17%;display:flex;flex-direction:column-reverse;gap:4px;font-size:clamp(9px,1.3vw,13px);max-height:38%;overflow:hidden}
+.rg{background:rgba(5,6,10,.7);border:1px solid #2c3a63;color:#8b93b0;border-radius:6px;padding:.35em .7em;text-align:center;white-space:nowrap;text-transform:uppercase;letter-spacing:.06em}
+.rg.cur{background:#facc15;color:#111;font-weight:800;border-color:#facc15;box-shadow:0 0 12px #facc15}
+.rg.done{background:#12372d;color:#7cf2c9;border-color:#7cf2c9}
+#qo button.reading{border-color:#facc15;box-shadow:0 0 10px #facc15}
+#qt .wkw.on,#qf .wkw.on{background:#facc15;color:#111;border-radius:4px;padding:0 .15em}
+#q{position:absolute;left:3%;top:8%;width:min(44%,27em);padding:1em 1.1em;background:rgba(5,6,10,.55);border:1px solid rgba(124,242,201,.5);border-radius:10px;backdrop-filter:blur(8px);font:clamp(10px,1.45vw,15px) system-ui,sans-serif}
+#q[hidden]{display:none}
+#qn{color:#7cf2c9;font-family:ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase}
+#qt{margin:.5em 0 .8em;font-size:1.15em;line-height:1.35}
+#qo button{display:block;width:100%;text-align:left;margin:.35em 0;padding:.6em .8em;background:#151926;color:#e9ecf5;border:1px solid #2c3350;border-radius:8px;font:inherit;cursor:pointer}
+#qo button:hover:not(:disabled){border-color:#7cf2c9}
+#qo button.ok{background:#12372d;border-color:#7cf2c9}
+#qo button.no{background:#3a1820;border-color:#ff6b6b;opacity:.7}
+#qf{margin:.6em 0 0;line-height:1.4}
+#qb{margin-top:.7em;background:#7cf2c9;color:#05060a;border:0;border-radius:6px;padding:.6em 1em;font:inherit;cursor:pointer}
+@media(max-width:640px){#q{left:3%;right:3%;width:auto;top:auto;bottom:16%}.asking #hud{display:none}}
+</style></head><body>
+<div id="st"><div id="hud"><small id="n"></small><b id="t"></b><span id="s"></span></div><div id="zf"></div>
+<div id="q" hidden><small id="qn"></small><p id="qt"></p><div id="qo"></div><p id="qf"></p><button id="qb" hidden></button></div>
+<div id="lad"></div><div id="ctl"><button id="pb" aria-label="Play / pausa">▶</button><div id="slw"><input id="sl" type="range" min="0" max="1000" value="0" step="1" aria-label="Scorri l’animazione"></div><span id="tm"></span><button id="mb" aria-label="Audio on/off" style="flex:none;width:2.6em;height:2.6em;border:0;border-radius:50%;background:#7cf2c9;color:#05060a;font:inherit;cursor:pointer">🔊</button></div></div>
+<audio id="q0" src="audio-file-cartelle/q0.mp3" preload="auto"></audio>
+<audio id="ok0" src="audio-file-cartelle/ok0.mp3" preload="auto"></audio>
+<audio id="h0" src="audio-file-cartelle/h0.mp3" preload="auto"></audio>
+<audio id="opt0_0" src="audio-file-cartelle/opt0_0.mp3" preload="auto"></audio>
+<audio id="opt0_1" src="audio-file-cartelle/opt0_1.mp3" preload="auto"></audio>
+<audio id="opt0_2" src="audio-file-cartelle/opt0_2.mp3" preload="auto"></audio>
+<audio id="opt0_3" src="audio-file-cartelle/opt0_3.mp3" preload="auto"></audio>
+<audio id="q1" src="audio-file-cartelle/q1.mp3" preload="auto"></audio>
+<audio id="ok1" src="audio-file-cartelle/ok1.mp3" preload="auto"></audio>
+<audio id="h1" src="audio-file-cartelle/h1.mp3" preload="auto"></audio>
+<audio id="opt1_0" src="audio-file-cartelle/opt1_0.mp3" preload="auto"></audio>
+<audio id="opt1_1" src="audio-file-cartelle/opt1_1.mp3" preload="auto"></audio>
+<audio id="opt1_2" src="audio-file-cartelle/opt1_2.mp3" preload="auto"></audio>
+<audio id="opt1_3" src="audio-file-cartelle/opt1_3.mp3" preload="auto"></audio>
+<audio id="q2" src="audio-file-cartelle/q2.mp3" preload="auto"></audio>
+<audio id="ok2" src="audio-file-cartelle/ok2.mp3" preload="auto"></audio>
+<audio id="h2" src="audio-file-cartelle/h2.mp3" preload="auto"></audio>
+<audio id="opt2_0" src="audio-file-cartelle/opt2_0.mp3" preload="auto"></audio>
+<audio id="opt2_1" src="audio-file-cartelle/opt2_1.mp3" preload="auto"></audio>
+<audio id="opt2_2" src="audio-file-cartelle/opt2_2.mp3" preload="auto"></audio>
+<audio id="opt2_3" src="audio-file-cartelle/opt2_3.mp3" preload="auto"></audio>
+<audio id="q3" src="audio-file-cartelle/q3.mp3" preload="auto"></audio>
+<audio id="ok3" src="audio-file-cartelle/ok3.mp3" preload="auto"></audio>
+<audio id="h3" src="audio-file-cartelle/h3.mp3" preload="auto"></audio>
+<audio id="opt3_0" src="audio-file-cartelle/opt3_0.mp3" preload="auto"></audio>
+<audio id="opt3_1" src="audio-file-cartelle/opt3_1.mp3" preload="auto"></audio>
+<audio id="opt3_2" src="audio-file-cartelle/opt3_2.mp3" preload="auto"></audio>
+<audio id="opt3_3" src="audio-file-cartelle/opt3_3.mp3" preload="auto"></audio>
+<audio id="q4" src="audio-file-cartelle/q4.mp3" preload="auto"></audio>
+<audio id="ok4" src="audio-file-cartelle/ok4.mp3" preload="auto"></audio>
+<audio id="h4" src="audio-file-cartelle/h4.mp3" preload="auto"></audio>
+<audio id="opt4_0" src="audio-file-cartelle/opt4_0.mp3" preload="auto"></audio>
+<audio id="opt4_1" src="audio-file-cartelle/opt4_1.mp3" preload="auto"></audio>
+<audio id="opt4_2" src="audio-file-cartelle/opt4_2.mp3" preload="auto"></audio>
+<audio id="opt4_3" src="audio-file-cartelle/opt4_3.mp3" preload="auto"></audio>
+<audio id="q5" src="audio-file-cartelle/q5.mp3" preload="auto"></audio>
+<audio id="ok5" src="audio-file-cartelle/ok5.mp3" preload="auto"></audio>
+<audio id="h5" src="audio-file-cartelle/h5.mp3" preload="auto"></audio>
+<audio id="opt5_0" src="audio-file-cartelle/opt5_0.mp3" preload="auto"></audio>
+<audio id="opt5_1" src="audio-file-cartelle/opt5_1.mp3" preload="auto"></audio>
+<audio id="opt5_2" src="audio-file-cartelle/opt5_2.mp3" preload="auto"></audio>
+<audio id="opt5_3" src="audio-file-cartelle/opt5_3.mp3" preload="auto"></audio>
+<audio id="ltr0" src="audio-letters/a.mp3" preload="auto"></audio>
+<audio id="ltr1" src="audio-letters/bi.mp3" preload="auto"></audio>
+<audio id="ltr2" src="audio-letters/ci.mp3" preload="auto"></audio>
+<audio id="ltr3" src="audio-letters/di.mp3" preload="auto"></audio>
+<audio id="fx-whoosh" src="audio-file-cartelle/whoosh.mp3" preload="auto"></audio>
+<audio id="fx-pop" src="audio-file-cartelle/pop.mp3" preload="auto"></audio>
+<audio id="fx-fan" src="audio-file-cartelle/fanfare.mp3" preload="auto"></audio>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const A=16/9,mk=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c};
+const rr=(c,x,y,w,h,r)=>{c.beginPath();c.roundRect?c.roundRect(x,y,w,h,r):c.rect(x,y,w,h)};
+const reg=(W,x,y,w)=>{const H=W*9/16,h=w*9/16;return{x,y,w,h,k:w/W,c:[((x+w/2)/W-.5)*A,.5-(y+h/2)/H]}};
+const tx=(c,s,x,y,sz,col,al)=>{c.font='bold '+sz+'px ui-monospace,Menlo,Consolas,monospace';c.fillStyle=col;c.textAlign=al||'center';c.textBaseline='middle';c.fillText(s,x,y)};
+const put=(c,img,r,col)=>{c.drawImage(img,r.x,r.y,r.w,r.h);c.strokeStyle=col||'rgba(255,255,255,.6)';c.lineWidth=Math.max(2,r.w/150);c.strokeRect(r.x,r.y,r.w,r.h)};
+const BG=(w,h)=>{const c=mk(w,h),x=c.getContext('2d');x.fillStyle='#0a0e1a';x.fillRect(0,0,w,h);return[c,x]};
+// ---- 5 · Il bit: tutto è fatto di bit
+const[Bt,bt]=BG(1600,900);tx(bt,'in fondo, tutto è fatto di bit',800,90,56,'#7cf2c9');tx(bt,'file, foto, film: solo 0 e 1',800,165,38,'#9db0dc');
+[0,1,0,1,1,0,1,0].forEach((b,i)=>{const x=200+i*150;bt.fillStyle=b?'#12372d':'#151926';rr(bt,x+6,360,138,180,14);bt.fill();bt.strokeStyle=b?'#7cf2c9':'#2c3350';bt.lineWidth=4;bt.stroke();tx(bt,String(b),x+75,450,110,b?'#7cf2c9':'#5d6682')});
+tx(bt,'il tuo disegno? 3 milioni di questi!',800,700,44,'#e9ecf5');tx(bt,'come nei moduli testo, pixel e memoria',800,770,36,'#9db0dc');
+// ---- 4 · Il backup: la copia che salva
+const[Bk,bk]=BG(1600,900);tx(bk,'il backup: la copia che salva',800,80,52,'#7cf2c9');tx(bk,'“e se il PC si rompe?” — la copia risponde',800,150,38,'#9db0dc');
+bk.fillStyle='#151926';rr(bk,150,300,560,320,18);bk.fill();bk.strokeStyle='#e0813a';bk.lineWidth=5;bk.stroke();
+tx(bk,'🖥️ PC',430,380,60,'#e9ecf5');tx(bk,'disegno.png ✓',430,470,40,'#7cf2c9');
+bk.fillStyle='#12372d';rr(bk,890,300,560,320,18);bk.fill();bk.strokeStyle='#7cf2c9';bk.lineWidth=5;bk.stroke();
+tx(bk,'🔑 chiavetta',1170,380,60,'#e9ecf5');tx(bk,'disegno.png ✓',1170,470,40,'#7cf2c9');
+tx(bk,'copia →',800,460,48,'#e0813a');
+tx(bk,'regola d’oro: 2 copie in 2 posti diversi',800,700,42,'#e9ecf5');
+const r5=reg(1600,165,342,420);put(bk,Bt,r5,'#fff');
+// ---- 3 · L'albero: ogni file ha un posto
+const[Bw,bw]=BG(1600,900);tx(bw,'l’albero: ogni file ha un posto solo',800,80,50,'#7cf2c9');
+bw.strokeStyle='#2c3350';bw.lineWidth=5;
+bw.beginPath();bw.moveTo(800,220);bw.lineTo(400,380);bw.moveTo(800,220);bw.lineTo(1200,380);bw.stroke();
+bw.beginPath();bw.moveTo(400,380);bw.lineTo(250,540);bw.moveTo(400,380);bw.lineTo(550,540);bw.stroke();
+[['Scuola',800,220,'#e0813a'],['3ªB',400,380,'#7fd8ff'],['Sport',1200,380,'#5d6682'],['Informatica',250,540,'#7cf2c9'],['Italiano',550,540,'#5d6682']].forEach(n=>{bw.fillStyle=n[0]==='Informatica'?'#12372d':'#151926';rr(bw,n[1]-130,n[2]-42,260,84,12);bw.fill();bw.strokeStyle=n[0]==='Informatica'?'#7cf2c9':'#2c3350';bw.lineWidth=4;bw.stroke();tx(bw,n[0],n[1],n[2],34,n[3])});
+bw.fillStyle='#12372d';rr(bw,120,640,260,84,12);bw.fill();bw.strokeStyle='#7cf2c9';bw.lineWidth=4;bw.stroke();tx(bw,'🖼 disegno',250,682,32,'#e9ecf5');
+bw.strokeStyle='#7cf2c9';bw.lineWidth=4;bw.setLineDash([10,8]);bw.beginPath();bw.moveTo(250,582);bw.lineTo(250,640);bw.stroke();bw.setLineDash([]);
+const r4=reg(1600,900,260,560);put(bw,Bk,r4,'#fff');tx(bw,'segui i rami e lo trovi sempre',1180,720,34,'#7cf2c9');
+// ---- 2 · Le cartelle: scatole dentro scatole
+const[Bd,bd]=BG(1600,900);tx(bd,'le cartelle: scatole dentro scatole',800,80,52,'#7cf2c9');
+[['📁 Scuola',180,300,1240,110,'#e0813a'],['📁 3ªB',240,440,1120,110,'#7fd8ff'],['📁 Informatica',300,580,1000,110,'#7cf2c9']].forEach(r=>{bd.fillStyle='#151926';rr(bd,r[1],r[2],r[3],r[4],12);bd.fill();bd.strokeStyle=r[5];bd.lineWidth=4;bd.stroke();tx(bd,r[0],r[1]+30,r[2]+55,40,'#e9ecf5','left')});
+bd.fillStyle='#12372d';rr(bd,360,710,500,80,12);bd.fill();bd.strokeStyle='#7cf2c9';bd.lineWidth=4;bd.stroke();tx(bd,'🖼 disegno.png',610,750,36,'#e9ecf5');
+tx(bd,'Scuola / 3ªB / Informatica / disegno.png',800,150,34,'#9db0dc');
+const r3=reg(1600,820,270,640);put(bd,Bw,r3,'#fff');
+// ---- 1 · Il file: nome + estensione
+const[Bf,bf]=BG(1600,900);tx(bf,'il file: un nome e un formato',800,80,52,'#7cf2c9');
+bf.fillStyle='#f6f4ec';rr(bf,450,280,700,320,20);bf.fill();bf.strokeStyle='#2c3350';bf.lineWidth=5;bf.stroke();
+tx(bf,'🌅',800,410,120,'#fff');tx(bf,'disegno',700,540,64,'#1a1d26');tx(bf,'.png',915,540,64,'#e0813a');
+tx(bf,'nome: COS’È · estensione: CHE TIPO È',800,680,40,'#e9ecf5');tx(bf,'.png = immagine · .mp3 = musica · .txt = testo',800,750,36,'#9db0dc');
+const r2=reg(1600,50,342,420);put(bf,Bd,r2,'#fff');
+// ---- 0 · Il disegno
+const P0=mk(1920,1080),p0=P0.getContext('2d');p0.fillStyle='#1a1d26';p0.fillRect(0,0,1920,1080);
+p0.fillStyle='#f6f4ec';rr(p0,660,200,600,560,20);p0.fill();
+tx(p0,'🌅🐱',960,450,150,'#fff');tx(p0,'il mio capolavoro!',960,650,44,'#1a1d26');
+tx(p0,'E adesso dove lo metto? E se si rompe tutto?',960,880,44,'#e9ecf5');
+const r1=reg(1920,312,203,560);put(p0,Bf,r1,'#e0813a');
+const NODE=[{cv:P0,par:-1},{cv:Bf,par:0,r:r1},{cv:Bd,par:1,r:r2},{cv:Bw,par:2,r:r3},{cv:Bk,par:3,r:r4},{cv:Bt,par:4,r:r5}],N=6,depth=[0,1,2,3,4,5];
+const ren=new THREE.WebGLRenderer({antialias:true}),st=document.getElementById('st');st.prepend(ren.domElement);
+const sc=new THREE.Scene(),cam=new THREE.OrthographicCamera(-A/2,A/2,.5,-.5,-10,10),aniso=ren.capabilities.getMaxAnisotropy(),grp=[],Sx=[1],Cx=[[0,0]];
+NODE.forEach((n,j)=>{const tex=new THREE.CanvasTexture(n.cv);tex.anisotropy=aniso;
+ const mesh=new THREE.Mesh(new THREE.PlaneGeometry(A,1),new THREE.MeshBasicMaterial({map:tex,depthTest:false,depthWrite:false}));mesh.renderOrder=depth[j];mesh.frustumCulled=false;
+ const gp=new THREE.Group();gp.add(mesh);grp.push(gp);
+ if(j){const P=NODE[j].par;grp[P].add(gp);gp.position.set(n.r.c[0],n.r.c[1],0);gp.scale.setScalar(n.r.k);Sx[j]=Sx[P]*n.r.k;Cx[j]=[Cx[P][0]+Sx[P]*n.r.c[0],Cx[P][1]+Sx[P]*n.r.c[1]]}});
+sc.add(grp[0]);
+const RHO=1.41;
+function vw(c0,w0,c1,w1,g){const dx=c1[0]-c0[0],dy=c1[1]-c0[1],d=Math.hypot(dx,dy);
+ if(d<1e-12)return[c0,w0*Math.pow(w1/w0,g),Math.abs(Math.log(w1/w0))/RHO];
+ const q=RHO*RHO,b0=(w1*w1-w0*w0+q*q*d*d)/(2*w0*q*d),b1=(w1*w1-w0*w0-q*q*d*d)/(2*w1*q*d),r0=Math.log(Math.sqrt(b0*b0+1)-b0),r1=Math.log(Math.sqrt(b1*b1+1)-b1),S=(r1-r0)/RHO,s=g*S;
+ const u=w0/q*Math.cosh(r0)*Math.tanh(RHO*s+r0)-w0/q*Math.sinh(r0),w=w0*Math.cosh(r0)/Math.cosh(RHO*s+r0),f=u/d;return[[c0[0]+dx*f,c0[1]+dy*f],w,S]}
+const W=Sx.map(x=>x*A),DU=[],T0=[0];
+for(let j=0;j<N-1;j++){const S=vw(Cx[j],W[j],Cx[j+1],W[j+1],1)[2];DU.push(Math.max(3.6,Math.min(6,2+1.6*S)));T0.push(T0[j]+DU[j])}
+const DUR=T0[N-1],sm=x=>x*x*(3-2*x),$=i=>document.getElementById(i);
+const PRIZES=['DISEGNO','FILE','CARTELLA','ALBERO','BACKUP','BIT'];
+PRIZES.forEach(p=>{const d=document.createElement('div');d.className='rg';d.textContent=p;$('lad').appendChild(d)});
+let audioOn=true,audioUnlocked=false,qdPlayed={},lastCtx=null,karTimer=null;
+addEventListener('pointerdown',()=>{audioUnlocked=true},{once:false});
+function paintLad(){const n=a;document.querySelectorAll('.rg').forEach((r,i)=>{r.className='rg'+(i<n?' done':i===n?' cur':'')})}
+function stopKar(){if(karTimer){clearInterval(karTimer);karTimer=null}document.querySelectorAll('.wkw.on').forEach(x=>x.classList.remove('on'))}
+function wrapWords(el){const t=el.textContent;el.innerHTML='';t.split(/(\s+)/).forEach(w=>{if(!w)return;const s=document.createElement('span');if(/^\s+$/.test(w)){s.textContent=w}else{s.className='wkw';s.textContent=w}el.appendChild(s)})}
+function startKar(el,audio){stopKar();if(!el||!audio)return;wrapWords(el);const words=[...el.querySelectorAll('.wkw')];if(!words.length)return;karTimer=setInterval(()=>{const d=audio.duration;if(!d||!isFinite(d)||audio.paused||audio.ended)return;const i=Math.min(words.length-1,Math.floor(audio.currentTime/d*words.length));words.forEach((w,j)=>w.classList.toggle('on',j<=i))},120)}
+function stopAllQ(){stopKar();for(let i=0;i<6;i++){['q','ok','h'].forEach(p=>{const a2=$(p+i);if(a2)a2.pause()});for(let j=0;j<4;j++){const o2=$('opt'+i+'_'+j);if(o2)o2.pause()}}stopSeq()}
+let seqOn=false;
+function stopSeq(){seqOn=false;for(let i=0;i<4;i++){const l=$('ltr'+i);if(l){l.onended=null;try{l.pause()}catch(e){}}}document.querySelectorAll('#qo button.reading').forEach(x=>x.classList.remove('reading'))}
+function playSeq(id,order,btns){stopSeq();if(!audioOn||!audioUnlocked)return;seqOn=true;const items=[];order.forEach((o,bi)=>{items.push({el:$('ltr'+bi),btn:btns[bi]});items.push({el:$('opt'+id+'_'+o.oi),btn:btns[bi]})});let k=0;const next=()=>{if(!seqOn||!audioOn||k>=items.length)return;const it=items[k++];if(!it.el){next();return}it.btn.classList.add('reading');it.el.onended=()=>{it.btn.classList.remove('reading');next()};try{it.el.currentTime=0;it.el.play().catch(()=>{next()})}catch(e){next()}};next()}
+function speak(i){if(!audioOn||!audioUnlocked||i===0)return;const a3=$('fx-whoosh');if(!a3)return;try{a3.currentTime=0;a3.play().catch(()=>{})}catch(e){}}
+function speakQ(p,i){if(!audioOn||!audioUnlocked)return;stopAllQ();if(p==='q'){const f=$('fx-pop');if(f){try{f.currentTime=0;f.play().catch(()=>{})}catch(e){}}}const a4=$(p+i);if(!a4)return;try{a4.currentTime=0;a4.play().catch(()=>{})}catch(e){}}
+function replayQ(){if(!lastCtx||shown<0||shown>5||lastCtx.id!==shown)return;stopAllQ();stopSeq();qdPlayed[shown]=true;speakQ('q',shown);startKar($('qt'),$('q'+shown));const qel=$('q'+shown);if(qel)qel.onended=()=>playSeq(shown,lastCtx.order,lastCtx.btns)}
+$('mb').onclick=()=>{audioOn=!audioOn;$('mb').textContent=audioOn?'🔊':'🔇';if(!audioOn){stopAllQ();stopSeq();['fx-whoosh','fx-pop','fx-fan'].forEach(f=>{const w=$(f);if(w)w.pause()})}};
+const labs=[['Il disegno','dove lo metto?'],['Il file','nome + estensione'],['Le cartelle','scatole dentro scatole'],['L’albero','un posto solo'],['Il backup','la copia che salva'],['Il bit','tutto è 0 e 1']];
+let last=-1;
+function frame(tm){let j=0;while(j<N-2&&tm>=T0[j+1])j++;const tau=Math.max(0,Math.min(1,(tm-T0[j])/DU[j])),r=vw(Cx[j],W[j],Cx[j+1],W[j+1],sm(tau)),s=A/r[1];
+ grp[0].scale.setScalar(s);grp[0].position.set(-r[0][0]*s,-r[0][1]*s,0);ren.render(sc,cam);
+ const idx=tau<.5?j:j+1;if(idx!==last){last=idx;$('n').textContent='0'+(idx+1)+' / 0'+N;$('t').textContent=labs[idx][0];$('s').textContent=labs[idx][1];speak(idx)}
+ $('zf').textContent='×'+s.toLocaleString('it-IT',{maximumFractionDigits:s<10?1:0})}
+function size(){const w=Math.max(2,st.clientWidth);ren.setPixelRatio(Math.min(devicePixelRatio||1,2));ren.setSize(w,Math.round(w*9/16),false)}
+addEventListener('resize',size);size();new ResizeObserver(size).observe(st);
+const QS=[
+{q:'Il tuo file si chiama “disegno.png”. Cosa ti dice “.png”?',o:['Che tipo di file è: un’immagine','Chi l’ha disegnato','Quanto è bello','Quando l’hai fatto'],why:'.png è l’estensione: dice il formato. .mp3 = musica, .txt = testo, .mp4 = video.',h:'Nome dice COS’È, estensione dice CHE TIPO è.'},
+{q:'Il percorso è Scuola / 3ªB / Informatica / disegno.png. Quante cartelle attraversi?',o:['3: Scuola, 3ªB, Informatica','1','4','Nessuna'],why:'Il file è in fondo; prima attraversi 3 cartelle, come 3 porte una dentro l’altra.',h:'Conta le 📁 prima del file.'},
+{q:'Vuoi salvare “disegno.png” nella stessa cartella dove esiste già. Si può?',o:['No: serve un nome diverso, o sovrascrivi quello vecchio','Sì, senza problemi','Sì, ma solo di lunedì','Il computer li unisce da solo'],why:'Nella stessa cartella ogni nome è unico: o cambi nome o sostituisci il vecchio (e lo perdi!).',h:'Due gemelli possono avere lo stesso nome nella stessa classe?'},
+{q:'A cosa serve fare il backup (la copia)?',o:['A non perdere tutto se il PC si rompe o la chiavetta si perde','A far andare il computer più veloce','A usare meno memoria','A niente, è inutile'],why:'Il backup è il paracadute: se l’originale sparisce, la copia ti salva il lavoro.',h:'Quando ti serve la copia: prima o dopo il disastro?'},
+{q:'Hai l’UNICA copia del tema sulla chiavetta e la perdi. Che succede?',o:['Tema perso per sempre: ecco perché servono 2 copie in 2 posti','Niente, si riscarica da internet','Il prof lo ha già','Si recupera dal cestino'],why:'Un’unica copia è come non averne: regola d’oro, 2 copie in 2 posti diversi.',h:'Quante copie avevi? E dove?'},
+{q:'In fondo, di cosa è fatto il tuo file “disegno.png”?',o:['Di bit: 0 e 1, come tutto nel computer','Di carta e pastelli','Di pixel colorati veri','Di elettricità magica'],why:'Anche i file sono bit: il disegno da 3 MB sono circa 24 milioni di 0 e 1.',h:'Chiudi il cerchio: cosa sono fatte tutte le cose del corso?'}];
+QS.forEach(q=>{q.o=q.o.map((x,i)=>({x,ok:i===0,oi:i}));for(let i=q.o.length-1;i>0;i--){const k=Math.random()*(i+1)|0;[q.o[i],q.o[k]]=[q.o[k],q.o[i]]}});
+let tm=0,playing=false,prev=null,a=0,first=[],shown=-2;
+const sl=$('sl'),pb=$('pb'),tmx=$('tm'),qd=$('q'),qn=$('qn'),qt=$('qt'),qo=$('qo'),qf=$('qf'),qb=$('qb');
+T0.forEach(v=>{const e=document.createElement('i');e.className='tk';e.style.left=v/DUR*100+'%';$('slw').appendChild(e)});
+const paintTicks=()=>document.querySelectorAll('.tk').forEach((e,j)=>e.classList.toggle('ok',j<a));
+const lim=()=>a<N?T0[a]:DUR,fmt=x=>x.toFixed(1).replace('.',',');
+const setPb=()=>pb.textContent=playing?'❚❚':(a===N&&tm>=DUR-.01?'↻':'▶');
+function card(){const vis=!playing&&tm>=lim()-.01,id=vis?a:-1;if(id===shown)return;shown=id;qd.hidden=id<0;st.classList.toggle('asking',id>=0);if(id<0)return;
+ qf.textContent='';qb.hidden=true;qo.innerHTML='';
+ function ciiModal(e,n){if(document.getElementById('ciimov'))return;const st=document.createElement('style');st.textContent='#ciimov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);z-index:99}#ciibox{background:#fffbeb;border:5px solid #b98a1d;border-radius:20px;padding:44px 52px;text-align:center;max-width:82%;animation:ciipop .5s cubic-bezier(.2,1.6,.4,1);font-family:system-ui,sans-serif;color:#1c1917}@keyframes ciipop{from{transform:scale(.4) rotate(-6deg);opacity:0}}#ciibox .em{font-size:84px}#ciibox h2{margin:10px 0 4px;font-size:34px;letter-spacing:.06em}#ciibox p{margin:0 0 20px;font-size:19px}#ciigo{background:#1c1917;color:#f4efe4;border:0;border-radius:12px;padding:14px 40px;font-size:20px;font-weight:800;cursor:pointer}';document.head.appendChild(st);const m=document.createElement('div');m.id='ciimov';m.innerHTML='<div id="ciibox"><div class="em">'+e+'</div><h2>TROFEO SBLOCCATO!</h2><p>'+n+'</p><button id="ciigo">Continua →</button></div>';document.getElementById('st').appendChild(m);document.getElementById('ciigo').onclick=()=>{location.href='index.html'}}
+const CIIBADGES={m_inglesi:['🎓','DIZIONARIO VIVENTE'],m_chifacosa:['🏠','PADRONE DI CASA'],m_testo:['✍️','SCRIBA DIGITALE'],m_pixel:['👑','RE DEI PIXEL'],m_suono:['🎵','MAESTRO D\u2019ONDA'],m_memoria:['🐘','MEMORIA DI FERRO'],m_file:['🗂️','ARCHIVISTA SUPREMO'],m_dentro:['🔧','CHIRURGO DEI CHIP'],m_componenti:['🔤','CACCIATORE DI SIGLE'],m_internet:['🌐','NAVIGATORE ESPERTO'],m_click:['🍕','PIZZAIOLO DEL CODICE'],m_variabili:['📦','MAGO DELLE SCATOLE'],m_condizioni:['🔀','GIUDICE SUPREMO'],m_cicli:['🔁','RE DELLA RIPETIZIONE'],m_ordinare:['🫧','DOMATORE DI BOLLE']};
+function ciiWin(k){try{const w=JSON.parse(localStorage.getItem('cii_badges')||'{}');w[k]=1;localStorage.setItem('cii_badges',JSON.stringify(w));const b=CIIBADGES[k];if(b)ciiModal(b[0],b[1])}catch(e){console.error('[ciiWin] ERROR:',e)}}
+ if(id===N){ciiWin('m_file');qn.textContent='Completato · 🎰 HAI VINTO: '+PRIZES[Math.max(0,a-1)]+'!';qt.textContent='Hai risposto bene al primo tentativo a '+first.filter(Boolean).length+' domande su '+N+'. Ora sai organizzarti: nomi, cartelle, albero e sempre 2 copie in 2 posti!';qb.textContent='↻ Ricomincia il quiz';qb.hidden=false;const fw=$('fx-fan');if(fw&&audioOn&&audioUnlocked){try{fw.currentTime=0;fw.play().catch(()=>{})}catch(e){}}qb.onclick=()=>{a=0;first=[];tm=0;shown=-2;qdPlayed={};lastCtx=null;paintLad();paintTicks();sl.value=0};return}
+ const q=QS[id];let tries=0;qn.textContent='Domanda '+(id+1)+' / '+N;qt.textContent=q.q;
+ const btns=[];q.o.forEach((o,bi)=>{const bt=document.createElement('button');bt.textContent='ABCD'[bi]+' - '+o.x;btns.push({b:bt,o});bt.onclick=()=>{tries++;stopSeq();stopKar();
+  if(o.ok){bt.className='ok';qo.querySelectorAll('button').forEach(x=>x.disabled=true);qf.textContent='✔ Esatto! '+q.why;first[id]=tries===1;speakQ('ok',id);startKar($('qf'),$('ok'+id));qb.textContent=id<N-1?'Continua ▶':'Concludi';qb.hidden=false;
+   qb.onclick=()=>{stopAllQ();stopSeq();a++;paintLad();paintTicks();if(id<N-1)playing=true;setPb()}}
+  else{bt.className='no';bt.disabled=true;qf.textContent='✘ Non proprio. '+q.h+' Riprova.';if(tries===1){speakQ('h',id);startKar($('qf'),$('h'+id))}}};qo.appendChild(bt)});lastCtx={id,order:q.o,btns:btns.map(x=>x.b)};if(!qdPlayed[id]){qdPlayed[id]=true;speakQ('q',id);startKar($('qt'),$('q'+id));const qel=$('q'+id);if(qel)qel.onended=()=>playSeq(id,q.o,btns.map(x=>x.b))}}
+function loop(now){if(prev===null)prev=now;const dt=Math.min(.1,(now-prev)/1000);prev=now;
+ if(playing){tm+=dt;const L=lim();if(tm>=L){tm=L;playing=false}sl.value=tm/DUR*1000}
+ setPb();card();
+ try{frame(tm)}catch(e){document.body.insertAdjacentHTML('beforeend','<pre style="position:fixed;top:0;left:0;color:#f88;font-size:12px;white-space:pre-wrap">Errore: '+e.message+'</pre>');return}
+ tmx.textContent=fmt(tm)+' s / '+fmt(DUR)+' s';requestAnimationFrame(loop)}
+sl.addEventListener('input',()=>{audioUnlocked=true;playing=false;tm=Math.min(sl.value/1000*DUR,lim());sl.value=tm/DUR*1000});
+pb.onclick=()=>{audioUnlocked=true;if(shown>=0&&shown<N){replayQ();return}if(a<N&&tm>=lim()-.01)return;if(a===N&&tm>=DUR-.01)tm=0;playing=!playing;setPb()};
+addEventListener('keydown',e=>{if(e.code==='Space'&&e.target!==sl&&e.target.tagName!=='BUTTON'){e.preventDefault();pb.click()}});
+paintTicks();paintLad();requestAnimationFrame(loop);
+</script></body></html>

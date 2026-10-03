@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="utf-8">
+<title>Chi vuol essere il Milionario del Lab?</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+html,body{margin:0;background:#01030a;color:#fff;font-family:Verdana,Geneva,sans-serif;min-height:100%}
+#bg{position:fixed;inset:0;background:radial-gradient(ellipse at 50% -10%,#2b4bd8 0%,#0a1440 42%,#01030a 75%);pointer-events:none}
+#bg:after{content:"";position:absolute;inset:0;background:conic-gradient(from 180deg at 50% -20%,transparent 0deg,rgba(120,160,255,.10) 12deg,transparent 24deg,rgba(120,160,255,.10) 36deg,transparent 48deg,rgba(120,160,255,.10) 60deg,transparent 72deg)}
+#wrap{position:relative;max-width:1000px;margin:0 auto;padding:20px 18px 60px;display:flex;gap:18px}
+#main{flex:3;min-width:0}
+#side{flex:1;min-width:170px}
+h1{font-size:clamp(24px,4.4vw,38px);text-align:center;color:#ffd94d;margin:.2em 0;font-family:Georgia,serif;letter-spacing:.04em;text-shadow:0 0 28px #ff9d00aa,0 2px 0 #7a4d00}
+h1 small{display:block;font-size:.42em;color:#cfe0ff;letter-spacing:.34em;font-family:Verdana,sans-serif}
+.rung{padding:7px 12px;margin:4px 0;border-radius:20px;background:linear-gradient(180deg,#0d1c5c,#060b28);border:2px solid #5a6db0;color:#aebadd;font-size:clamp(11px,1.8vw,15px);text-align:center}
+.rung.cur{background:linear-gradient(180deg,#ffdf6b,#e09a00);color:#1a1000;font-weight:900;border-color:#ffe9a8;box-shadow:0 0 20px #ffb300}
+.rung.done{background:linear-gradient(180deg,#0e4d33,#07271a);color:#7cf2c9;border-color:#2fbf8f}
+.rung.ms{border-color:#ffb300;color:#ffd94d}
+#life{display:flex;gap:8px;justify-content:center;margin:10px 0}
+#life button{background:#1b2450;color:#fff;border:2px solid #4c5fa3;border-radius:999px;padding:9px 15px;font:inherit;cursor:pointer;font-size:14px}
+#life button.used{opacity:.3;pointer-events:none}
+#spot{text-align:center;font-size:13px;letter-spacing:.25em;color:#9fb6cc}
+#q{font-size:clamp(17px,2.8vw,24px);text-align:center;margin:.6em 0;padding:20px 26px;background:linear-gradient(180deg,#10246e,#060b2e);border:3px solid #ff9d00;border-radius:16px;box-shadow:0 0 0 2px #060b2e,0 0 26px #0a2a8f88;min-height:3em}
+#q .wkw.on{background:#facc15;color:#111;border-radius:4px;padding:0 .15em}
+#qo{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+#qo button{display:block;width:100%;text-align:left;padding:13px 15px;background:linear-gradient(180deg,#0d1c5c,#060b28);color:#fff;border:3px solid #ff9d00;border-radius:14px;font-size:clamp(15px,2.4vw,19px);cursor:pointer}
+#qo button small{color:#facc15;font-weight:800;margin-right:10px}
+#qo button.sel{border-color:#facc15;background:#2a2305}
+#qo button.ok{background:#12372d;border-color:#7cf2c9}
+#qo button.no{background:#3a1820;border-color:#ff6b6b}
+#qo button:disabled{cursor:default}
+#qo button.reading{box-shadow:0 0 10px #facc15}
+#qo button.gone{opacity:.25;pointer-events:none}
+#fb{min-height:1.8em;font-size:15px;color:#9fd8ef;text-align:center;margin-top:8px}
+#bar2{display:flex;gap:8px;margin-top:8px}
+#bar2 button{flex:1;padding:12px;background:#facc15;color:#111;border:0;border-radius:10px;font:inherit;font-weight:800;cursor:pointer}
+#bar2 button[hidden]{display:none}
+#pub{display:none;gap:8px;align-items:flex-end;justify-content:center;min-height:110px;margin-top:8px}
+#pub.on{display:flex}
+.pb{flex:1;max-width:80px;text-align:center;color:#9fd8ef;font-size:12px}
+.pb i{display:block;background:linear-gradient(#38e1ff,#1d6fd1);border-radius:6px 6px 0 0;margin:0 auto;width:100%}
+#mb{position:fixed;right:16px;bottom:16px;width:52px;height:52px;border:0;border-radius:50%;background:#facc15;font-size:22px;cursor:pointer}
+#modtag{text-align:center;color:#9fb6cc;font-size:13px;letter-spacing:.2em;margin-top:2px}
+@media(max-width:700px){#wrap{flex-direction:column-reverse}#side{min-width:0}#qo{grid-template-columns:1fr}#ladder{display:flex;flex-direction:row;flex-wrap:wrap;gap:4px}.rung{flex:1;font-size:11px;text-align:center;padding:5px 2px}}
+</style></head><body>
+<div id="bg"></div>
+<div id="splash" style="position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(1,3,10,.72);z-index:30"><div id="splashin" style="text-align:center;padding:50px 70px;background:linear-gradient(180deg,#10246e,#060b2e);border:5px solid #ffb300;border-radius:24px;box-shadow:0 0 60px #ffb30088"><div style="font-size:15px;letter-spacing:.3em;color:#cfe0ff">HAI VINTO</div><div id="splashamt" style="font-size:88px;font-weight:900;color:#ffd94d;text-shadow:0 0 34px #ff9d00"></div></div></div>
+<div id="wrap"><div id="main">
+<div id="startov" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:rgba(2,4,12,.88);z-index:20;border-radius:12px"><div style="font-size:70px">🎰</div><div style="font-size:26px;font-weight:900;color:#facc15">MILIONARIO DEL LAB</div><div style="color:#9fb6cc">15 domande · 3 aiuti · 1 milione di colori</div><button id="start" style="padding:16px 60px;font-size:24px;font-weight:900;background:#facc15;color:#111;border:0;border-radius:14px;cursor:pointer">GIOCA</button></div>
+<h1>MILIONARIO DEL LAB<small>15 MODULI · GERRY CONDUCE</small></h1>
+<div id="life"><button id="l50">50:50</button><button id="lpub">📊 Pubblico</button><button id="lph">📞 Telefonata</button></div>
+<div id="spot">● REC</div>
+<div id="modtag"></div>
+<p id="q"></p><div id="qo"></div><p id="fb"></p>
+<div id="bar2"><button id="ok" hidden>L'accendiamo!</button><button id="nx" hidden>Prossima domanda ▶</button><button id="rs" hidden>↻ Rig gioca</button></div>
+<div id="pub"></div>
+</div><div id="side"><div id="ladder"></div></div></div>
+<button id="mb">🔊</button>
+<audio id="a-bed" src="audio-milionario15/suspense.mp3" preload="auto" loop></audio>
+<audio id="a-bedhi" src="audio-milionario15/bedhi.mp3" preload="auto" loop></audio>
+<audio id="a-stok" src="audio-milionario15/sting_ok.mp3" preload="auto"></audio>
+<audio id="a-stko" src="audio-milionario15/sting_ko.mp3" preload="auto"></audio>
+<audio id="a-fanms" src="audio-milionario15/fan_ms.mp3" preload="auto"></audio>
+<audio id="a-tick" src="audio-milionario15/ticktock.mp3" preload="auto"></audio>
+<audio id="a-j50" src="audio-milionario15/j50.mp3" preload="auto"></audio>
+<audio id="a-jpub" src="audio-milionario15/jpub.mp3" preload="auto"></audio>
+<audio id="a-jph" src="audio-milionario15/jph.mp3" preload="auto"></audio>
+<audio id="a-intro" src="audio-milionario15/intro2.mp3" preload="auto"></audio>
+<audio id="a-lacc" src="audio-milionario15/lacc.mp3" preload="auto"></audio>
+<audio id="a-fifty" src="audio-milionario/fifty.mp3" preload="auto"></audio>
+<audio id="a-publ" src="audio-milionario/publ.mp3" preload="auto"></audio>
+<audio id="a-phone" src="audio-milionario/phone.mp3" preload="auto"></audio>
+<audio id="a-phonea" src="audio-milionario/phonea.mp3" preload="auto"></audio>
+<audio id="a-win" src="audio-milionario/win.mp3" preload="auto"></audio>
+<audio id="a-lose" src="audio-milionario/lose.mp3" preload="auto"></audio>
+<audio id="a-whoosh" src="audio-milionario15/whoosh.mp3" preload="auto"></audio>
+<audio id="mq0" src="audio-milionario15/n0.mp3" preload="auto"></audio>
+<audio id="mok0" src="audio-parole-inglesi/ok5.mp3" preload="auto"></audio>
+<audio id="mopt0_0" src="audio-parole-inglesi/opt5_0.mp3" preload="auto"></audio>
+<audio id="mopt0_1" src="audio-parole-inglesi/opt5_1.mp3" preload="auto"></audio>
+<audio id="mopt0_2" src="audio-parole-inglesi/opt5_2.mp3" preload="auto"></audio>
+<audio id="mopt0_3" src="audio-parole-inglesi/opt5_3.mp3" preload="auto"></audio>
+<audio id="mq1" src="audio-milionario15/n1.mp3" preload="auto"></audio>
+<audio id="mok1" src="audio-chi-fa-cosa/ok5.mp3" preload="auto"></audio>
+<audio id="mopt1_0" src="audio-chi-fa-cosa/opt5_0.mp3" preload="auto"></audio>
+<audio id="mopt1_1" src="audio-chi-fa-cosa/opt5_1.mp3" preload="auto"></audio>
+<audio id="mopt1_2" src="audio-chi-fa-cosa/opt5_2.mp3" preload="auto"></audio>
+<audio id="mopt1_3" src="audio-chi-fa-cosa/opt5_3.mp3" preload="auto"></audio>
+<audio id="mq2" src="audio-milionario15/n2.mp3" preload="auto"></audio>
+<audio id="mok2" src="audio-testo-bit/ok5.mp3" preload="auto"></audio>
+<audio id="mopt2_0" src="audio-testo-bit/opt5_0.mp3" preload="auto"></audio>
+<audio id="mopt2_1" src="audio-testo-bit/opt5_1.mp3" preload="auto"></audio>
+<audio id="mopt2_2" src="audio-testo-bit/opt5_2.mp3" preload="auto"></audio>
+<audio id="mopt2_3" src="audio-testo-bit/opt5_3.mp3" preload="auto"></audio>
+<audio id="mq3" src="audio-pixel-bit/q1.mp3" preload="auto"></audio>
+<audio id="mok3" src="audio-pixel-bit/ok1.mp3" preload="auto"></audio>
+<audio id="mopt3_0" src="audio-pixel-bit/opt1_0.mp3" preload="auto"></audio>
+<audio id="mopt3_1" src="audio-pixel-bit/opt1_1.mp3" preload="auto"></audio>
+<audio id="mopt3_2" src="audio-pixel-bit/opt1_2.mp3" preload="auto"></audio>
+<audio id="mopt3_3" src="audio-pixel-bit/opt1_3.mp3" preload="auto"></audio>
+<audio id="mq4" src="audio-suono-bit/q4.mp3" preload="auto"></audio>
+<audio id="mok4" src="audio-suono-bit/ok4.mp3" preload="auto"></audio>
+<audio id="mopt4_0" src="audio-suono-bit/opt4_0.mp3" preload="auto"></audio>
+<audio id="mopt4_1" src="audio-suono-bit/opt4_1.mp3" preload="auto"></audio>
+<audio id="mopt4_2" src="audio-suono-bit/opt4_2.mp3" preload="auto"></audio>
+<audio id="mopt4_3" src="audio-suono-bit/opt4_3.mp3" preload="auto"></audio>
+<audio id="mq5" src="audio-memoria/q1.mp3" preload="auto"></audio>
+<audio id="mok5" src="audio-memoria/ok1.mp3" preload="auto"></audio>
+<audio id="mopt5_0" src="audio-memoria/opt1_0.mp3" preload="auto"></audio>
+<audio id="mopt5_1" src="audio-memoria/opt1_1.mp3" preload="auto"></audio>
+<audio id="mopt5_2" src="audio-memoria/opt1_2.mp3" preload="auto"></audio>
+<audio id="mopt5_3" src="audio-memoria/opt1_3.mp3" preload="auto"></audio>
+<audio id="mq6" src="audio-file-cartelle/q3.mp3" preload="auto"></audio>
+<audio id="mok6" src="audio-file-cartelle/ok3.mp3" preload="auto"></audio>
+<audio id="mopt6_0" src="audio-file-cartelle/opt3_0.mp3" preload="auto"></audio>
+<audio id="mopt6_1" src="audio-file-cartelle/opt3_1.mp3" preload="auto"></audio>
+<audio id="mopt6_2" src="audio-file-cartelle/opt3_2.mp3" preload="auto"></audio>
+<audio id="mopt6_3" src="audio-file-cartelle/opt3_3.mp3" preload="auto"></audio>
+<audio id="mq7" src="audio-dentro-computer/q7.mp3" preload="auto"></audio>
+<audio id="mok7" src="audio-dentro-computer/ok7.mp3" preload="auto"></audio>
+<audio id="mopt7_0" src="audio-dentro-computer/opt7_0.mp3" preload="auto"></audio>
+<audio id="mopt7_1" src="audio-dentro-computer/opt7_1.mp3" preload="auto"></audio>
+<audio id="mopt7_2" src="audio-dentro-computer/opt7_2.mp3" preload="auto"></audio>
+<audio id="mopt7_3" src="audio-dentro-computer/opt7_3.mp3" preload="auto"></audio>
+<audio id="mq8" src="audio-parole-componenti/q3.mp3" preload="auto"></audio>
+<audio id="mok8" src="audio-parole-componenti/ok3.mp3" preload="auto"></audio>
+<audio id="mopt8_0" src="audio-parole-componenti/opt3_0.mp3" preload="auto"></audio>
+<audio id="mopt8_1" src="audio-parole-componenti/opt3_1.mp3" preload="auto"></audio>
+<audio id="mopt8_2" src="audio-parole-componenti/opt3_2.mp3" preload="auto"></audio>
+<audio id="mopt8_3" src="audio-parole-componenti/opt3_3.mp3" preload="auto"></audio>
+<audio id="mq9" src="audio-milionario15/n3.mp3" preload="auto"></audio>
+<audio id="mok9" src="audio-internet/ok5.mp3" preload="auto"></audio>
+<audio id="mopt9_0" src="audio-internet/opt5_0.mp3" preload="auto"></audio>
+<audio id="mopt9_1" src="audio-internet/opt5_1.mp3" preload="auto"></audio>
+<audio id="mopt9_2" src="audio-internet/opt5_2.mp3" preload="auto"></audio>
+<audio id="mopt9_3" src="audio-internet/opt5_3.mp3" preload="auto"></audio>
+<audio id="mq10" src="audio-milionario15/n4.mp3" preload="auto"></audio>
+<audio id="mok10" src="audio-click/ok0.mp3" preload="auto"></audio>
+<audio id="mopt10_0" src="audio-click/opt0_0.mp3" preload="auto"></audio>
+<audio id="mopt10_1" src="audio-click/opt0_1.mp3" preload="auto"></audio>
+<audio id="mopt10_2" src="audio-click/opt0_2.mp3" preload="auto"></audio>
+<audio id="mopt10_3" src="audio-click/opt0_3.mp3" preload="auto"></audio>
+<audio id="mq11" src="audio-milionario15/n5.mp3" preload="auto"></audio>
+<audio id="mok11" src="audio-variabili/ok5.mp3" preload="auto"></audio>
+<audio id="mopt11_0" src="audio-variabili/opt5_0.mp3" preload="auto"></audio>
+<audio id="mopt11_1" src="audio-variabili/opt5_1.mp3" preload="auto"></audio>
+<audio id="mopt11_2" src="audio-variabili/opt5_2.mp3" preload="auto"></audio>
+<audio id="mopt11_3" src="audio-variabili/opt5_3.mp3" preload="auto"></audio>
+<audio id="mq12" src="audio-milionario15/c_q.mp3" preload="auto"></audio>
+<audio id="mok12" src="audio-milionario15/c_ok.mp3" preload="auto"></audio>
+<audio id="mopt12_0" src="audio-milionario15/c_o0.mp3" preload="auto"></audio>
+<audio id="mopt12_1" src="audio-milionario15/c_o1.mp3" preload="auto"></audio>
+<audio id="mopt12_2" src="audio-milionario15/c_o2.mp3" preload="auto"></audio>
+<audio id="mopt12_3" src="audio-milionario15/c_o3.mp3" preload="auto"></audio>
+<audio id="mq13" src="audio-milionario15/y_q.mp3" preload="auto"></audio>
+<audio id="mok13" src="audio-milionario15/y_ok.mp3" preload="auto"></audio>
+<audio id="mopt13_0" src="audio-milionario15/y_o0.mp3" preload="auto"></audio>
+<audio id="mopt13_1" src="audio-milionario15/y_o1.mp3" preload="auto"></audio>
+<audio id="mopt13_2" src="audio-milionario15/y_o2.mp3" preload="auto"></audio>
+<audio id="mopt13_3" src="audio-milionario15/y_o3.mp3" preload="auto"></audio>
+<audio id="mq14" src="audio-milionario15/r_q.mp3" preload="auto"></audio>
+<audio id="mok14" src="audio-milionario15/r_ok.mp3" preload="auto"></audio>
+<audio id="mopt14_0" src="audio-milionario15/r_o0.mp3" preload="auto"></audio>
+<audio id="mopt14_1" src="audio-milionario15/r_o1.mp3" preload="auto"></audio>
+<audio id="mopt14_2" src="audio-milionario15/r_o2.mp3" preload="auto"></audio>
+<audio id="mopt14_3" src="audio-milionario15/r_o3.mp3" preload="auto"></audio>
+<audio id="mpos0" src="audio-milionario15/pos0.mp3" preload="auto"></audio>
+<audio id="mpos1" src="audio-milionario15/pos1.mp3" preload="auto"></audio>
+<audio id="mpos2" src="audio-milionario15/pos2.mp3" preload="auto"></audio>
+<audio id="mpos3" src="audio-milionario15/pos3.mp3" preload="auto"></audio>
+<audio id="mpos4" src="audio-milionario15/pos4.mp3" preload="auto"></audio>
+<audio id="mpos5" src="audio-milionario15/pos5.mp3" preload="auto"></audio>
+<audio id="mpos6" src="audio-milionario15/pos6.mp3" preload="auto"></audio>
+<audio id="mpos7" src="audio-milionario15/pos7.mp3" preload="auto"></audio>
+<audio id="mpos8" src="audio-milionario15/pos8.mp3" preload="auto"></audio>
+<audio id="mpos9" src="audio-milionario15/pos9.mp3" preload="auto"></audio>
+<audio id="mpos10" src="audio-milionario15/pos10.mp3" preload="auto"></audio>
+<audio id="mpos11" src="audio-milionario15/pos11.mp3" preload="auto"></audio>
+<audio id="mpos12" src="audio-milionario15/pos12.mp3" preload="auto"></audio>
+<audio id="mpos13" src="audio-milionario15/pos13.mp3" preload="auto"></audio>
+<audio id="mpos14" src="audio-milionario15/pos14.mp3" preload="auto"></audio>
+<audio id="mph0" src="audio-milionario15/ph0.mp3" preload="auto"></audio>
+<audio id="mph1" src="audio-milionario15/ph1.mp3" preload="auto"></audio>
+<audio id="mph2" src="audio-milionario15/ph2.mp3" preload="auto"></audio>
+<audio id="mph3" src="audio-milionario15/ph3.mp3" preload="auto"></audio>
+<audio id="mph4" src="audio-milionario15/ph4.mp3" preload="auto"></audio>
+<audio id="mph5" src="audio-milionario15/ph5.mp3" preload="auto"></audio>
+<audio id="mph6" src="audio-milionario15/ph6.mp3" preload="auto"></audio>
+<audio id="mph7" src="audio-milionario15/ph7.mp3" preload="auto"></audio>
+<audio id="mph8" src="audio-milionario15/ph8.mp3" preload="auto"></audio>
+<audio id="mph9" src="audio-milionario15/ph9.mp3" preload="auto"></audio>
+<audio id="mph10" src="audio-milionario15/ph10.mp3" preload="auto"></audio>
+<audio id="mph11" src="audio-milionario15/ph11.mp3" preload="auto"></audio>
+<audio id="mph12" src="audio-milionario15/ph12.mp3" preload="auto"></audio>
+<audio id="mph13" src="audio-milionario15/ph13.mp3" preload="auto"></audio>
+<audio id="mph14" src="audio-milionario15/ph14.mp3" preload="auto"></audio>
+<audio id="mltr0" src="audio-letters/a.mp3" preload="auto"></audio>
+<audio id="mltr1" src="audio-letters/bi.mp3" preload="auto"></audio>
+<audio id="mltr2" src="audio-letters/ci.mp3" preload="auto"></audio>
+<audio id="mltr3" src="audio-letters/di.mp3" preload="auto"></audio>
+<script>
+const PRIZES=["€ 100", "€ 200", "€ 300", "€ 500", "€ 1.000", "€ 2.000", "€ 4.000", "€ 8.000", "€ 16.000", "€ 32.000", "€ 64.000", "€ 125.000", "€ 250.000", "€ 500.000", "€ 1 MILIONE"],MS=[4,9],MODS=["inglesi", "chifacosa", "testo", "pixel", "suono", "memoria", "file", "dentro", "componenti", "internet", "click", "variabili", "condizioni", "cicli", "ordinare"],QQ=["Il primo “bug” della storia fu…?", "Metti in ordine: chi sta SOPRA tutto il resto?", "Quanti valori diversi può avere un bit?", "Questa immagine generata dall’IA è larga 256 pixel e alta 144. Quanti pixel contiene in tutto?", "163 si scrive con 8 cifre di 0 e 1 (10100011). Ognuna di queste cifre è un bit. Quanti bit ci sono in un byte?", "Ogni gradino (byte → KB → MB → GB) vale quante volte il precedente?", "A cosa serve fare il backup (la copia)?", "Che cosa rappresenta un transistor nel computer?", "Spegni il computer: cosa si svuota, la RAM o la ROM?", "Alla fine, cosa viaggia DAVVERO dentro il cavo?", "Tocchiamo “ordina”: dietro il pulsante cosa parte?", "Dentro la scatola “punti = 3”, in fondo cosa c’è?", "VERO e FALSO per il computer sono…?", "Dimentichi il freno (stop a 100). Che succede?", "Perché questo metodo si chiama “bubble sort” (ordinamento a bolle)?"],OPTS=[["Una vera falena trovata dentro un computer nel 1947", "Un errore di ortografia", "Un virus creato apposta", "Un topo che rosicchiò un cavo"], ["Internet (la rete): copre OS, app, browser e siti come il cielo", "Il browser", "Google", "WhatsApp"], ["2: soltanto 0 oppure 1", "1", "10", "256"], ["36.864", "400", "3.686", "256.144"], ["8", "4", "163", "16"], ["1024 volte", "1000 volte esatte", "10 volte", "2 volte"], ["A non perdere tutto se il PC si rompe o la chiavetta si perde", "A far andare il computer più veloce", "A usare meno memoria", "A niente, è inutile"], ["Un interruttore microscopico: acceso = 1, spento = 0 (un bit)", "Un cavo che trasporta il suono", "Una memoria permanente", "Una piccola ventola"], ["La RAM: è la scrivania, si svuota quando spegni", "La ROM: si cancella tutto", "Nessuna delle due", "Entrambe per sempre"], ["Bit: lampi che valgono 0 oppure 1", "Lettere dell’alfabeto", "Piccoli pacchi di cartone", "La voce registrata"], ["Una ricetta di passi precisi: l’algoritmo", "Un pizzaiolo vero dentro il telefono", "La magia", "Niente, la pizza arriva da sola"], ["Bit: 3 è 1+2, due interruttori accesi", "Tre palline vere", "Il numero disegnato", "Niente"], ["1 e 0: un bit!", "Due parole italiane", "Due colori", "Due suoni"], ["Loop infinito: non si ferma più", "Si ferma da solo a 100", "Stampa mezzo foglio", "Niente"], ["Perché i numeri grandi salgono in fondo come bolle", "Perché si fa soffiando", "Perché è stato inventato in una vasca", "Perché fa le bolle sullo schermo"]],WHY=["Nel 1947 una falena entrò nel computer Mark II e lo bloccò: da allora “bug” (insetto) significa errore. La falena è ancora al museo!", "La pila è: in alto la rete-cielo, sotto OS, poi app, poi browser, poi i siti. Senza cielo, niente funziona.", "Un bit è come un interruttore: spento (0) o acceso (1). Con 8 bit si hanno 2 × 2 × … (8 volte) = 256 combinazioni, abbastanza per tutte le lettere.", "256 × 144 = 36.864: i pixel totali sono larghezza per altezza.", "Un byte è un gruppo di 8 bit: 8 piccoli interruttori, accesi (1) o spenti (0).", "Si sale di 1024 in 1024, perché 1024 = 2¹⁰ ed è il modo in cui conta il computer.", "Il backup è il paracadute: se l’originale sparisce, la copia ti salva il lavoro.", "Miliardi di interruttori che si accendono e si spengono formano i bit: da qui nasce tutta l’informazione digitale.", "RAM = scrivania di lavoro: veloce ma temporanea. ROM = istruzioni incise, restano per sempre.", "Tutto — messaggi, foto, film — in viaggio diventa bit: acceso o spento, 1 o 0.", "Ogni tap avvia un algoritmo: passi precisi che il computer esegue uno per uno.", "Anche i valori sono bit: 3 si scrive 11 in binario, due 1 accesi.", "Decidere è un interruttore: acceso (1, vero) o spento (0, falso).", "Senza condizione di uscita il ciclo ripete per sempre: l’errore più classico.", "Bubble = bolla: i valori grandi risalgono verso il fondo a ogni passata, come bolle nell’acqua."];
+const AQ=["audio-parole-inglesi/q5.mp3", "audio-chi-fa-cosa/q5.mp3", "audio-testo-bit/q5.mp3", "audio-pixel-bit/q1.mp3", "audio-suono-bit/q4.mp3", "audio-memoria/q1.mp3", "audio-file-cartelle/q3.mp3", "audio-dentro-computer/q7.mp3", "audio-parole-componenti/q3.mp3", "audio-internet/q5.mp3", "audio-click/q0.mp3", "audio-variabili/q5.mp3", "audio-milionario15/c_q.mp3", "audio-milionario15/y_q.mp3", "audio-milionario15/r_q.mp3"],AOK=["audio-parole-inglesi/ok5.mp3", "audio-chi-fa-cosa/ok5.mp3", "audio-testo-bit/ok5.mp3", "audio-pixel-bit/ok1.mp3", "audio-suono-bit/ok4.mp3", "audio-memoria/ok1.mp3", "audio-file-cartelle/ok3.mp3", "audio-dentro-computer/ok7.mp3", "audio-parole-componenti/ok3.mp3", "audio-internet/ok5.mp3", "audio-click/ok0.mp3", "audio-variabili/ok5.mp3", "audio-milionario15/c_ok.mp3", "audio-milionario15/y_ok.mp3", "audio-milionario15/r_ok.mp3"],AOPT=[["audio-parole-inglesi/opt5_0.mp3", "audio-parole-inglesi/opt5_1.mp3", "audio-parole-inglesi/opt5_2.mp3", "audio-parole-inglesi/opt5_3.mp3"], ["audio-chi-fa-cosa/opt5_0.mp3", "audio-chi-fa-cosa/opt5_1.mp3", "audio-chi-fa-cosa/opt5_2.mp3", "audio-chi-fa-cosa/opt5_3.mp3"], ["audio-testo-bit/opt5_0.mp3", "audio-testo-bit/opt5_1.mp3", "audio-testo-bit/opt5_2.mp3", "audio-testo-bit/opt5_3.mp3"], ["audio-pixel-bit/opt1_0.mp3", "audio-pixel-bit/opt1_1.mp3", "audio-pixel-bit/opt1_2.mp3", "audio-pixel-bit/opt1_3.mp3"], ["audio-suono-bit/opt4_0.mp3", "audio-suono-bit/opt4_1.mp3", "audio-suono-bit/opt4_2.mp3", "audio-suono-bit/opt4_3.mp3"], ["audio-memoria/opt1_0.mp3", "audio-memoria/opt1_1.mp3", "audio-memoria/opt1_2.mp3", "audio-memoria/opt1_3.mp3"], ["audio-file-cartelle/opt3_0.mp3", "audio-file-cartelle/opt3_1.mp3", "audio-file-cartelle/opt3_2.mp3", "audio-file-cartelle/opt3_3.mp3"], ["audio-dentro-computer/opt7_0.mp3", "audio-dentro-computer/opt7_1.mp3", "audio-dentro-computer/opt7_2.mp3", "audio-dentro-computer/opt7_3.mp3"], ["audio-parole-componenti/opt3_0.mp3", "audio-parole-componenti/opt3_1.mp3", "audio-parole-componenti/opt3_2.mp3", "audio-parole-componenti/opt3_3.mp3"], ["audio-internet/opt5_0.mp3", "audio-internet/opt5_1.mp3", "audio-internet/opt5_2.mp3", "audio-internet/opt5_3.mp3"], ["audio-click/opt0_0.mp3", "audio-click/opt0_1.mp3", "audio-click/opt0_2.mp3", "audio-click/opt0_3.mp3"], ["audio-variabili/opt5_0.mp3", "audio-variabili/opt5_1.mp3", "audio-variabili/opt5_2.mp3", "audio-variabili/opt5_3.mp3"], ["audio-milionario15/c_o0.mp3", "audio-milionario15/c_o1.mp3", "audio-milionario15/c_o2.mp3", "audio-milionario15/c_o3.mp3"], ["audio-milionario15/y_o0.mp3", "audio-milionario15/y_o1.mp3", "audio-milionario15/y_o2.mp3", "audio-milionario15/y_o3.mp3"], ["audio-milionario15/r_o0.mp3", "audio-milionario15/r_o1.mp3", "audio-milionario15/r_o2.mp3", "audio-milionario15/r_o3.mp3"]];
+const $=i=>document.getElementById(i);
+const lad=$('ladder');PRIZES.forEach((p,i)=>{const d=document.createElement('div');d.className='rung'+(MS.includes(i)?' ms':'');d.id='rg'+i;d.textContent=(i+1)+' · '+p;lad.appendChild(d)});
+let qi=0,sel=-1,over=false,audioOn=true,unlocked=false,used={fifty:false,pub:false,ph:false},seqOn=false,karT=null;
+addEventListener('pointerdown',()=>{unlocked=true;const b=$('a-bed');if(b&&audioOn){try{b.volume=.5;b.play().catch(()=>{})}catch(e){}}},{once:false});
+function play(id){if(!audioOn||!unlocked)return null;const a=$(id);if(!a)return null;try{a.currentTime=0;const p=a.play();if(p)p.catch(()=>{});return a}catch(e){return null}}
+function stopAll(){document.querySelectorAll('audio:not(#a-bed)').forEach(a=>{try{a.pause()}catch(e){}});seqOn=false;stopKar();document.querySelectorAll('#qo button.reading').forEach(x=>x.classList.remove('reading'))}
+function stopKar(){if(karT){clearInterval(karT);karT=null}document.querySelectorAll('#q .wkw.on').forEach(x=>x.classList.remove('on'))}
+function kar(el,audio){stopKar();if(!el||!audio)return;const t=el.textContent;el.innerHTML='';t.split(/(\s+)/).forEach(w=>{if(!w)return;const s=document.createElement('span');if(/^\s+$/.test(w)){s.textContent=w}else{s.className='wkw';s.textContent=w}el.appendChild(s)});const words=[...el.querySelectorAll('.wkw')];if(!words.length)return;karT=setInterval(()=>{const d=audio.duration;if(!d||!isFinite(d)||audio.paused||audio.ended)return;const i=Math.min(words.length-1,Math.floor(audio.currentTime/d*words.length));words.forEach((w,j)=>w.classList.toggle('on',j<=i))},120)}
+$('mb').onclick=()=>{audioOn=!audioOn;$('mb').textContent=audioOn?'🔊':'🔇';if(audioOn){const b=$('a-bed');if(b&&unlocked){try{b.play().catch(()=>{})}catch(e){}}}else{stopAll();const b=$('a-bed');if(b)try{b.pause()}catch(e){}}};
+function paint(){document.querySelectorAll('.rung').forEach((r,i)=>{r.className='rung'+(MS.includes(i)?' ms':'')+(i<qi?' done':i===qi?' cur':'')})}
+function letters(cb){const btns=[...document.querySelectorAll('#qo button')];const items=[];ORDER.forEach((oi,bi)=>{items.push({id:'mopt'+qi+'_'+oi,btn:btns[bi]})});let k=0;seqOn=true;
+ const nx=()=>{if(!seqOn||!audioOn){seqOn=false;if(cb)cb();return}if(k>=items.length){seqOn=false;if(cb)cb();return}const it=items[k++],ae=$(it.id);if(!ae){nx();return}if(it.btn){it.btn.style.visibility='visible';it.btn.disabled=false;it.btn.classList.add('reading')}ae.onended=()=>{if(it.btn)it.btn.classList.remove('reading');nx()};try{ae.currentTime=0;const p=ae.play();if(p)p.catch(()=>nx())}catch(e){nx()}};nx()}
+let splashT=null;
+function splash(txt){const s=$('splash');if(!s)return;if(splashT){clearTimeout(splashT);splashT=null}$('splashamt').textContent=txt;s.style.display='flex';splashT=setTimeout(()=>{s.style.display='none';splashT=null},5000)}
+function hideSplash(){const s=$('splash');if(!s)return;if(splashT){clearTimeout(splashT);splashT=null}s.style.display='none'}
+let ORDER=[];
+function ask(){const q=QQ[qi];paint();hideSplash();const blo=$('a-bed'),bhi=$('a-bedhi');
+ if(qi>=12){if(blo)try{blo.pause()}catch(e){}if(bhi&&audioOn&&unlocked){try{if(bhi.paused){bhi.volume=.5;bhi.currentTime=0;bhi.play().catch(()=>{})}}catch(e){}}}
+ else{if(bhi)try{bhi.pause()}catch(e){}if(blo&&audioOn&&unlocked){try{if(blo.paused){blo.volume=.5;blo.play().catch(()=>{})}}catch(e){}}}
+ sel=-1;$('fb').textContent='';$('ok').hidden=true;$('nx').hidden=true;$('pub').classList.remove('on');$('pub').innerHTML='';
+ $('modtag').textContent='MODULO · '+MODS[qi].toUpperCase();
+ $('q').textContent=q;
+ const qo=$('qo');qo.innerHTML='';ORDER=[0,1,2,3];
+ for(let i=ORDER.length-1;i>0;i--){const k=Math.random()*(i+1)|0;[ORDER[i],ORDER[k]]=[ORDER[k],ORDER[i]]}
+ ORDER.forEach((oi,bi)=>{const b=document.createElement('button');b.innerHTML='<small>'+'ABCD'[bi]+' -</small>'+OPTS[qi][oi];b.style.visibility='hidden';b.disabled=true;b.onclick=()=>pick(bi);qo.appendChild(b)});
+ const intro=play('mpos'+qi);const go=()=>{const a=play('mq'+qi);kar($('q'),a);if(a)a.onended=()=>letters();else letters()};if(intro)intro.onended=()=>go();else go()}
+function pick(bi){if(over)return;stopAll();sel=bi;document.querySelectorAll('#qo button').forEach((b,i)=>b.classList.toggle('sel',i===bi));
+ $('fb').textContent='L\u2019accendiamo?';$('ok').hidden=false;const _l=play('a-lacc');const _t=play('a-tick');}
+$('ok').onclick=()=>{if(sel<0||over)return;const oi=ORDER[sel];stopAll();$('ok').hidden=true;
+ document.querySelectorAll('#qo button').forEach(b=>b.disabled=true);
+ if(oi===0){document.querySelectorAll('#qo button')[sel].classList.add('ok');play('a-stok');splash(PRIZES[qi]);
+  $('fb').textContent='✔ Esatto! '+WHY[qi];const a=play('mok'+qi);qi++;
+  if(qi>=15){setTimeout(win,2600)}else{if(qi===5||qi===10)play('a-fanms');$('nx').hidden=false}}
+ else{document.querySelectorAll('#qo button')[sel].classList.add('no');play('a-stko');lose()}};
+$('nx').onclick=()=>{hideSplash();$('nx').hidden=true;const w=play('a-whoosh');if(w&&w.onended!==undefined){w.onended=()=>ask()}setTimeout(ask,700)};
+function safe(){let s=0;for(const m of [4,9])if(m<qi)s=m;return s}
+function win(){over=true;paint();document.querySelectorAll('.rung').forEach(r=>r.classList.add('done'));
+ const b=$('a-bed');if(b)try{b.pause()}catch(e){}
+ $('q').innerHTML='';$('qo').innerHTML='<div style="font-size:30px;text-align:center">🏆 HAI VINTO<br>1 MILIONE DI COLORI!</div>';$('fb').textContent='';$('nx').hidden=true;play('a-win')}
+function lose(){over=true;const ms=safe();paint();
+ const b=$('a-bed');if(b)try{b.pause()}catch(e){}
+ $('qo').innerHTML='<div style="font-size:26px;text-align:center">💥 OH NO!<br>Ti fermi a '+PRIZES[ms]+'.</div>';$('fb').textContent='';$('rs').hidden=false;play('a-lose')}
+$('rs').onclick=()=>location.reload();
+$('l50').onclick=e=>{if(used.fifty||over)return;used.fifty=true;e.target.classList.add('used');play('a-j50');play('a-fifty');
+ const btns=[...document.querySelectorAll('#qo button')];let n=0;ORDER.forEach((oi,bi)=>{if(oi!==0&&n<2){btns[bi].classList.add('gone');n++}})};
+$('lpub').onclick=e=>{if(used.pub||over)return;used.pub=true;e.target.classList.add('used');play('a-jpub');play('a-publ');
+ const pub=$('pub');pub.classList.add('on');pub.innerHTML='';const ci=ORDER.findIndex(o=>o===0);
+ ORDER.forEach((oi,bi)=>{const v=bi===ci?55+((qi*13+bi*7)%20):((qi*7+bi*11)%25);const d=document.createElement('div');d.className='pb';d.innerHTML='<i style="height:'+(v*1.4)+'px"></i>'+'ABCD'[bi]+' '+v+'%';pub.appendChild(d)})};
+$('lph').onclick=e=>{if(used.ph||over)return;used.ph=true;e.target.classList.add('used');play('a-jph');
+ const a=play('a-phone');const ci=ORDER.findIndex(o=>o===0);const L='ABCD'[ci];
+ $('fb').textContent='📞 Pronto? Totò ragiona… e dice: ascolta bene!';
+ if(a)a.onended=()=>play('mph'+qi);else play('mph'+qi)};
+paint();
+$('start').onclick=()=>{unlocked=true;document.getElementById('startov').style.display='none';const b=$('a-bed');if(b&&audioOn){try{b.volume=.9;b.currentTime=0;b.play().catch(()=>{})}catch(e){}}const a=play('a-intro');if(a)a.onended=()=>ask();else ask()};
+</script></body></html>
