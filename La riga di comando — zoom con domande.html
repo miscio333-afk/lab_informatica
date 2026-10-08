@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="utf-8">
+<title>La riga di comando — zoom con domande</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;margin:0;background:#05060a;color:#e9ecf5;font-family:ui-monospace,Menlo,Consolas,monospace}
+body{display:flex;align-items:center;justify-content:center}
+#st{position:relative;aspect-ratio:16/9;width:min(100vw,177.78vh);min-height:240px;overflow:hidden;background:#000}
+canvas{display:block;width:100%!important;height:100%!important}
+#hud{position:absolute;left:3%;bottom:15%;padding:.8em 1em;background:rgba(5,6,10,.62);border:1px solid rgba(255,255,255,.18);border-radius:8px;backdrop-filter:blur(6px);font-size:clamp(10px,1.6vw,16px);min-width:14em}
+#hud b{display:block;font-size:1.25em}#hud span{color:#4ade80}#hud small{display:block;opacity:.65;margin-top:.3em}
+#zf{position:absolute;right:3%;top:5%;font-size:clamp(11px,2vw,22px);color:#4ade80;text-shadow:0 0 8px #000}
+#ctl{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:.9em;padding:.7em 3% 1em;background:linear-gradient(transparent,rgba(0,0,0,.7));font-size:clamp(10px,1.5vw,15px)}
+#pb{flex:none;width:2.6em;height:2.6em;border:0;border-radius:50%;background:#4ade80;color:#05060a;font:inherit;cursor:pointer}
+#slw{flex:1;position:relative;display:flex}
+.tk{position:absolute;top:50%;width:11px;height:11px;margin:-5px 0 0 -5px;border-radius:50%;background:#666;border:2px solid #05060a;pointer-events:none}.tk.ok{background:#4ade80}
+#sl{width:100%;accent-color:#4ade80;height:2em;cursor:pointer}
+#tm{flex:none;min-width:7.5em;text-align:right;opacity:.8}
+#lad{position:absolute;right:3%;bottom:17%;display:flex;flex-direction:column-reverse;gap:4px;font-size:clamp(9px,1.3vw,13px);max-height:38%;overflow:hidden}
+.rg{background:rgba(5,6,10,.7);border:1px solid #2c3a63;color:#8b93b0;border-radius:6px;padding:.35em .7em;text-align:center;white-space:nowrap;text-transform:uppercase;letter-spacing:.06em}
+.rg.cur{background:#4ade80;color:#111;font-weight:800;border-color:#4ade80;box-shadow:0 0 12px #4ade80}
+.rg.done{background:#12372d;color:#4ade80;border-color:#4ade80}
+#qo button.reading{border-color:#4ade80;box-shadow:0 0 10px #4ade80}
+#qt .wkw.on,#qf .wkw.on{background:#4ade80;color:#111;border-radius:4px;padding:0 .15em}
+#q{position:absolute;left:3%;top:8%;width:min(44%,27em);padding:1em 1.1em;background:rgba(5,6,10,.55);border:1px solid rgba(74,222,128,.5);border-radius:10px;backdrop-filter:blur(8px);font:clamp(10px,1.45vw,15px) system-ui,sans-serif;max-height:78%;overflow-y:auto;overflow-wrap:break-word}
+#q[hidden]{display:none}
+#qn{color:#4ade80;font-family:ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase}
+#qt{margin:.5em 0 .8em;font-size:1.15em;line-height:1.35;overflow-wrap:break-word}
+#qo button{display:block;width:100%;text-align:left;margin:.35em 0;padding:.6em .8em;background:#151926;color:#e9ecf5;border:1px solid #2c3350;border-radius:8px;font:inherit;cursor:pointer}
+#qo button:hover:not(:disabled){border-color:#4ade80}
+#qo button.ok{background:#12372d;border-color:#4ade80}
+#qo button.no{background:#3a1820;border-color:#ff6b6b;opacity:.7}
+#qf{margin:.6em 0 0;line-height:1.4}
+#qb{margin-top:.7em;background:#4ade80;color:#05060a;border:0;border-radius:6px;padding:.6em 1em;font:inherit;cursor:pointer}
+@media(max-width:640px){#q{left:3%;right:3%;width:auto;top:auto;bottom:16%}.asking #hud{display:none}}
+</style></head><body>
+<div id="st"><div id="hud"><small id="n"></small><b id="t"></b><span id="s"></span></div><div id="zf"></div>
+<div id="q" hidden><small id="qn"></small><p id="qt"></p><div id="qo"></div><p id="qf"></p><button id="qb" hidden></button></div>
+<div id="lad"></div><div id="ctl"><button id="pb" aria-label="Play / pausa">▶</button><div id="slw"><input id="sl" type="range" min="0" max="1000" value="0" step="1" aria-label="Scorri l’animazione"></div><span id="tm"></span><button id="mb" aria-label="Audio on/off" style="flex:none;width:2.6em;height:2.6em;border:0;border-radius:50%;background:#4ade80;color:#05060a;font:inherit;cursor:pointer">🔊</button></div></div>
+<audio id="fx-whoosh" src="audio-terminale/whoosh.mp3" preload="auto"></audio>
+<audio id="fx-pop" src="audio-terminale/pop.mp3" preload="auto"></audio>
+<audio id="fx-fan" src="audio-terminale/fanfare.mp3" preload="auto"></audio>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const A=16/9,mk=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c};
+const rr=(c,x,y,w,h,r)=>{c.beginPath();c.roundRect?c.roundRect(x,y,w,h,r):c.rect(x,y,w,h)};
+const reg=(W,x,y,w)=>{const H=W*9/16,h=w*9/16;return{x,y,w,h,k:w/W,c:[((x+w/2)/W-.5)*A,.5-(y+h/2)/H]}};
+const tx=(c,s,x,y,sz,col,al)=>{c.font='bold '+sz+'px ui-monospace,Menlo,Consolas,monospace';c.fillStyle=col;c.textAlign=al||'center';c.textBaseline='middle';c.fillText(s,x,y)};
+const put=(c,img,r,col)=>{c.save();c.globalAlpha=.62;c.drawImage(img,r.x,r.y,r.w,r.h);c.restore();c.strokeStyle=col||'rgba(255,255,255,.6)';c.lineWidth=Math.max(2,r.w/150);c.strokeRect(r.x,r.y,r.w,r.h)};
+const BG=(w,h)=>{const c=mk(w,h),x=c.getContext('2d');x.fillStyle='#07120b';x.fillRect(0,0,w,h);return[c,x]};
+// ---- 5 · Il comando e tuo
+const[Bt,bt]=BG(1600,900);tx(bt,'il comando e tuo',800,80,56,'#4ade80');tx(bt,'il mouse e nato per chi non ricordava i comandi',800,155,38,'#9db0dc');
+[['IL MOUSE','clic, doppio clic, trascina','comodo, ma decidi poco'],['LA RIGA DI COMANDO','scrivi tu cosa vuoi','potentissima, ma da imparare']].forEach((r,i)=>{const x=190+i*630;bt.fillStyle=i?'#12372d':'#151926';rr(bt,x,240,590,230,18);bt.fill();bt.strokeStyle=i?'#4ade80':'#2c3350';bt.lineWidth=5;bt.stroke();tx(bt,r[0],x+295,300,40,i?'#4ade80':'#e9ecf5');tx(bt,r[1],x+295,375,29,'#9db0dc');tx(bt,r[2],x+295,432,32,i?'#4ade80':'#5d6682')});
+tx(bt,'la riga di comando e rimasta per chi li ricorda',800,560,42,'#4ade80');
+bt.fillStyle='#151926';rr(bt,300,650,1000,150,16);bt.fill();bt.strokeStyle='#2c3350';bt.lineWidth=4;bt.stroke();
+tx(bt,'nessun programma ti obbliga: scrivi tu cosa succede',800,710,34,'#e9ecf5');tx(bt,'da qui comincia il tuo lavoro',800,762,30,'#9db0dc');
+// ---- 4 · Un comando diventa due
+const[Br,br]=BG(1600,900);tx(br,'la composizione',800,80,52,'#4ade80');tx(br,'wildcard e pipe: fai piu cose scrivendo meno',800,155,36,'#9db0dc');
+[["ls *.txt",'il jolly * vuol dire qualsiasi: elenca i file .txt',1],['cat diario.txt | wc -l','il pipe | passa il risultato di un comando al successivo',0]].forEach((r,i)=>{const y=235+i*140;br.fillStyle=r[2]?'#12372d':'#151926';rr(br,220,y,1160,120,14);br.fill();br.strokeStyle=r[2]?'#4ade80':'#2c3350';br.lineWidth=4;br.stroke();tx(br,r[0],330,y+60,40,r[2]?'#4ade80':'#e9ecf5','left');tx(br,r[1],1160,y+60,27,'#9db0dc','right')});
+tx(br,'i caratteri speciali sono potere',800,858,36,'#4ade80');
+const r5=reg(1600,980,500,580);put(br,Bt,r5,'#4ade80');
+// ---- 3 · Dove sei
+const[Bv,bv]=BG(1600,900);tx(bv,'il percorso',800,80,52,'#4ade80');tx(bv,'cd = change directory: cambi posto, e il prompt te lo dice',800,155,36,'#9db0dc');
+bv.font='bold 34px ui-monospace,Menlo,Consolas,monospace';bv.textAlign='left';bv.textBaseline='middle';
+[['/','',1],['home','',0],['matte','la tua cartella personale',1],['Compiti','ci stai ora',0],['Foto','',0],['etc','fuori da casa',1]].forEach((r,i)=>{const x=260+r[1].length*0+(r[1]?120:60),y=225+i*36;bv.fillStyle=r[2]?'#4ade80':'#5d6682';bv.fillText((r[1]?'   ':'')+r[0],x,y);if(r[2]&&r[1]){bv.fillStyle='#9db0dc';bv.font='bold 26px ui-monospace,Menlo,Consolas,monospace';bv.fillText('~ = '+r[1],x+230,y);bv.font='bold 34px ui-monospace,Menlo,Consolas,monospace'}});
+bv.textAlign='center';
+tx(bv,'~ vuol dire casa tua   ·   / vuol dire la radice',800,440,32,'#4ade80');
+tx(bv,'dopo un cd, ls elenca un posto diverso',800,858,34,'#4ade80');
+const r4=reg(1600,980,500,580);put(bv,Br,r4,'#4ade80');
+// ---- 2 · ls non e magia
+const[Bi,bi]=BG(1600,900);tx(bi,'il comando',800,80,52,'#4ade80');tx(bi,'ogni comando e il nome di un programma che vive sul tuo computer',800,155,34,'#9db0dc');
+bi.fillStyle='#151926';rr(bi,590,200,420,85,14);bi.fill();bi.strokeStyle='#4ade80';bi.lineWidth=5;bi.stroke();tx(bi,'ls',800,243,48,'#4ade80');
+bi.fillStyle='#0d2a18';rr(bi,420,305,760,105,14);bi.fill();bi.strokeStyle='#2c3350';bi.lineWidth=4;bi.stroke();
+tx(bi,'Compiti   Foto   diario.txt',800,358,32,'#e9ecf5');
+tx(bi,'/usr/bin/ls',480,432,40,'#4ade80');
+tx(bi,'un file eseguibile, come tutti gli altri',480,472,28,'#9db0dc');
+const r3=reg(1600,980,500,580);put(bi,Bv,r3,'#4ade80');
+// ---- 1 · matte@lab:~$
+const[Bs,bs]=BG(1600,900);tx(bs,'il prompt',800,80,52,'#4ade80');tx(bs,'la riga che ti dice: sono qui, ti ascolto',800,155,36,'#9db0dc');
+const PT=[['matte','chi sei'],['','@'],[ 'lab','il computer'],[':','separatore'],['~','dove sei'],['$','ti ascolto']];
+let px=250;PT.forEach((p,i)=>{const w=185;bs.fillStyle=p[1]==='matte'?'#4ade80':p[1]==='lab'?'#4ade80':'#151926';rr(bs,px,250,w,100,12);bs.fill();bs.strokeStyle=(p[1]==='matte'||p[1]==='lab')?'#4ade80':'#2c3350';bs.lineWidth=4;bs.stroke();tx(bs,p[0],px+w/2,300,44,p[1]==='matte'||p[1]==='lab'?'#4ade80':'#e9ecf5');tx(bs,p[1]===''?'@':p[1],px+w/2,400,26,'#9db0dc');px+=w+14});
+bs.fillStyle='#12372d';rr(bs,150,425,820,64,12);bs.fill();bs.strokeStyle='#4ade80';bs.lineWidth=4;bs.stroke();
+tx(bs,'sono matte, sul computer lab, nella tua cartella: ti ascolto',560,457,26,'#e9ecf5');
+tx(bs,'il prompt non e un errore: e linizio di ogni comando',800,858,32,'#4ade80');
+const r2=reg(1600,980,500,580);put(bs,Bi,r2,'#4ade80');
+// ---- 0 · La finestra nera
+const P0=mk(1920,1080),p0=P0.getContext('2d');p0.fillStyle='#050a07';p0.fillRect(0,0,1920,1080);
+p0.fillStyle='#0d1a12';rr(p0,260,150,720,520,22);p0.fill();p0.strokeStyle='#4ade80';p0.lineWidth=6;p0.stroke();
+p0.fillStyle='#16301f';rr(p0,260,150,720,60,22);p0.fill();p0.fillStyle='#12372d';p0.fillRect(260,190,720,20);
+[['#ff6b6b',352],['#facc15',392],['#4ade80',432]].forEach((c,i)=>{p0.fillStyle=c[0];p0.beginPath();p0.arc(c[1],180,12,0,7);p0.fill()});
+tx(p0,'terminale',520,180,24,'#9db0dc','left');
+p0.font='bold 30px ui-monospace,Menlo,Consolas,monospace';p0.textAlign='left';p0.textBaseline='middle';
+p0.fillStyle='#4ade80';p0.fillText('matte@lab:~$ ',290,280);
+p0.fillStyle='#e9ecf5';p0.fillText('ls',524,280);
+p0.fillStyle='#9db0dc';p0.fillText('Compiti   Foto   diario.txt',290,340);
+p0.fillStyle='#4ade80';p0.fillText('matte@lab:~$ ',290,420);p0.fillStyle='#e9ecf5';p0.fillRect(524,398,22,44);
+p0.textAlign='center';
+tx(p0,'qui scrivi e qualcosa succede',620,760,42,'#e9ecf5');
+tx(p0,'sembra difficile: e solo una riga di parole',620,812,30,'#9db0dc');
+const r1=reg(1920,1010,600,580);put(p0,Bs,r1,'#4ade80');
+
+const NODE=[{cv:P0,par:-1},{cv:Bs,par:0,r:r1},{cv:Bi,par:1,r:r2},{cv:Bv,par:2,r:r3},{cv:Br,par:3,r:r4},{cv:Bt,par:4,r:r5}],N=6,depth=[0,1,2,3,4,5];
+const ren=new THREE.WebGLRenderer({antialias:true}),st=document.getElementById('st');st.prepend(ren.domElement);
+const sc=new THREE.Scene(),cam=new THREE.OrthographicCamera(-A/2,A/2,.5,-.5,-10,10),aniso=ren.capabilities.getMaxAnisotropy(),grp=[],Sx=[1],Cx=[[0,0]];
+NODE.forEach((n,j)=>{const tex=new THREE.CanvasTexture(n.cv);tex.anisotropy=aniso;
+ const mesh=new THREE.Mesh(new THREE.PlaneGeometry(A,1),new THREE.MeshBasicMaterial({map:tex,depthTest:false,depthWrite:false}));mesh.renderOrder=depth[j];mesh.frustumCulled=false;
+ const gp=new THREE.Group();gp.add(mesh);grp.push(gp);
+ if(j){const P=NODE[j].par;grp[P].add(gp);gp.position.set(n.r.c[0],n.r.c[1],0);gp.scale.setScalar(n.r.k);Sx[j]=Sx[P]*n.r.k;Cx[j]=[Cx[P][0]+Sx[P]*n.r.c[0],Cx[P][1]+Sx[P]*n.r.c[1]]}});
+sc.add(grp[0]);
+// ---- trajet continu (zoom/pan à la van Wijk)
+const RHO=1.41;
+function vw(c0,w0,c1,w1,g){const dx=c1[0]-c0[0],dy=c1[1]-c0[1],d=Math.hypot(dx,dy);
+ if(d<1e-12)return[c0,w0*Math.pow(w1/w0,g),Math.abs(Math.log(w1/w0))/RHO];
+ const q=RHO*RHO,b0=(w1*w1-w0*w0+q*q*d*d)/(2*w0*q*d),b1=(w1*w1-w0*w0-q*q*d*d)/(2*w1*q*d),r0=Math.log(Math.sqrt(b0*b0+1)-b0),r1=Math.log(Math.sqrt(b1*b1+1)-b1),S=(r1-r0)/RHO,s=g*S;
+ const u=w0/q*Math.cosh(r0)*Math.tanh(RHO*s+r0)-w0/q*Math.sinh(r0),w=w0*Math.cosh(r0)/Math.cosh(RHO*s+r0),f=u/d;return[[c0[0]+dx*f,c0[1]+dy*f],w,S]}
+const W=Sx.map(x=>x*A),DU=[],T0=[0];
+for(let j=0;j<N-1;j++){const S=vw(Cx[j],W[j],Cx[j+1],W[j+1],1)[2];DU.push(Math.max(3.6,Math.min(6,2+1.6*S)));T0.push(T0[j]+DU[j])}
+const DUR=T0[N-1],sm=x=>x*x*(3-2*x),$=i=>document.getElementById(i);
+const PRIZES=['PROMPT','COMANDO','PERCORSO','ALBERO','PIPE','MANI'];
+PRIZES.forEach(p=>{const d=document.createElement('div');d.className='rg';d.textContent=p;$('lad').appendChild(d)});
+let audioOn=true,audioUnlocked=false,qdPlayed={},lastCtx=null,karTimer=null;
+addEventListener('pointerdown',()=>{audioUnlocked=true},{once:false});
+function paintLad(){const n=a;document.querySelectorAll('.rg').forEach((r,i)=>{r.className='rg'+(i<n?' done':i===n?' cur':'')})}
+function stopKar(){if(karTimer){clearInterval(karTimer);karTimer=null}document.querySelectorAll('.wkw.on').forEach(x=>x.classList.remove('on'))}
+function wrapWords(el){const t=el.textContent;el.innerHTML='';t.split(/(\s+)/).forEach(w=>{if(!w)return;const s=document.createElement('span');if(/^\s+$/.test(w)){s.textContent=w}else{s.className='wkw';s.textContent=w}el.appendChild(s)})}
+function startKar(el,audio){stopKar();if(!el||!audio)return;wrapWords(el);const words=[...el.querySelectorAll('.wkw')];if(!words.length)return;karTimer=setInterval(()=>{const d=audio.duration;if(!d||!isFinite(d)||audio.paused||audio.ended)return;const i=Math.min(words.length-1,Math.floor(audio.currentTime/d*words.length));words.forEach((w,j)=>w.classList.toggle('on',j<=i))},120)}
+function stopAllQ(){stopKar();for(let i=0;i<6;i++){['q','ok','h'].forEach(p=>{const a2=$(p+i);if(a2)a2.pause()})}stopSeq()}
+let seqOn=false;
+function stopSeq(){seqOn=false;for(let i=0;i<4;i++){const s=$('sfx'+i);if(s){s.onended=null;try{s.pause()}catch(e){}}}document.querySelectorAll('#qo button.reading').forEach(x=>x.classList.remove('reading'))}
+function playSeq(id,order,btns){stopSeq();if(!audioOn||!audioUnlocked)return;seqOn=true;const items=[];order.forEach((o,bi)=>{items.push({el:$('sfx'+bi),btn:btns[bi]})});let k=0;const next=()=>{if(!seqOn||!audioOn||k>=items.length)return;const it=items[k++];if(!it.el){next();return}it.btn.classList.add('reading');it.el.onended=()=>{it.btn.classList.remove('reading');next()};try{it.el.currentTime=0;it.el.play().catch(()=>{next()})}catch(e){next()}};next()}
+function speak(i){if(!audioOn||!audioUnlocked||i===0)return;const a3=$('fx-whoosh');if(!a3)return;try{a3.currentTime=0;a3.play().catch(()=>{})}catch(e){}}
+function speakQ(p,i){if(!audioOn||!audioUnlocked)return;stopAllQ();if(p==='q'){const f=$('fx-pop');if(f){try{f.currentTime=0;f.play().catch(()=>{})}catch(e){}}}const a4=$(p+i);if(!a4)return;try{a4.currentTime=0;a4.play().catch(()=>{})}catch(e){}}
+function replayQ(){if(!lastCtx||shown<0||shown>5||lastCtx.id!==shown)return;stopAllQ();stopSeq();qdPlayed[shown]=true;speakQ('q',shown);startKar($('qt'),$('q'+shown));const qel=$('q'+shown);if(qel)qel.onended=()=>playSeq(shown,lastCtx.order,lastCtx.btns)}
+$('mb').onclick=()=>{audioOn=!audioOn;$('mb').textContent=audioOn?'🔊':'🔇';if(!audioOn){stopAllQ();stopSeq();['fx-whoosh','fx-pop','fx-fan'].forEach(f=>{const w=$(f);if(w)w.pause()})}};
+const labs=[['La finestra','qui scrivi e succede'],['Il prompt','chi ascolta'],['Il comando','un programma con un nome'],['Il percorso','dove sei'],['La composizione','due comandi in uno'],['Le mani','il comando e tuo']];
+let last=-1;
+function frame(tm){let j=0;while(j<N-2&&tm>=T0[j+1])j++;const tau=Math.max(0,Math.min(1,(tm-T0[j])/DU[j])),r=vw(Cx[j],W[j],Cx[j+1],W[j+1],sm(tau)),s=A/r[1];
+ grp[0].scale.setScalar(s);grp[0].position.set(-r[0][0]*s,-r[0][1]*s,0);ren.render(sc,cam);
+ const idx=tau<.5?j:j+1;if(idx!==last){last=idx;$('n').textContent='0'+(idx+1)+' / 0'+N;$('t').textContent=labs[idx][0];$('s').textContent=labs[idx][1];speak(idx)}
+ $('zf').textContent='×'+s.toLocaleString('it-IT',{maximumFractionDigits:s<10?1:0})}
+function size(){const w=Math.max(2,st.clientWidth);ren.setPixelRatio(Math.min(devicePixelRatio||1,2));ren.setSize(w,Math.round(w*9/16),false)}
+addEventListener('resize',size);size();new ResizeObserver(size).observe(st);
+// ---- quiz
+const QS=[
+{q:'La riga matte@lab:~$ cosa ti dice?',o:['Che il computer e pronto e ti ascolta','Che hai sbagliato il comando','Quanto manca alla fine della lezione','Che il computer e spento'],why:'Il prompt e la promessa del computer: ha capito chi sei e ti dice che puoi scrivere. Non e un errore: e linizio di ogni comando.',h:'Il prompt e come: dimmi, sto qui.'},
+{q:'Il comando ls cosa fa?',o:['Elenca i file della cartella in cui sei','Cancella i file che non servono','Apre il browser a una pagina','Spegne il computer dopo un ora'],why:'ls e labbreviazione di list. Non e un comando magico: e il nome di un piccolo programma che guarda la cartella e scrive i nomi.',h:'ls viene da list: elenca.'},
+{q:'Il comando cd cambia cosa?',o:['La cartella in cui ti trovi','Il file che hai aperto','La velocita del computer','Il colore dello schermo'],why:'cd e change directory: il prompt mostra sempre dove sei. Dopo un cd, ls elenca un posto diverso.',h:'cd = change directory: cambi dove stai.'},
+{q:'Nel percorso, il simbolo ~ significa...',o:['La tua cartella home, quella con le tue cose','La cartella immediatamente sopra','Un file da cancellare subito','Il posto dove finiscono i file'],why:'~ e labbreviazione della tua home, la cartella personale. Con / si parte dalla radice del disco, con ~ si parte da casa.',h:'~ e il segno della home: e casa tua.'},
+{q:'Cosa fa il comando ls *.txt ?',o:['Elenca solo i file che finiscono con .txt','Elenca i file che iniziano con .txt','Rinomina tutti i file in .txt','Cancella i file .txt'],why:'Lasterisco e il jolly: *.txt significa qualsiasi nome che finisce con .txt. Con il pipe | loutput di un comando diventa linput di un altro.',h:'Il jolly * vuol dire qualsiasi: tutto quello che vuoi.'},
+{q:'Perche si dice che la riga di comando e potente?',o:['Perche decidi tu cosa succede, schrittando cosa vuoi','Perche e sempre piu veloce del mouse','Perche e quella dei computer vecchi','Perche fa tutto senza errori'],why:'Nessun programma ti obbliga: scrivi tu cosa vuoi. Il mouse e stato creato per chi non ricordava i comandi; la riga di comando e rimasta per chi li ricorda.',h:'Il mouse e nato per chi non ricordava i comandi.'}];
+
+QS.forEach(q=>{q.o=q.o.map((x,i)=>({x,ok:i===0,oi:i}));for(let i=q.o.length-1;i>0;i--){const k=Math.random()*(i+1)|0;[q.o[i],q.o[k]]=[q.o[k],q.o[i]]}});
+let tm=0,playing=false,prev=null,a=0,first=[],shown=-2,review=false,watch=false;//REVIEW_PATCH
+function enterReview(){review=true;try{stopAllQ()}catch(e){}try{stopSeq()}catch(e){}qd.hidden=true;st.classList.remove('asking');shown=-2;tm=0;sl.value=0;playing=true;setPb();const qx=document.createElement('button');qx.id='qx';qx.textContent='✕ Esci dal ripasso';qx.style.cssText='position:absolute;left:3%;top:3%;z-index:50;background:#4ade80;color:#111;border:0;border-radius:8px;padding:.5em 1em;font:inherit;cursor:pointer';qx.onclick=()=>{review=false;playing=false;qx.remove();tm=DUR;shown=-2;sl.value=1000;setPb()};document.getElementById('st').appendChild(qx)}
+const sl=$('sl'),pb=$('pb'),tmx=$('tm'),qd=$('q'),qn=$('qn'),qt=$('qt'),qo=$('qo'),qf=$('qf'),qb=$('qb');
+T0.forEach(v=>{const e=document.createElement('i');e.className='tk';e.style.left=v/DUR*100+'%';$('slw').appendChild(e)});
+const paintTicks=()=>document.querySelectorAll('.tk').forEach((e,j)=>e.classList.toggle('ok',j<a));
+const lim=()=>(review||watch)?DUR:(a<N?T0[a]:DUR),fmt=x=>x.toFixed(1).replace('.',',');
+const setPb=()=>pb.textContent=playing?'❚❚':(a===N&&tm>=DUR-.01?'↻':'▶');
+function card(){if(review||watch){if(shown!==-2){shown=-2;qd.hidden=true;st.classList.remove('asking')}return}const vis=!playing&&tm>=lim()-.01,id=vis?a:-1;if(id===shown)return;shown=id;qd.hidden=id<0;st.classList.toggle('asking',id>=0);if(id<0)return;
+ qf.textContent='';qb.hidden=true;qo.innerHTML='';
+ function ciiModal(e,n){if(document.getElementById('ciimov'))return;const st=document.createElement('style');st.textContent='#ciimov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);z-index:99}#ciibox{background:#fffbeb;border:5px solid #b98a1d;border-radius:20px;padding:44px 52px;text-align:center;max-width:82%;animation:ciipop .5s cubic-bezier(.2,1.6,.4,1);font-family:system-ui,sans-serif;color:#1c1917}@keyframes ciipop{from{transform:scale(.4) rotate(-6deg);opacity:0}}#ciibox .em{font-size:84px}#ciibox h2{margin:10px 0 4px;font-size:34px;letter-spacing:.06em}#ciibox p{margin:0 0 20px;font-size:19px}#ciirev{background:#4ade80;color:#111;border:0;border-radius:12px;padding:14px 28px;font-size:18px;font-weight:800;cursor:pointer;margin-left:10px}#ciigo{background:#1c1917;color:#f4efe4;border:0;border-radius:12px;padding:14px 40px;font-size:20px;font-weight:800;cursor:pointer}';document.head.appendChild(st);const m=document.createElement('div');m.id='ciimov';m.innerHTML='<div id="ciibox"><div class="em">'+e+'</div><h2>TROFEO SBLOCCATO!</h2><p>'+n+'</p><button id="ciigo">Continua →</button> <button id="ciirev">▶ Rivedi la lezione</button></div>';document.getElementById('st').appendChild(m);document.getElementById('ciigo').onclick=()=>{location.href='lab.html'};document.getElementById('ciirev').onclick=()=>{document.getElementById('ciimov').remove();enterReview()}}
+const CIIBADGES={m_terminale:['🖥️','MAGO DEL TERMINALE']};
+function ciiWin(k){try{const w=JSON.parse(localStorage.getItem('lab_badges')||'{}');w[k]=1;localStorage.setItem('lab_badges',JSON.stringify(w));const b=CIIBADGES[k];if(b)ciiModal(b[0],b[1])}catch(e){console.error('[ciiWin] ERROR:',e)}}
+ if(id===N){ciiWin('m_terminale');qn.textContent='Completato · 🎰 HAI VINTO: '+PRIZES[Math.max(0,a-1)]+'!';qt.textContent='Hai risposto bene al primo tentativo a '+first.filter(Boolean).length+' domande su '+N+'. Ora sai cosa sia un prompt, come muoverti tra le cartelle e perche la riga di comando e lo strumento piu potente che hai: decidi tu cosa succede.';qb.textContent='↻ Ricomincia il quiz';qb.hidden=false;const fw=$('fx-fan');if(fw&&audioOn&&audioUnlocked){try{fw.currentTime=0;fw.play().catch(()=>{})}catch(e){}}qb.onclick=()=>{a=0;first=[];tm=0;shown=-2;review=false;qdPlayed={};lastCtx=null;paintLad();paintTicks();sl.value=0;const qx=document.getElementById('qx');if(qx)qx.remove()};return}
+ const q=QS[id];let tries=0;qn.textContent='Domanda '+(id+1)+' / '+N;qt.textContent=q.q;
+ const btns=[];q.o.forEach((o,bi)=>{const bt=document.createElement('button');bt.textContent='ABCD'[bi]+' - '+o.x;btns.push({b:bt,o});bt.onclick=()=>{tries++;stopSeq();stopKar();
+  if(o.ok){bt.className='ok';qo.querySelectorAll('button').forEach(x=>x.disabled=true);qf.textContent='✔ Esatto! '+q.why;first[id]=tries===1;speakQ('ok',id);startKar($('qf'),$('ok'+id));qb.textContent=id<N-1?'Continua ▶':'Concludi';qb.hidden=false;
+   qb.onclick=()=>{stopAllQ();stopSeq();a++;paintLad();paintTicks();if(id<N-1)playing=true;setPb()}}
+  else{bt.className='no';bt.disabled=true;qf.textContent='✘ Non proprio. '+q.h+' Riprova.';if(tries===1){speakQ('h',id);startKar($('qf'),$('h'+id))}}};qo.appendChild(bt)});lastCtx={id,order:q.o,btns:btns.map(x=>x.b)};if(!qdPlayed[id]){qdPlayed[id]=true;speakQ('q',id);startKar($('qt'),$('q'+id));const qel=$('q'+id);if(qel)qel.onended=()=>playSeq(id,q.o,btns.map(x=>x.b))}}
+function loop(now){if(prev===null)prev=now;const dt=Math.min(.1,(now-prev)/1000);prev=now;
+ if(playing){tm+=dt;const L=lim();if(tm>=L){tm=L;playing=false}sl.value=tm/DUR*1000}
+ setPb();card();
+ try{frame(tm)}catch(e){document.body.insertAdjacentHTML('beforeend','<pre style="position:fixed;top:0;left:0;color:#f88;font-size:12px;white-space:pre-wrap">Errore: '+e.message+'</pre>');return}
+ tmx.textContent=fmt(tm)+' s / '+fmt(DUR)+' s';requestAnimationFrame(loop)}
+sl.addEventListener('input',()=>{audioUnlocked=true;playing=false;tm=Math.min(sl.value/1000*DUR,lim());sl.value=tm/DUR*1000});
+pb.onclick=()=>{audioUnlocked=true;if(shown>=0&&shown<N){replayQ();return}if(a<N&&tm>=lim()-.01)return;if(a===N&&tm>=DUR-.01)tm=0;playing=!playing;setPb()};
+addEventListener('keydown',e=>{if(e.code==='Space'&&e.target!==sl&&e.target.tagName!=='BUTTON'){e.preventDefault();pb.click()}});
+const ws=document.createElement('div');ws.id='wstart';ws.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.72);z-index:99';ws.innerHTML='<div style="background:#fffbeb;border:5px solid #1c1917;border-radius:20px;padding:36px 44px;text-align:center;max-width:84%;font-family:system-ui,sans-serif;color:#1c1917"><div style="font-size:64px">🎬</div><h2 style="margin:10px 0 4px;font-size:30px">Come vuoi iniziare?</h2><p style="margin:0 0 18px;font-size:17px">Guarda prima tutta la lezione, oppure parti subito con le domande.</p><button id="wwatch" style="background:#4ade80;color:#111;border:0;border-radius:12px;padding:14px 28px;font-size:18px;font-weight:800;cursor:pointer;margin-right:10px">▶ Guarda la lezione</button><button id="wquiz" style="background:#1c1917;color:#f4efe4;border:0;border-radius:12px;padding:14px 28px;font-size:18px;font-weight:800;cursor:pointer">❓ Vai alle domande</button></div>';document.getElementById('st').appendChild(ws);function showQw(){if(document.getElementById('qw'))return;const b=document.createElement('button');b.id='qw';b.textContent='❓ Inizia le domande';b.style.cssText='position:absolute;left:3%;top:3%;z-index:50;background:#4ade80;color:#05060a;border:0;border-radius:8px;padding:.5em 1em;font:inherit;cursor:pointer';try{const qx=document.getElementById('qx');if(qx)qx.remove()}catch(e){}b.onclick=()=>{watch=false;review=false;b.remove();a=0;first=[];tm=0;shown=-2;qdPlayed={};lastCtx=null;paintLad();paintTicks();sl.value=0;playing=true;setPb()};document.getElementById('st').appendChild(b)}document.getElementById('wwatch').onclick=()=>{audioUnlocked=true;watch=true;ws.remove();tm=0;sl.value=0;playing=true;setPb();showQw()};document.getElementById('wquiz').onclick=()=>{audioUnlocked=true;ws.remove();playing=true;setPb()};paintTicks();paintLad();requestAnimationFrame(loop);
+</script></body></html>

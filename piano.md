@@ -78,6 +78,31 @@ Demo/sperimentazioni (senza quiz): `index.html` (Aula Informatica — landing + 
 Extra: `Milionario dei pixel.html` (gioco a squadre, 6 domande + 3 aiuti), `masterclass.html`
 (diploma, sbloccato a 20 trofei).
 
+## Percorso Advanced — corso separato (`lab.html`)
+
+Corso a sé stante, stesso repo ma **pagina e trofei propri** (`localStorage['lab_badges']`, non
+`cii_badges`): il diploma del corso base resta a 20 e non risente di nulla. Link bidirezionali
+fra `index.html` e `lab.html`.
+
+| # | Trofeo | File | Catena zoom |
+|---|--------|------|-------------|
+| A1 | 🖥️ MAGO DEL TERMINALE | La riga di comando | la finestra nera → il prompt (`matte@lab:~$`) → il comando (`ls` è un programma) → il percorso (`cd`, `/`, `~`) → la composizione (`*.txt`, `\|`) → **le mani: il comando è tuo** |
+
+**Differenza di principio rispetto al corso base**: qui la lezione **non finisce sui bit**.
+15 moduli su 20 del corso base chiudono su "anche questo è 0 e 1" — è la tesi del corso, ma
+ripetuta 15 volte (più 15 volte ancora nelle domande 6) con la stessa formula. Nel percorso
+advanced la chiusura è su **chi decide**: il modulo non termina con "un bit", termina con
+"Il mouse è nato per chi non ricordava i comandi; la riga di comando è rimasta per chi li
+ricorda". Stesso schema di rotazione, `PRIZES` chiude con `MANI` invece di `BIT`.
+
+**Nota sui prossimi moduli**: se il Blocco 7 proseguirà, applicare qui lo stesso criterio —
+chiudere su "cosa decidi tu" e non su "sono bit". Restano da decidere: 🗣️ DIFENSORE DEL GRUPPO
+(già impostato: chiude su `SCELTA`), ⚖️ L'IA SBAGLIA ANCHE, 🎨 COSTRUISCI.
+
+**Audio**: solo effetti sonori (`whoosh`, `pop`, `fanfare`), 3 file per modulo, sintetizzati con
+ffmpeg. Nessuna voce narrante → i tag `<audio>` delle voci non vengono creati, quindi nella pagina
+non gira nessun 404 (a differenza dei 5 moduli recenti, che ne hanno 22 morti ciascuno).
+
 ## Ordine consigliato in classe
 
 1. **Le parole inglesi** (toglie la paura, gancio leggero)
