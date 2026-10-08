@@ -72,20 +72,20 @@ const tx=(c,s,x,y,sz,col,al)=>{c.font='bold '+sz+'px ui-monospace,Menlo,Consolas
 const put=(c,img,r,col)=>{c.save();c.globalAlpha=.62;c.drawImage(img,r.x,r.y,r.w,r.h);c.restore();c.strokeStyle=col||'rgba(255,255,255,.6)';c.lineWidth=Math.max(2,r.w/150);c.strokeRect(r.x,r.y,r.w,r.h)};
 const BG=(w,h)=>{const c=mk(w,h),x=c.getContext('2d');x.fillStyle='#0a0e1a';x.fillRect(0,0,w,h);return[c,x]};
 // ---- 5 · Alla fine anche lui e fatto di bit
-const[Bt,bt]=BG(1600,900);tx(bt,'anche il virus e fatto di bit',800,90,56,'#ff7ab8');tx(bt,'istruzioni cattive scritte in 0 e 1',800,165,38,'#9db0dc');
+const[Bt,bt]=BG(1600,900);tx(bt,'anche il virus è fatto di bit',800,90,56,'#ff7ab8');tx(bt,'istruzioni cattive scritte in 0 e 1',800,165,38,'#9db0dc');
 bt.strokeStyle='#2c3350';bt.lineWidth=14;bt.beginPath();bt.moveTo(120,480);bt.lineTo(1480,480);bt.stroke();
 [1,1,0,1,0,1,1,0].forEach((b,i)=>{const x=200+i*150;bt.fillStyle=b?'#ff7ab8':'#2a3148';bt.beginPath();bt.arc(x,480,b?46:30,0,7);bt.fill();tx(bt,String(b),x,620,60,b?'#ff7ab8':'#5d6682')});
 tx(bt,'bit buoni e bit cattivi: sta a te',800,760,40,'#9db0dc');
 // ---- 4 · La quarantena
 const[Br,br]=BG(1600,900);tx(br,'beccato: in quarantena',800,80,50,'#ff7ab8');
-[['il file sospetto','viene isolato'],['non puo piu toccare niente','ne i tuoi file ne la rete'],['tu decidi: cancella o ripristina','meglio cancellare']].forEach((r,i)=>{const y=210+i*170,hl=i===2;br.fillStyle=hl?'#3a1820':'#151926';rr(br,140,y,1320,135,14);br.fill();br.strokeStyle=hl?'#ff7ab8':'#2c3350';br.lineWidth=4;br.stroke();tx(br,r[0],220,y+68,40,'#e9ecf5','left');tx(br,r[1],1380,y+68,32,'#9db0dc','right')});
+[['il file sospetto','viene isolato'],['non può più toccare niente','né i tuoi file né la rete'],['tu decidi: cancella o ripristina','meglio cancellare']].forEach((r,i)=>{const y=210+i*170,hl=i===2;br.fillStyle=hl?'#3a1820':'#151926';rr(br,140,y,1320,135,14);br.fill();br.strokeStyle=hl?'#ff7ab8':'#2c3350';br.lineWidth=4;br.stroke();tx(br,r[0],220,y+68,40,'#e9ecf5','left');tx(br,r[1],1380,y+68,32,'#9db0dc','right')});
 const r5=reg(1600,165,342,420);put(br,Bt,r5,'#fff');
 // ---- 3 · Aggiorna le difese
 const[Bv,bv]=BG(1600,900);tx(bv,'ogni giorno nascono virus nuovi',800,80,50,'#ff7ab8');tx(bv,'antivirus vecchio = porta aperta',800,150,38,'#9db0dc');
 [['versione di 2 anni fa','conosce 1000 virus'],['aggiornata oggi','ne conosce 10 milioni'],['aggiorna sempre tutto','sistema + antivirus']].forEach((r,i)=>{const y=250+i*150;bv.fillStyle=i===2?'#12372d':'#151926';rr(bv,170,y,1260,110,14);bv.fill();bv.strokeStyle=i===2?'#7cf2c9':'#2c3350';bv.lineWidth=4;bv.stroke();tx(bv,r[0],250,y+55,40,'#e9ecf5','left');tx(bv,r[1],1350,y+55,36,i===2?'#7cf2c9':'#9db0dc','right')});
 const r4=reg(1600,900,260,560);put(bv,Br,r4,'#fff');tx(bv,'gli aggiornamenti sono il vaccino',1180,720,34,'#7cf2c9');
 // ---- 2 · La guardia all ingresso
-const[Bi,bi]=BG(1600,900);tx(bi,'l antivirus fa la guardia',800,80,48,'#ff7ab8');tx(bi,'ogni file viene controllato',800,150,38,'#9db0dc');
+const[Bi,bi]=BG(1600,900);tx(bi,'l\'antivirus fa la guardia',800,80,48,'#ff7ab8');tx(bi,'ogni file viene controllato',800,150,38,'#9db0dc');
 [['foto.png','pulito: passa'],['compiti.pdf','pulito: passa'],['regalo.exe','sospetto: STOP']].forEach((r,i)=>{const y=260+i*130;bi.fillStyle=i===2?'#3a1820':'#151926';rr(bi,180,y,1240,100,14);bi.fill();bi.strokeStyle=i===2?'#ff7ab8':'#7cf2c9';bi.lineWidth=4;bi.stroke();tx(bi,r[0],260,y+50,36,'#e9ecf5','left');tx(bi,r[1],1240,y+50,38,i===2?'#ff7ab8':'#7cf2c9','right')});
 const r3=reg(1600,820,270,640);put(bi,Bv,r3,'#fff');tx(bi,'soprattutto gli .exe regalati',800,830,40,'#9db0dc');
 // ---- 1 · Il contagio
@@ -146,12 +146,12 @@ function size(){const w=Math.max(2,st.clientWidth);ren.setPixelRatio(Math.min(de
 addEventListener('resize',size);size();new ResizeObserver(size).observe(st);
 // ---- quiz
 const QS=[
-{q:'Cos\u2019\u00e8 un virus informatico?',o:['Un programma che si copia da solo e fa danni','Un raffreddore del computer','Un insetto dentro il pc','Polvere nella ventola'],why:'Si chiama virus perche si replica come quelli veri: da un file agli altri, da un pc alla rete.',h:'Cosa fanno i virus veri? Si diffondono.'},
-{q:'Come entra pi\u00f9 spesso in un computer?',o:['Allegati e link ingannevoli che sembrano regali','Da solo, col wifi spento','Parlando al microfono','Col freddo in inverno'],why:'Il trucco classico: regalo.exe sembra un regalo, ma e una trappola. Mai aprire allegati sospetti.',h:'Hai mai visto mail da sconosciuti con allegati?'},
+{q:'Cos\u2019\u00e8 un virus informatico?',o:['Un programma che si copia da solo e fa danni','Un raffreddore del computer','Un insetto dentro il pc','Polvere nella ventola'],why:'Si chiama virus perché si replica come quelli veri: da un file agli altri, da un pc alla rete.',h:'Cosa fanno i virus veri? Si diffondono.'},
+{q:'Come entra pi\u00f9 spesso in un computer?',o:['Allegati e link ingannevoli che sembrano regali','Da solo, col wifi spento','Parlando al microfono','Col freddo in inverno'],why:'Il trucco classico: regalo.exe sembra un regalo, ma è una trappola. Mai aprire allegati sospetti.',h:'Hai mai visto mail da sconosciuti con allegati?'},
 {q:'Cosa fa l\u2019antivirus?',o:['Controlla ogni file e blocca quelli cattivi noti','Spegne internet per sempre','Cancella tutti i tuoi file','Fa solo finta di lavorare'],why:'Fa la guardia all\u2019ingresso: confronta ogni file con la lista dei cattivi conosciuti.',h:'Come un buttafuori con la lista degli invitati.'},
-{q:'Perch\u00e9 bisogna aggiornare antivirus e sistema?',o:['Per riconoscere i virus nuovi nati ogni giorno','Per cambiare colore alle icone','Per andare pi\u00f9 veloci','Non serve a niente'],why:'Ogni giorno nascono virus nuovi: un antivirus vecchio non li conosce ed e come una porta aperta.',h:'I vaccini si aggiornano: perche?'},
+{q:'Perch\u00e9 bisogna aggiornare antivirus e sistema?',o:['Per riconoscere i virus nuovi nati ogni giorno','Per cambiare colore alle icone','Per andare pi\u00f9 veloci','Non serve a niente'],why:'Ogni giorno nascono virus nuovi: un antivirus vecchio non li conosce ed è come una porta aperta.',h:'I vaccini si aggiornano: perché?'},
 {q:'Ricevi un file sospetto: cosa fai?',o:['Non lo apri e lo segnali o lo cestini','Lo apri subito per curiosit\u00e0','Lo mandi a tutti gli amici','Lo stampi'],why:'La regola d\u2019oro: mai aprire, mai inoltrare. Cestina e segnala.',h:'La curiosit\u00e0 e l\u2019arma dei virus.'},
-{q:'Virus, antivirus, quarantena: alla fine cosa sono davvero?',o:['Bit: zero e uno, come tutto nel corso','Insetti veri molto piccoli','Medicine in pillole','Fili elettrici'],why:'Tutto, anche i virus, alla fine e bit: istruzioni in 0 e 1, buone o cattive.',h:'Come tutto in questo corso: zero e...?'}];
+{q:'Virus, antivirus, quarantena: alla fine cosa sono davvero?',o:['Bit: zero e uno, come tutto nel corso','Insetti veri molto piccoli','Medicine in pillole','Fili elettrici'],why:'Tutto, anche i virus, alla fine è bit: istruzioni in 0 e 1, buone o cattive.',h:'Come tutto in questo corso: zero e...?'}];
 
 
 QS.forEach(q=>{q.o=q.o.map((x,i)=>({x,ok:i===0,oi:i}));for(let i=q.o.length-1;i>0;i--){const k=Math.random()*(i+1)|0;[q.o[i],q.o[k]]=[q.o[k],q.o[i]]}});

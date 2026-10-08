@@ -75,7 +75,7 @@ const BG=(w,h)=>{const c=mk(w,h),x=c.getContext('2d');x.fillStyle='#0a0e1a';x.fi
 const[Bt,bt]=BG(1600,900);tx(bt,'anche le bufale sono bit',800,90,56,'#facc15');tx(bt,'vere o false: viaggiano in 0 e 1',800,165,38,'#9db0dc');
 bt.strokeStyle='#2c3350';bt.lineWidth=14;bt.beginPath();bt.moveTo(120,480);bt.lineTo(1480,480);bt.stroke();
 [1,0,0,1,1,0,1,0].forEach((b,i)=>{const x=200+i*150;bt.fillStyle=b?'#facc15':'#2a3148';bt.beginPath();bt.arc(x,480,b?46:30,0,7);bt.fill();tx(bt,String(b),x,620,60,b?'#facc15':'#5d6682')});
-tx(bt,'i bit non dicono se e vero',800,760,40,'#9db0dc');
+tx(bt,'i bit non dicono se è vero',800,760,40,'#9db0dc');
 // ---- 4 · I 3 controlli
 const[Br,br]=BG(1600,900);tx(br,'3 controlli prima di credere',800,80,50,'#facc15');
 [['1. chi lo dice?','autore vero o fantasma'],['2. quando?','foto di 5 anni fa?'],['3. lo dicono anche altri?','una sola voce = sospetta']].forEach((r,i)=>{const y=210+i*170,hl=i===2;br.fillStyle=hl?'#12372d':'#151926';rr(br,620,y,800,135,14);br.fill();br.strokeStyle=hl?'#facc15':'#2c3350';br.lineWidth=4;br.stroke();tx(br,r[0],670,y+48,36,'#e9ecf5','left');tx(br,r[1],670,y+98,30,'#9db0dc','left')});
@@ -83,17 +83,17 @@ const r5=reg(1600,165,342,420);put(br,Bt,r5,'#fff');
 // ---- 3 · La foto rubata al passato
 const[Bv,bv]=BG(1600,900);tx(bv,'foto vera, storia falsa',800,80,50,'#facc15');tx(bv,'scatto del 2019 spacciato per oggi',800,150,38,'#9db0dc');
 bv.fillStyle='#151926';rr(bv,180,280,600,300,18);bv.fill();bv.strokeStyle='#facc15';bv.lineWidth=5;bv.stroke();tx(bv,'foto: code e sirene',480,380,42,'#e9ecf5');tx(bv,'scattata nel 2019',480,470,38,'#ff7ab8');
-tx(bv,'oggi dicono: e successo ieri',800,660,42,'#e9ecf5');
+tx(bv,'oggi dicono: è successo ieri',800,660,42,'#e9ecf5');
 const r4=reg(1600,900,260,560);put(bv,Br,r4,'#fff');tx(bv,'controlla sempre la data',1180,720,34,'#facc15');
 // ---- 2 · La fonte fantasma
-const[Bi,bi]=BG(1600,900);tx(bi,'ma chi l ha detto davvero?',800,80,48,'#facc15');tx(bi,'nessun nome, nessun giornale',800,150,38,'#9db0dc');
+const[Bi,bi]=BG(1600,900);tx(bi,'ma chi l\'ha detto davvero?',800,80,48,'#facc15');tx(bi,'nessun nome, nessun giornale',800,150,38,'#9db0dc');
 [['dicono che...','chi?'],['una fonte segreta...','quale?'],['gira voce che...','dove?']].forEach((r,i)=>{const y=260+i*130;bi.fillStyle='#151926';rr(bi,120,y,680,100,14);bi.fill();bi.strokeStyle='#ff7ab8';bi.lineWidth=4;bi.stroke();tx(bi,r[0],170,y+50,34,'#e9ecf5','left');tx(bi,r[1],750,y+50,38,'#ff7ab8','right')});
-const r3=reg(1600,820,270,640);put(bi,Bv,r3,'#fff');tx(bi,'senza fonte non e notizia',800,830,40,'#9db0dc');
-// ---- 1 · Perche corre cosi veloce
-const[Bs,bs]=BG(1600,900);tx(bs,'la rabbia corre piu del vero',800,80,52,'#facc15');tx(bs,'paura e indignazione: condividi subito',800,150,38,'#9db0dc');
+const r3=reg(1600,820,270,640);put(bi,Bv,r3,'#fff');tx(bi,'senza fonte non è notizia',800,830,40,'#9db0dc');
+// ---- 1 · Perché corre così veloce
+const[Bs,bs]=BG(1600,900);tx(bs,'la rabbia corre più del vero',800,80,52,'#facc15');tx(bs,'paura e indignazione: condividi subito',800,150,38,'#9db0dc');
 tx(bs,'bufala scioccante',700,420,44,'#ff7ab8');tx(bs,'10.000 condivisioni',700,500,40,'#e9ecf5');
 tx(bs,'notizia vera noiosa',1150,420,44,'#9db0dc');tx(bs,'100 condivisioni',1150,500,40,'#e9ecf5');
-tx(bs,'l emozione spegne il cervello',800,660,42,'#e9ecf5');
+tx(bs,'l\'emozione spegne il cervello',800,660,42,'#e9ecf5');
 const r2=reg(1600,50,342,420);put(bs,Bi,r2,'#fff');tx(bs,'se ti fa infuriare: fermati',800,800,44,'#9db0dc');
 // ---- 0 · Un post virale
 const P0=mk(1920,1080),p0=P0.getContext('2d');p0.fillStyle='#1a1d26';p0.fillRect(0,0,1920,1080);
@@ -102,7 +102,7 @@ tx(p0,'CONDIVIDI SUBITO!!!',1150,230,52,'#ff7ab8');
 tx(p0,'Non ci crederai mai...',1150,330,40,'#e9ecf5');
 tx(p0,'condivisioni: 48.215',1150,430,40,'#9db0dc');
 tx(p0,'mi piace: 90.000',1150,500,40,'#9db0dc');
-tx(p0,'Sara vero?',1150,940,38,'#aaa');
+tx(p0,'Sarà vero?',1150,940,38,'#aaa');
 const r1=reg(1920,312,203,480);put(p0,Bs,r1,'#e0813a');
 
 
@@ -139,7 +139,7 @@ function speak(i){if(!audioOn||!audioUnlocked||i===0)return;const a3=$('fx-whoos
 function speakQ(p,i){if(!audioOn||!audioUnlocked)return;stopAllQ();if(p==='q'){const f=$('fx-pop');if(f){try{f.currentTime=0;f.play().catch(()=>{})}catch(e){}}}const a4=$(p+i);if(!a4)return;try{a4.currentTime=0;a4.play().catch(()=>{})}catch(e){}}
 function replayQ(){if(!lastCtx||shown<0||shown>5||lastCtx.id!==shown)return;stopAllQ();stopSeq();qdPlayed[shown]=true;speakQ('q',shown);startKar($('qt'),$('q'+shown));const qel=$('q'+shown);if(qel)qel.onended=()=>playSeq(shown,lastCtx.order,lastCtx.btns)}
 $('mb').onclick=()=>{audioOn=!audioOn;$('mb').textContent=audioOn?'🔊':'🔇';if(!audioOn){stopAllQ();stopSeq();['fx-whoosh','fx-pop','fx-fan'].forEach(f=>{const w=$(f);if(w)w.pause()})}};
-const labs=[['Il post','sara vero'],['L\u2019emozione','corre piu del vero'],['La fonte','chi l ha detto'],['La foto','rubata al passato'],['I controlli','3 prima di credere'],['I bit','zero e uno']];
+const labs=[['Il post','sarà vero'],['L\u2019emozione','corre più del vero'],['La fonte','chi l\'ha detto'],['La foto','rubata al passato'],['I controlli','3 prima di credere'],['I bit','zero e uno']];
 let last=-1;
 function frame(tm){let j=0;while(j<N-2&&tm>=T0[j+1])j++;const tau=Math.max(0,Math.min(1,(tm-T0[j])/DU[j])),r=vw(Cx[j],W[j],Cx[j+1],W[j+1],sm(tau)),s=A/r[1];
  grp[0].scale.setScalar(s);grp[0].position.set(-r[0][0]*s,-r[0][1]*s,0);ren.render(sc,cam);
@@ -149,10 +149,10 @@ function size(){const w=Math.max(2,st.clientWidth);ren.setPixelRatio(Math.min(de
 addEventListener('resize',size);size();new ResizeObserver(size).observe(st);
 // ---- quiz
 const QS=[
-{q:'Cos\u2019\u00e8 una fake news?',o:['Una notizia falsa travestita da vera','Un giornale di carta','Una barzelletta dichiarata','Un errore di stampa corretto'],why:'Sembra una notizia vera ma non lo e: titolo, foto e tono copiati dai giornali veri.',h:'Sembra vera, ma non lo e. Cosa la distingue da uno scherzo?'},
+{q:'Cos\u2019\u00e8 una fake news?',o:['Una notizia falsa travestita da vera','Un giornale di carta','Una barzelletta dichiarata','Un errore di stampa corretto'],why:'Sembra una notizia vera ma non lo è: titolo, foto e tono copiati dai giornali veri.',h:'Sembra vera, ma non lo è. Cosa la distingue da uno scherzo?'},
 {q:'Perch\u00e9 le bufale corrono pi\u00f9 del vero?',o:['Fanno leva su rabbia e paura: condividi senza pensare','Sono pi\u00f9 corte da leggere','Hanno pi\u00f9 foto belle','Costano di meno'],why:'L\u2019emozione spegne il cervello: indignato condividi subito, senza controllare.',h:'Quando hai condiviso qualcosa di pancia?'},
-{q:'Primo controllo: cosa guardi?',o:['Chi lo dice: autore vero o fantasma','Quanti mi piace ha','Il colore del post','L\u2019ora di pubblicazione'],why:'Senza autore verificabile non e notizia: dicono che e gira voce non sono fonti.',h:'Chi parla? Se non si sa, e sospetto.'},
-{q:'La foto sembra vera ma la storia puzza. Cosa controlli?',o:['Quando \u00e8 stata scattata davvero','Quanti pixel ha','Se \u00e8 a colori','Il nome del fotografo'],why:'Trucco classico: foto vere ma vecchie di anni, riusate per una storia di oggi.',h:'Una foto del 2019 puo raccontare oggi?'},
+{q:'Primo controllo: cosa guardi?',o:['Chi lo dice: autore vero o fantasma','Quanti mi piace ha','Il colore del post','L\u2019ora di pubblicazione'],why:'Senza autore verificabile non è notizia: dicono che è girato voce non sono fonti.',h:'Chi parla? Se non si sa, è sospetto.'},
+{q:'La foto sembra vera ma la storia puzza. Cosa controlli?',o:['Quando \u00e8 stata scattata davvero','Quanti pixel ha','Se \u00e8 a colori','Il nome del fotografo'],why:'Trucco classico: foto vere ma vecchie di anni, riusate per una storia di oggi.',h:'Una foto del 2019 può raccontare oggi?'},
 {q:'Prima di condividere una notizia scioccante, cosa fai?',o:['Verifico fonte, data e altre testate','La condivido subito agli amici','La salvo e basta','La commento con rabbia'],why:'3 controlli in un minuto: chi, quando, chi altro lo dice. Poi decidi.',h:'I 3 controlli della tappa 5.'},
 {q:'Bufale e verifiche: alla fine cosa sono davvero?',o:['Bit: zero e uno, come tutto nel corso','Carta stampata','Voci nel vento','Opinioni sacre'],why:'Vere o false, anche le notizie alla fine sono bit: sta a te separare il vero.',h:'Come tutto in questo corso: zero e...?'}];
 

@@ -50,13 +50,13 @@ const tx=(c,s,x,y,sz,col,al)=>{c.font='bold '+sz+'px ui-monospace,Menlo,Consolas
 const put=(c,img,r,col)=>{c.save();c.globalAlpha=.62;c.drawImage(img,r.x,r.y,r.w,r.h);c.restore();c.strokeStyle=col||'rgba(255,255,255,.6)';c.lineWidth=Math.max(2,r.w/150);c.strokeRect(r.x,r.y,r.w,r.h)};
 const BG=(w,h)=>{const c=mk(w,h),x=c.getContext('2d');x.fillStyle='#07120b';x.fillRect(0,0,w,h);return[c,x]};
 // ---- 5 · Il comando e tuo
-const[Bt,bt]=BG(1600,900);tx(bt,'il comando e tuo',800,80,56,'#4ade80');tx(bt,'il mouse e nato per chi non ricordava i comandi',800,155,38,'#9db0dc');
+const[Bt,bt]=BG(1600,900);tx(bt,'il comando è tuo',800,80,56,'#4ade80');tx(bt,'il mouse è nato per chi non ricordava i comandi',800,155,38,'#9db0dc');
 [['IL MOUSE','clic, doppio clic, trascina','comodo, ma decidi poco'],['LA RIGA DI COMANDO','scrivi tu cosa vuoi','potentissima, ma da imparare']].forEach((r,i)=>{const x=190+i*630;bt.fillStyle=i?'#12372d':'#151926';rr(bt,x,240,590,230,18);bt.fill();bt.strokeStyle=i?'#4ade80':'#2c3350';bt.lineWidth=5;bt.stroke();tx(bt,r[0],x+295,300,40,i?'#4ade80':'#e9ecf5');tx(bt,r[1],x+295,375,29,'#9db0dc');tx(bt,r[2],x+295,432,32,i?'#4ade80':'#5d6682')});
-tx(bt,'la riga di comando e rimasta per chi li ricorda',800,560,42,'#4ade80');
+tx(bt,'la riga di comando è rimasta per chi li ricorda',800,560,42,'#4ade80');
 bt.fillStyle='#151926';rr(bt,300,650,1000,150,16);bt.fill();bt.strokeStyle='#2c3350';bt.lineWidth=4;bt.stroke();
 tx(bt,'nessun programma ti obbliga: scrivi tu cosa succede',800,710,34,'#e9ecf5');tx(bt,'da qui comincia il tuo lavoro',800,762,30,'#9db0dc');
 // ---- 4 · Un comando diventa due
-const[Br,br]=BG(1600,900);tx(br,'la composizione',800,80,52,'#4ade80');tx(br,'wildcard e pipe: fai piu cose scrivendo meno',800,155,36,'#9db0dc');
+const[Br,br]=BG(1600,900);tx(br,'la composizione',800,80,52,'#4ade80');tx(br,'wildcard e pipe: fai più cose scrivendo meno',800,155,36,'#9db0dc');
 [["ls *.txt",'il jolly * vuol dire qualsiasi: elenca i file .txt',1],['cat diario.txt | wc -l','il pipe | passa il risultato di un comando al successivo',0]].forEach((r,i)=>{const y=215+i*140;br.fillStyle=r[2]?'#12372d':'#151926';rr(br,150,y,1300,125,14);br.fill();br.strokeStyle=r[2]?'#4ade80':'#2c3350';br.lineWidth=4;br.stroke();tx(br,r[0],190,y+44,38,r[2]?'#4ade80':'#e9ecf5','left');tx(br,r[1],190,y+90,24,'#9db0dc','left')});
 tx(br,'i caratteri speciali sono potere',800,858,36,'#4ade80');
 const r5=reg(1600,980,500,580);put(br,Bt,r5,'#4ade80');
@@ -68,8 +68,8 @@ bv.textAlign='center';
 tx(bv,'~ vuol dire casa tua   ·   / vuol dire la radice',800,440,32,'#4ade80');
 tx(bv,'dopo un cd, ls elenca un posto diverso',800,858,34,'#4ade80');
 const r4=reg(1600,980,500,580);put(bv,Br,r4,'#4ade80');
-// ---- 2 · ls non e magia
-const[Bi,bi]=BG(1600,900);tx(bi,'il comando',800,80,52,'#4ade80');tx(bi,'ogni comando e il nome di un programma che vive sul tuo computer',800,155,34,'#9db0dc');
+// ---- 2 · ls non è magia
+const[Bi,bi]=BG(1600,900);tx(bi,'il comando',800,80,52,'#4ade80');tx(bi,'ogni comando è il nome di un programma che vive sul tuo computer',800,155,34,'#9db0dc');
 bi.fillStyle='#151926';rr(bi,590,200,420,85,14);bi.fill();bi.strokeStyle='#4ade80';bi.lineWidth=5;bi.stroke();tx(bi,'ls',800,243,48,'#4ade80');
 bi.fillStyle='#0d2a18';rr(bi,420,305,760,105,14);bi.fill();bi.strokeStyle='#2c3350';bi.lineWidth=4;bi.stroke();
 tx(bi,'Compiti   Foto   diario.txt',800,358,32,'#e9ecf5');
@@ -82,7 +82,7 @@ const PT=[['matte','chi sei'],['','@'],[ 'lab','il computer'],[':','separatore']
 let px=250;PT.forEach((p,i)=>{const w=185;bs.fillStyle=p[1]==='matte'?'#4ade80':p[1]==='lab'?'#4ade80':'#151926';rr(bs,px,250,w,100,12);bs.fill();bs.strokeStyle=(p[1]==='matte'||p[1]==='lab')?'#4ade80':'#2c3350';bs.lineWidth=4;bs.stroke();tx(bs,p[0],px+w/2,300,44,p[1]==='matte'||p[1]==='lab'?'#4ade80':'#e9ecf5');tx(bs,p[1]===''?'@':p[1],px+w/2,400,26,'#9db0dc');px+=w+14});
 bs.fillStyle='#12372d';rr(bs,150,425,820,64,12);bs.fill();bs.strokeStyle='#4ade80';bs.lineWidth=4;bs.stroke();
 tx(bs,'sono matte, sul computer lab, nella tua cartella: ti ascolto',560,457,26,'#e9ecf5');
-tx(bs,'il prompt non e un errore: e linizio di ogni comando',800,858,32,'#4ade80');
+tx(bs,'il prompt non è un errore: è l\'inizio di ogni comando',800,858,32,'#4ade80');
 const r2=reg(1600,980,500,580);put(bs,Bi,r2,'#4ade80');
 // ---- 0 · La finestra nera
 const P0=mk(1920,1080),p0=P0.getContext('2d');p0.fillStyle='#050a07';p0.fillRect(0,0,1920,1080);
@@ -97,7 +97,7 @@ p0.fillStyle='#9db0dc';p0.fillText('Compiti   Foto   diario.txt',290,340);
 p0.fillStyle='#4ade80';p0.fillText('matte@lab:~$ ',290,420);p0.fillStyle='#e9ecf5';p0.fillRect(524,398,22,44);
 p0.textAlign='center';
 tx(p0,'qui scrivi e qualcosa succede',620,760,42,'#e9ecf5');
-tx(p0,'sembra difficile: e solo una riga di parole',620,812,30,'#9db0dc');
+tx(p0,'sembra difficile: è solo una riga di parole',620,812,30,'#9db0dc');
 const r1=reg(1920,1010,600,580);put(p0,Bs,r1,'#4ade80');
 
 const NODE=[{cv:P0,par:-1},{cv:Bs,par:0,r:r1},{cv:Bi,par:1,r:r2},{cv:Bv,par:2,r:r3},{cv:Br,par:3,r:r4},{cv:Bt,par:4,r:r5}],N=6,depth=[0,1,2,3,4,5];
@@ -133,7 +133,7 @@ function speak(i){if(!audioOn||!audioUnlocked||i===0)return;const a3=$('fx-whoos
 function speakQ(p,i){if(!audioOn||!audioUnlocked)return;stopAllQ();if(p==='q'){const f=$('fx-pop');if(f){try{f.currentTime=0;f.play().catch(()=>{})}catch(e){}}}const a4=$(p+i);if(!a4)return;try{a4.currentTime=0;a4.play().catch(()=>{})}catch(e){}}
 function replayQ(){if(!lastCtx||shown<0||shown>5||lastCtx.id!==shown)return;stopAllQ();stopSeq();qdPlayed[shown]=true;speakQ('q',shown);startKar($('qt'),$('q'+shown));const qel=$('q'+shown);if(qel)qel.onended=()=>playSeq(shown,lastCtx.order,lastCtx.btns)}
 $('mb').onclick=()=>{audioOn=!audioOn;$('mb').textContent=audioOn?'🔊':'🔇';if(!audioOn){stopAllQ();stopSeq();['fx-whoosh','fx-pop','fx-fan'].forEach(f=>{const w=$(f);if(w)w.pause()})}};
-const labs=[['La finestra','qui scrivi e succede'],['Il prompt','chi ascolta'],['Il comando','un programma con un nome'],['Il percorso','dove sei'],['La composizione','due comandi in uno'],['Le mani','il comando e tuo']];
+const labs=[['La finestra','qui scrivi e succede'],['Il prompt','chi ascolta'],['Il comando','un programma con un nome'],['Il percorso','dove sei'],['La composizione','due comandi in uno'],['Le mani','il comando è tuo']];
 let last=-1;
 function frame(tm){let j=0;while(j<N-2&&tm>=T0[j+1])j++;const tau=Math.max(0,Math.min(1,(tm-T0[j])/DU[j])),r=vw(Cx[j],W[j],Cx[j+1],W[j+1],sm(tau)),s=A/r[1];
  grp[0].scale.setScalar(s);grp[0].position.set(-r[0][0]*s,-r[0][1]*s,0);ren.render(sc,cam);
@@ -143,12 +143,12 @@ function size(){const w=Math.max(2,st.clientWidth);ren.setPixelRatio(Math.min(de
 addEventListener('resize',size);size();new ResizeObserver(size).observe(st);
 // ---- quiz
 const QS=[
-{q:'La riga matte@lab:~$ cosa ti dice?',o:['Che il computer e pronto e ti ascolta','Che hai sbagliato il comando','Quanto manca alla fine della lezione','Che il computer e spento'],why:'Il prompt e la promessa del computer: ha capito chi sei e ti dice che puoi scrivere. Non e un errore: e linizio di ogni comando.',h:'Il prompt e come: dimmi, sto qui.'},
-{q:'Il comando ls cosa fa?',o:['Elenca i file della cartella in cui sei','Cancella i file che non servono','Apre il browser a una pagina','Spegne il computer dopo un ora'],why:'ls e labbreviazione di list. Non e un comando magico: e il nome di un piccolo programma che guarda la cartella e scrive i nomi.',h:'ls viene da list: elenca.'},
-{q:'Il comando cd cambia cosa?',o:['La cartella in cui ti trovi','Il file che hai aperto','La velocita del computer','Il colore dello schermo'],why:'cd e change directory: il prompt mostra sempre dove sei. Dopo un cd, ls elenca un posto diverso.',h:'cd = change directory: cambi dove stai.'},
-{q:'Nel percorso, il simbolo ~ significa...',o:['La tua cartella home, quella con le tue cose','La cartella immediatamente sopra','Un file da cancellare subito','Il posto dove finiscono i file'],why:'~ e labbreviazione della tua home, la cartella personale. Con / si parte dalla radice del disco, con ~ si parte da casa.',h:'~ e il segno della home: e casa tua.'},
-{q:'Cosa fa il comando ls *.txt ?',o:['Elenca solo i file che finiscono con .txt','Elenca i file che iniziano con .txt','Rinomina tutti i file in .txt','Cancella i file .txt'],why:'Lasterisco e il jolly: *.txt significa qualsiasi nome che finisce con .txt. Con il pipe | loutput di un comando diventa linput di un altro.',h:'Il jolly * vuol dire qualsiasi: tutto quello che vuoi.'},
-{q:'Perche si dice che la riga di comando e potente?',o:['Perche decidi tu cosa succede, schrittando cosa vuoi','Perche e sempre piu veloce del mouse','Perche e quella dei computer vecchi','Perche fa tutto senza errori'],why:'Nessun programma ti obbliga: scrivi tu cosa vuoi. Il mouse e stato creato per chi non ricordava i comandi; la riga di comando e rimasta per chi li ricorda.',h:'Il mouse e nato per chi non ricordava i comandi.'}];
+{q:'La riga matte@lab:~$ cosa ti dice?',o:['Che il computer è pronto e ti ascolta','Che hai sbagliato il comando','Quanto manca alla fine della lezione','Che il computer è spento'],why:'Il prompt è la promessa del computer: ha capito chi sei e ti dice che puoi scrivere. Non è un errore: è l\'inizio di ogni comando.',h:'Il prompt è come: dimmi, sto qui.'},
+{q:'Il comando ls cosa fa?',o:['Elenca i file della cartella in cui sei','Cancella i file che non servono','Apre il browser a una pagina','Spegne il computer dopo un ora'],why:'ls è abbreviazione di list. Non è un comando magico: è il nome di un piccolo programma che guarda la cartella e scrive i nomi.',h:'ls viene da list: elenca.'},
+{q:'Il comando cd cambia cosa?',o:['La cartella in cui ti trovi','Il file che hai aperto','La velocità del computer','Il colore dello schermo'],why:'cd è change directory: il prompt mostra sempre dove sei. Dopo un cd, ls elenca un posto diverso.',h:'cd = change directory: cambi dove stai.'},
+{q:'Nel percorso, il simbolo ~ significa...',o:['La tua cartella home, quella con le tue cose','La cartella immediatamente sopra','Un file da cancellare subito','Il posto dove finiscono i file'],why:'~ è abbreviazione della tua home, la cartella personale. Con / si parte dalla radice del disco, con ~ si parte da casa.',h:'~ è il segno della home: è casa tua.'},
+{q:'Cosa fa il comando ls *.txt ?',o:['Elenca solo i file che finiscono con .txt','Elenca i file che iniziano con .txt','Rinomina tutti i file in .txt','Cancella i file .txt'],why:'L\'asterisco è il jolly: *.txt significa qualsiasi nome che finisce con .txt. Con il pipe | l\'output di un comando diventa l\'input di un altro.',h:'Il jolly * vuol dire qualsiasi: tutto quello che vuoi.'},
+{q:'Perché si dice che la riga di comando è potente?',o:['Perché decidi tu cosa succede, scrivendo cosa vuoi','Perché è sempre più veloce del mouse','Perché è quella dei computer vecchi','Perché fa tutto senza errori'],why:'Nessun programma ti obbliga: scrivi tu cosa vuoi. Il mouse è stato creato per chi non ricordava i comandi; la riga di comando è rimasta per chi li ricorda.',h:'Il mouse è nato per chi non ricordava i comandi.'}];
 
 QS.forEach(q=>{q.o=q.o.map((x,i)=>({x,ok:i===0,oi:i}));for(let i=q.o.length-1;i>0;i--){const k=Math.random()*(i+1)|0;[q.o[i],q.o[k]]=[q.o[k],q.o[i]]}});
 let tm=0,playing=false,prev=null,a=0,first=[],shown=-2,review=false,watch=false;//REVIEW_PATCH
@@ -163,7 +163,7 @@ function card(){if(review||watch){if(shown!==-2){shown=-2;qd.hidden=true;st.clas
  function ciiModal(e,n){if(document.getElementById('ciimov'))return;const st=document.createElement('style');st.textContent='#ciimov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);z-index:99}#ciibox{background:#fffbeb;border:5px solid #b98a1d;border-radius:20px;padding:44px 52px;text-align:center;max-width:82%;animation:ciipop .5s cubic-bezier(.2,1.6,.4,1);font-family:system-ui,sans-serif;color:#1c1917}@keyframes ciipop{from{transform:scale(.4) rotate(-6deg);opacity:0}}#ciibox .em{font-size:84px}#ciibox h2{margin:10px 0 4px;font-size:34px;letter-spacing:.06em}#ciibox p{margin:0 0 20px;font-size:19px}#ciirev{background:#4ade80;color:#111;border:0;border-radius:12px;padding:14px 28px;font-size:18px;font-weight:800;cursor:pointer;margin-left:10px}#ciigo{background:#1c1917;color:#f4efe4;border:0;border-radius:12px;padding:14px 40px;font-size:20px;font-weight:800;cursor:pointer}';document.head.appendChild(st);const m=document.createElement('div');m.id='ciimov';m.innerHTML='<div id="ciibox"><div class="em">'+e+'</div><h2>TROFEO SBLOCCATO!</h2><p>'+n+'</p><button id="ciigo">Continua →</button> <button id="ciirev">▶ Rivedi la lezione</button></div>';document.getElementById('st').appendChild(m);document.getElementById('ciigo').onclick=()=>{location.href='lab.html'};document.getElementById('ciirev').onclick=()=>{document.getElementById('ciimov').remove();enterReview()}}
 const CIIBADGES={m_terminale:['🖥️','MAGO DEL TERMINALE']};
 function ciiWin(k){try{const w=JSON.parse(localStorage.getItem('lab_badges')||'{}');w[k]=1;localStorage.setItem('lab_badges',JSON.stringify(w));const b=CIIBADGES[k];if(b)ciiModal(b[0],b[1])}catch(e){console.error('[ciiWin] ERROR:',e)}}
- if(id===N){ciiWin('m_terminale');qn.textContent='Completato · 🎰 HAI VINTO: '+PRIZES[Math.max(0,a-1)]+'!';qt.textContent='Hai risposto bene al primo tentativo a '+first.filter(Boolean).length+' domande su '+N+'. Ora sai cosa sia un prompt, come muoverti tra le cartelle e perche la riga di comando e lo strumento piu potente che hai: decidi tu cosa succede.';qb.textContent='↻ Ricomincia il quiz';qb.hidden=false;const fw=$('fx-fan');if(fw&&audioOn&&audioUnlocked){try{fw.currentTime=0;fw.play().catch(()=>{})}catch(e){}}qb.onclick=()=>{a=0;first=[];tm=0;shown=-2;review=false;qdPlayed={};lastCtx=null;paintLad();paintTicks();sl.value=0;const qx=document.getElementById('qx');if(qx)qx.remove()};return}
+ if(id===N){ciiWin('m_terminale');qn.textContent='Completato · 🎰 HAI VINTO: '+PRIZES[Math.max(0,a-1)]+'!';qt.textContent='Hai risposto bene al primo tentativo a '+first.filter(Boolean).length+' domande su '+N+'. Ora sai cosa sia un prompt, come muoverti tra le cartelle e perché la riga di comando è lo strumento più potente che hai: decidi tu cosa succede.';qb.textContent='↻ Ricomincia il quiz';qb.hidden=false;const fw=$('fx-fan');if(fw&&audioOn&&audioUnlocked){try{fw.currentTime=0;fw.play().catch(()=>{})}catch(e){}}qb.onclick=()=>{a=0;first=[];tm=0;shown=-2;review=false;qdPlayed={};lastCtx=null;paintLad();paintTicks();sl.value=0;const qx=document.getElementById('qx');if(qx)qx.remove()};return}
  const q=QS[id];let tries=0;qn.textContent='Domanda '+(id+1)+' / '+N;qt.textContent=q.q;
  const btns=[];q.o.forEach((o,bi)=>{const bt=document.createElement('button');bt.textContent='ABCD'[bi]+' - '+o.x;btns.push({b:bt,o});bt.onclick=()=>{tries++;stopSeq();stopKar();
   if(o.ok){bt.className='ok';qo.querySelectorAll('button').forEach(x=>x.disabled=true);qf.textContent='✔ Esatto! '+q.why;first[id]=tries===1;speakQ('ok',id);startKar($('qf'),$('ok'+id));qb.textContent=id<N-1?'Continua ▶':'Concludi';qb.hidden=false;
