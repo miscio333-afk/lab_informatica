@@ -99,6 +99,38 @@ ricorda". Stesso schema di rotazione, `PRIZES` chiude con `MANI` invece di `BIT`
 chiudere su "cosa decidi tu" e non su "sono bit". Restano da decidere: 🗣️ DIFENSORE DEL GRUPPO
 (già impostato: chiude su `SCELTA`), ⚖️ L'IA SBAGLIA ANCHE, 🎨 COSTRUISCI.
 
+### Laboratorio — il terminale che funziona
+
+Il modulo ha due metà: le 6 tappe di zoom che spiegano, e un **terminale vero nella pagina**
+(nessun backend, funziona offline) dove lo studente scrive davvero i comandi.
+
+Il motivo di esistere: la chiusura del modulo dice "il comando è tuo" e il trofeo si chiama
+`MANI`, ma senza un laboratorio era una promessa non mantenuta — l'unico modulo del corso
+interattivo che non lasciava fare niente.
+
+- **Filesystem virtuale** che rispecchia il corso: `lezioni/` contiene i 20 nomi veri dei moduli,
+  `Foto/gita.jpg` risponde che non è un file di testo, `leggiomi.txt` rimanda a `index.html`
+- **12 comandi**: `help` `ls` `pwd` `cd` `cat` `tree` `echo` `mkdir` `touch` `rm` `clear` `man`
+- Percorsi `~` `/` `..`, wildcards `*.txt`, pipe `cat file | wc -l`, cronologia ↑/↓
+- Nessun `eval`: dispatch su una tabella di funzioni, si possono eseguire solo i 12 dichiarati
+- `man <comando>` ristampa la spiegazione della tappa del canvas — il filo tra le due metà
+
+**6 compiti guidati**, uno per tappa: `ls` → `pwd` → `cd Compiti` → `ls *.txt` →
+`cat matematica.txt` → `tree`. Sbagli non costa nulla (compare un suggerimento); completati i 6
+→ modalità libera, coriandoli e **secondo trofeo `⌨️ MANI D’ORO`** (`m_terminale_lab` in
+`lab_badges`). I due trofei per lo stesso modulo hanno ruoli distinti: il quiz fa capire,
+il laboratorio fa fare.
+
+Su telefono i comandi sono anche **tocccabili** (8 chip sotto il prompt), così `ls` `pwd`
+`tree` `help` si possono eseguire senza digitare.
+
+Il motore è JavaScript puro senza DOM: está verificato in node con **55 test** (comandi,
+percorsi, errori, wildcards, pipe), il flusso del laboratorio con altri **44**.
+
+**Attenzione ai nomi**: il filesystem è case-sensitive come un terminale Unix (`cd Compiti`
+sì, `cd compiti` no). I controlli dei compiti sono case-*insensitive* solo per non punire
+chi scrive in maiuscolo, ma un comando che il terminale rifiuta non conta mai come risposta.
+
 **Audio**: solo effetti sonori (`whoosh`, `pop`, `fanfare`), 3 file per modulo, sintetizzati con
 ffmpeg. Nessuna voce narrante → i tag `<audio>` delle voci non vengono creati, quindi nella pagina
 non gira nessun 404 (a differenza dei 5 moduli recenti, che ne hanno 22 morti ciascuno).

@@ -44,7 +44,7 @@ footer a{color:#15803d}
 <h1>Percorso Advanced</h1>
 <div class="sub">hands-on · il laboratorio · per chi ha finito il corso base</div>
 </header>
-<div id="progress"><div id="ptxt">Trofei: <b id="n">0</b> / 1</div><div id="barwrap"><div id="bar"></div></div><a id="resume" href="#">↻ Ricomincia da capo</a></div>
+<div id="progress"><div id="ptxt">Trofei: <b id="n">0</b> / 2</div><div id="barwrap"><div id="bar"></div></div><a id="resume" href="#">↻ Ricomincia da capo</a></div>
 <h2>— Il laboratorio —</h2><hr class="rule"><div class="grid" id="mods"></div>
 <h2>— Bacheca trofei —</h2><hr class="rule"><div id="cabinet"></div>
 <h2>— Prima di cominciare —</h2><hr class="rule">
@@ -56,21 +56,30 @@ footer a{color:#15803d}
 <footer><span>Percorso Advanced · progressi in <b>lab_badges</b>, separati dal corso base</span><a href="index.html">← Torna al corso base</a></footer>
 </div>
 <script>
-const TOTAL=1;
+const TOTAL=2;
 const MODS=[
  {f:'La riga di comando — zoom con domande.html',t:'La riga di comando',d:'Prompt, comandi, percorsi',b:'m_terminale',e:'🖥️',bt:'MAGO DEL TERMINALE'}];
+const TROPHIES=[
+ {b:'m_terminale',   e:'🖥️',bt:'MAGO DEL TERMINALE'},
+ {b:'m_terminale_lab',e:'⌨️',bt:'MANI D’ORO'}];
 function won(){try{return JSON.parse(localStorage.getItem('lab_badges')||'{}')}catch(e){return{}}}
 function renderAll(){
  const W=won(),g=document.getElementById('mods'),c=document.getElementById('cabinet');
  g.innerHTML='';c.innerHTML='';
- let n=0,firstOpen=-1;
- MODS.forEach((m,i)=>{const w=!!W[m.b];if(w)n++;else if(firstOpen<0)firstOpen=i;
+ let n=0;
+ MODS.forEach((m,i)=>{const w=!!W[m.b];
   const a=document.createElement('a');a.className='card'+(w?' done':'');a.href=m.f;
-  a.innerHTML='<div class="num">MODULO '+(i+1)+' / '+TOTAL+'</div><h3>'+m.e+' '+m.t+'</h3><p>'+m.d+'<br>🏆 '+m.bt+'</p><span class="go">→</span>';g.appendChild(a);
-  const s=document.createElement('div');s.className='slot'+(w?' won':'');s.innerHTML='<div class="em">'+(w?m.e:'·')+'</div><div>'+(w?m.bt:'???')+'</div>';c.appendChild(s)});
+  a.innerHTML='<div class="num">MODULO '+(i+1)+' / '+MODS.length+'</div><h3>'+m.e+' '+m.t+'</h3><p>'+m.d+'<br>🏆 '+m.bt+(W.m_terminale_lab?' · ⌨️ MANI D’ORO':'')+'</p><span class="go">→</span>';g.appendChild(a)});
+ TROPHIES.forEach(t=>{const w=!!W[t.b];if(w)n++;
+  const s=document.createElement('div');s.className='slot'+(w?' won':'');
+  s.innerHTML='<div class="em">'+(w?t.e:'·')+'</div><div>'+(w?t.bt:'???')+'</div>';c.appendChild(s)});
  document.getElementById('n').textContent=n;
  document.getElementById('bar').style.width=(n/TOTAL*100)+'%';
- if(firstOpen>=0)document.getElementById('resume').href=MODS[firstOpen].f;else document.getElementById('resume').textContent='↻ Ricomincia dal modulo 1';
+ const open=MODS.find(function(m){return !W[m.b]});
+ const r=document.getElementById('resume');
+ if(open)r.href=open.f;
+ else if(!W.m_terminale_lab){r.textContent='⌨️ Apri il laboratorio';r.href=MODS[0].f}
+ else r.textContent='↻ Ricomincia il laboratorio';
 }
 renderAll();
 addEventListener('storage',e=>{if(e.key==='lab_badges')renderAll()});
