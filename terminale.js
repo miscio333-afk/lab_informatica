@@ -178,7 +178,7 @@ touch:function(st,args){
   if(!args.length)return err('touch: serve un nome');
   var abs=normalize(st.cwd,args[0]),n=at(abs),segs=parts(abs);
   var parent=at('/'+segs.slice(0,-1).join('/'));
-  if(n)return {lines:[]};
+  if(n!==null)return {lines:[]};   /* gia esiste: touch non lo tocca (niente rm, niente ricreazione) */
   if(!parent||!isDir(parent))return err('touch: '+args[0]+': cartella non trovata');
   parent[segs[segs.length-1]]='';return {lines:[]};
 },

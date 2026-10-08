@@ -44,7 +44,7 @@ footer a{color:#15803d}
 <h1>Percorso Advanced</h1>
 <div class="sub">hands-on · il laboratorio · per chi ha finito il corso base</div>
 </header>
-<div id="progress"><div id="ptxt">Trofei: <b id="n">0</b> / 2</div><div id="barwrap"><div id="bar"></div></div><a id="resume" href="#">↻ Ricomincia da capo</a></div>
+<div id="progress"><div id="ptxt">Trofei: <b id="n">0</b> / 4</div><div id="barwrap"><div id="bar"></div></div><a id="resume" href="#">↻ Ricomincia da capo</a></div>
 <h2>— Il laboratorio —</h2><hr class="rule"><div class="grid" id="mods"></div>
 <h2>— Bacheca trofei —</h2><hr class="rule"><div id="cabinet"></div>
 <h2>— Prima di cominciare —</h2><hr class="rule">
@@ -56,12 +56,15 @@ footer a{color:#15803d}
 <footer><span>Percorso Advanced · progressi in <b>lab_badges</b>, separati dal corso base</span><a href="index.html">← Torna al corso base</a></footer>
 </div>
 <script>
-const TOTAL=2;
+const TOTAL=4;
 const MODS=[
- {f:'La riga di comando — zoom con domande.html',t:'La riga di comando',d:'Prompt, comandi, percorsi',b:'m_terminale',e:'🖥️',bt:'MAGO DEL TERMINALE'}];
+ {f:'La riga di comando — zoom con domande.html',t:'La riga di comando',d:'Prompt, comandi, percorsi',b:'m_terminale',e:'🖥️',bt:'MAGO DEL TERMINALE'},
+ {f:'Costruisci — zoom con domande.html',t:'Costruisci',d:'Crea cartelle, file, scrivi dentro',b:'m_costruisci',e:'🎨',bt:'PRIMO CREATORE'}];
 const TROPHIES=[
- {b:'m_terminale',   e:'🖥️',bt:'MAGO DEL TERMINALE'},
- {b:'m_terminale_lab',e:'⌨️',bt:'MANI D’ORO'}];
+ {b:'m_terminale',      e:'🖥️',bt:'MAGO DEL TERMINALE'},
+ {b:'m_terminale_lab',  e:'⌨️',bt:'MANI D’ORO'},
+ {b:'m_costruisci',     e:'🎨',bt:'PRIMO CREATORE'},
+ {b:'m_costruisci_lab', e:'📄',bt:'PRIMO FILE'}];
 function won(){try{return JSON.parse(localStorage.getItem('lab_badges')||'{}')}catch(e){return{}}}
 function renderAll(){
  const W=won(),g=document.getElementById('mods'),c=document.getElementById('cabinet');

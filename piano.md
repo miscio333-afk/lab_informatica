@@ -84,9 +84,15 @@ Corso a sé stante, stesso repo ma **pagina e trofei propri** (`localStorage['la
 `cii_badges`): il diploma del corso base resta a 20 e non risente di nulla. Link bidirezionali
 fra `index.html` e `lab.html`.
 
-| # | Trofeo | File | Catena zoom |
-|---|--------|------|-------------|
-| A1 | 🖥️ MAGO DEL TERMINALE | La riga di comando | la finestra nera → il prompt (`matte@lab:~$`) → il comando (`ls` è un programma) → il percorso (`cd`, `/`, `~`) → la composizione (`*.txt`, `\|`) → **le mani: il comando è tuo** |
+| # | Trofeo quiz | Trofeo lab | File | Catena zoom |
+|---|-------------|------------|------|-------------|
+| A1 | 🖥️ MAGO DEL TERMINALE | ⌨️ MANI D’ORO | La riga di comando | la finestra nera → il prompt (`matte@lab:~$`) → il comando (`ls` è un programma) → il percorso (`cd`, `/`, `~`) → la composizione (`*.txt`, `\|`) → **le mani: il comando è tuo** |
+| A2 | 🎨 PRIMO CREATORE | 📄 PRIMO FILE | Costruisci | l’idea → `mkdir` la cartella → `touch` il file vuoto → `>` scrive dentro → `>>` aggiunge senza cancellare → **rileggere con `cat`: ora è vero** |
+
+**A2 chiude la lacuna più grande del corso**: 21 moduli e nessuno aveva mai *creato* qualcosa.
+Con `>` e `>>` lo studente apre una scatola e ci scrive dentro — che è la lezione sulle variabili
+del Blocco 5, usata per davvero. La catena non finisce sui bit ma su
+`“non hai guardato un file: l’hai fatto”`.
 
 **Differenza di principio rispetto al corso base**: qui la lezione **non finisce sui bit**.
 15 moduli su 20 del corso base chiudono su "anche questo è 0 e 1" — è la tesi del corso, ma
