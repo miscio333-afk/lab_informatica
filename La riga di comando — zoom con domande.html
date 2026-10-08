@@ -57,7 +57,7 @@ bt.fillStyle='#151926';rr(bt,300,650,1000,150,16);bt.fill();bt.strokeStyle='#2c3
 tx(bt,'nessun programma ti obbliga: scrivi tu cosa succede',800,710,34,'#e9ecf5');tx(bt,'da qui comincia il tuo lavoro',800,762,30,'#9db0dc');
 // ---- 4 · Un comando diventa due
 const[Br,br]=BG(1600,900);tx(br,'la composizione',800,80,52,'#4ade80');tx(br,'wildcard e pipe: fai piu cose scrivendo meno',800,155,36,'#9db0dc');
-[["ls *.txt",'il jolly * vuol dire qualsiasi: elenca i file .txt',1],['cat diario.txt | wc -l','il pipe | passa il risultato di un comando al successivo',0]].forEach((r,i)=>{const y=235+i*140;br.fillStyle=r[2]?'#12372d':'#151926';rr(br,220,y,1160,120,14);br.fill();br.strokeStyle=r[2]?'#4ade80':'#2c3350';br.lineWidth=4;br.stroke();tx(br,r[0],330,y+60,40,r[2]?'#4ade80':'#e9ecf5','left');tx(br,r[1],1160,y+60,27,'#9db0dc','right')});
+[["ls *.txt",'il jolly * vuol dire qualsiasi: elenca i file .txt',1],['cat diario.txt | wc -l','il pipe | passa il risultato di un comando al successivo',0]].forEach((r,i)=>{const y=215+i*140;br.fillStyle=r[2]?'#12372d':'#151926';rr(br,150,y,1300,125,14);br.fill();br.strokeStyle=r[2]?'#4ade80':'#2c3350';br.lineWidth=4;br.stroke();tx(br,r[0],190,y+44,38,r[2]?'#4ade80':'#e9ecf5','left');tx(br,r[1],190,y+90,24,'#9db0dc','left')});
 tx(br,'i caratteri speciali sono potere',800,858,36,'#4ade80');
 const r5=reg(1600,980,500,580);put(br,Bt,r5,'#4ade80');
 // ---- 3 · Dove sei
