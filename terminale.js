@@ -43,7 +43,17 @@ var MAN={
   touch:'Crea un file vuoto. touch pippo.txt.',
   rm:'Cancella un file o una cartella vuota. Non si può annullare.',
   clear:'Pulisce il terminale.',
-  man:'Spiega un comando. Prova: man ls'};
+  man:'Spiega un comando. Prova: man ls',
+  find:'Cerca per nome, anche dentro le sottocartelle. Prova: find . -name "*.txt"',
+  grep:'Cerca una parola dentro i file. Prova: grep bit leggiomi.txt',
+  cp:'Copia un file o una cartella. cp <da> <a>. Con -r copia anche le cartelle.',
+  mv:'Sposta o rinomina. mv <da> <a>.',
+  wc:'Conta righe e parole. wc -l conta solo le righe.',
+  sort:'Mette in ordine alfabetico. Con -r al contrario.',
+  uniq:'Toglie le righe uguali consecutive. Con -c anche quante volte.',
+  '>':'Scrive il risultato in un file, cancellando quello che c\u00e8 prima. echo ciao > nota.txt',
+  '>>':'Aggiunge in fondo al file, senza cancellare. echo ciao >> diario.txt',
+  '&&':'Esegue il secondo comando solo se il primo ha funzionato.'};
 
 function isDir(n){return n&&n.dir===true}
 function parts(p){return p.split('/').filter(Boolean)}
@@ -65,6 +75,13 @@ function normalize(cwd,p){
   return '/'+out.join('/');
 }
 function disp(abs){return abs===HOME?'~':(abs.indexOf(HOME+'/')===0?'~'+abs.slice(HOME.length):abs)}
+function fileLines(st,spec){
+  var t=resolveTargets(st.cwd,spec);
+  if(!t)return null;
+  if(isDir(t.node))return null;
+  if(!isText(t.node))return 'bin';
+  return t.node.replace(/\n$/,'').split('\n');
+}
 function isText(n){return typeof n==='string'&&n.charAt(0)!=='«'}
 function err(t){return {lines:[{text:t,cls:'err'}]}}
 function out(t,cls){return {lines:[{text:t,cls:cls||'out'}]}}
@@ -89,9 +106,15 @@ var CMD={
 help:function(st,args){
   var ks=Object.keys(MAN).sort(),out=[];
   out.push('comandi disponibili:');
-  ks.forEach(function(k){out.push('  '+k)});
+  ks.forEach(function(k){out.push((k[0]==='>'?'  ':'  ')+k)});
   out.push('');
-  out.push('man <comando>  spiega un comando.  clear  pulisce.');
+  out.push('grammatica:');
+  out.push('  comando > file      scrive in un file (cancella il contenuto)');
+  out.push('  comando >> file     aggiunge in fondo al file');
+  out.push('  comando1 | comando2  il risultato del primo diventa input del secondo');
+  out.push('  comando1 && comando2 esegui il secondo solo se il primo ha funzionato');
+  out.push('');
+  out.push('man <comando> spiega un comando.   clear pulisce.');
   return {lines:out.map(function(t){return {text:t,cls:'out'}})};
 },
 ls:function(st,args){
@@ -102,7 +125,7 @@ ls:function(st,args){
   var ks=Object.keys(t.node).filter(function(k){return k!=='dir'});
   var dirs=hasWild?[]:ks.filter(function(k){return isDir(t.node[k])}).sort();
   var files=ks.filter(function(k){return !isDir(t.node[k])})
-             .filter(function(k){return !pat||match(pat,k)}).sort();
+             .filter(function(k){return !hasWild||match(pat,k)}).sort();
   var lines=[],all=dirs.map(function(d){return d+'/'}).concat(files);
   if(!all.length)return out('(vuoto)');
   for(var i=0;i<all.length;i+=4)lines.push(all.slice(i,i+4).map(function(s){return '  '+s}).join(''));
@@ -123,7 +146,7 @@ cat:function(st,args){
     if(!t){lines.push({text:'cat: '+a+': nessun file con questo nome',cls:'err'});bad=true;return}
     if(isDir(t.node)){lines.push({text:'cat: '+a+': è una cartella, non un file',cls:'err'});bad=true;return}
     if(!isText(t.node)){lines.push({text:a+': non è un file di testo (binario)',cls:'err'});bad=true;return}
-    t.node.split('\n').forEach(function(l){lines.push({text:l,cls:'out'})});
+    fileLines(st,a).forEach(function(l){lines.push({text:l,cls:'out'})});
   });
   return {lines:lines};
 },
@@ -176,25 +199,241 @@ man:function(st,args){
   if(!MAN[c])return err('man: nessun comando chiamato '+c);
   return out(MAN[c]);
 },
+find:function(st,args){
+  var dir='.',name=null,type=null;
+  for(var i=0;i<args.length;i++){
+    if(args[i]==='-name')name=args[++i];
+    else if(args[i]==='-type')type=args[++i];
+    else if(args[i][0]!=='-')dir=args[i];
+  }
+  var start=resolveTargets(st.cwd,dir,true);
+  if(!start||!isDir(start.node))return mkErr('find: '+dir+': cartella non trovata');
+  var pre=dir.charAt(0)==='/'?dir:dir;
+  var out=[];
+  (function walk(node,rel,depth){
+    if(depth>5)return;
+    Object.keys(node).filter(function(k){return k!=='dir'}).sort().forEach(function(k){
+      var p=(rel?rel+'/':'')+k,isd=isDir(node[k]);
+      if(type==='d'&&!isd)return;
+      if(type==='f'&&isd)return;
+      if(!name||match(name,k))out.push(pre.replace(/\/$/,'')+'/'+p);
+      if(isd)walk(node[k],p,depth+1);
+    });
+  })(start.node,'',1);
+  if(!out.length)return {lines:[{text:'(nessun risultato)',cls:'dim'}],texts:[]};
+  return mkOut(out);
+},
+grep:function(st,args,stdin){
+  var ci=false,pat=null,files=[];
+  for(var i=0;i<args.length;i++){
+    var a=args[i];
+    if(a[0]==='-'&&a!=='-'){if(a.indexOf('i')>=0)ci=true;continue}
+    if(pat===null)pat=a;else files.push(a);
+  }
+  if(pat===null)return mkErr('grep: che cosa cerchi? prova: grep bit leggiomi.txt');
+  var test=function(L){return ci?L.toLowerCase().indexOf(pat.toLowerCase())>=0:L.indexOf(pat)>=0};
+  var hits=[];
+  if(files.length){
+    var multi=files.length>1;
+    for(var j=0;j<files.length;j++){
+      var ls=fileLines(st,files[j]);
+      if(ls===null)return mkErr('grep: '+files[j]+': nessun file con questo nome');
+      if(ls==='bin')return mkErr(files[j]+': non è un file di testo (binario)');
+      ls.forEach(function(L){if(test(L))hits.push(multi?files[j]+':'+L:L)});
+    }
+  }else{
+    (stdin||[]).forEach(function(L){if(test(L))hits.push(L)});
+  }
+  if(!hits.length)return {lines:[{text:'(nessuna corrispondenza)',cls:'dim'}],texts:[]};
+  return mkOut(hits);
+},
+cp:function(st,args){
+  var rec=args.some(function(a){return a[0]==='-'&&a.indexOf('r')>=0});
+  var rest=args.filter(function(a){return a[0]!=='-'});
+  if(rest.length<2)return mkErr('cp: serve: cp <da> <a>');
+  var src=resolveTargets(st.cwd,rest[0]);
+  if(!src)return mkErr('cp: '+rest[0]+': non esiste');
+  if(isDir(src.node)&&!rec)return mkErr('cp: '+rest[0]+' è una cartella: usa cp -r');
+  var dst=resolveTargets(st.cwd,rest[1]);
+  var abs=(dst&&isDir(dst.node))?normalize(st.cwd,rest[1]+'/'+baseName(src.abs)):normalize(st.cwd,rest[1]);
+  var p=at(parentOf(abs));
+  if(!p||!isDir(p))return mkErr('cp: '+rest[1]+': cartella non trovata');
+  if(at(abs)!==null&&isDir(at(abs)))return mkErr('cp: '+rest[1]+': è una cartella esistente');
+  p[baseName(abs)]=cloneFS(src.node);
+  return {lines:[],texts:[]};
+},
+mv:function(st,args){
+  var rest=args.filter(function(a){return a[0]!=='-'});
+  if(rest.length<2)return mkErr('mv: serve: mv <da> <a>');
+  var src=resolveTargets(st.cwd,rest[0]);
+  if(!src)return mkErr('mv: '+rest[0]+': non esiste');
+  if(baseName(src.abs)==='.'||src.abs==='/')return mkErr('mv: non puoi spostare la radice');
+  var dst=resolveTargets(st.cwd,rest[1]);
+  var abs=(dst&&isDir(dst.node))?normalize(st.cwd,rest[1]+'/'+baseName(src.abs)):normalize(st.cwd,rest[1]);
+  var p=at(parentOf(abs)),sp=at(parentOf(src.abs));
+  if(!p||!isDir(p))return mkErr('mv: '+rest[1]+': cartella non trovata');
+  if(at(abs)!==null)return mkErr('mv: '+rest[1]+': esiste già');
+  if(!sp)return mkErr('mv: '+rest[0]+': non esiste');
+  p[baseName(abs)]=sp[baseName(src.abs)];
+  delete sp[baseName(src.abs)];
+  return {lines:[],texts:[]};
+},
+wc:function(st,args,stdin){
+  var flag=null,files=[];
+  for(var i=0;i<args.length;i++){if(args[i][0]==='-'&&args[i].length>1)flag=args[i];else files.push(args[i])}
+  var lines;
+  if(files.length){
+    lines=[];
+    for(var j=0;j<files.length;j++){
+      var ls=fileLines(st,files[j]);
+      if(ls===null)return mkErr('wc: '+files[j]+': nessun file con questo nome');
+      if(ls==='bin')return mkErr(files[j]+': non è un file di testo (binario)');
+      lines=lines.concat(ls);
+    }
+  }else lines=stdin||[];
+  var nl=lines.length;
+  var nw=lines.reduce(function(a,l){return a+l.split(/\s+/).filter(Boolean).length},0);
+  if(flag==='-l')return mkOut(String(nl));
+  if(flag==='-w')return mkOut(String(nw));
+  if(flag)return mkErr('wc: opzione sconosciuta: '+flag);
+  return mkOut(nl+' '+nw);
+},
+sort:function(st,args,stdin){
+  var rev=args.some(function(a){return a[0]==='-'&&a.indexOf('r')>=0});
+  var files=args.filter(function(a){return a[0]!=='-'});
+  var lines=stdin||[];
+  if(files.length){
+    lines=[];
+    for(var j=0;j<files.length;j++){
+      var ls=fileLines(st,files[j]);
+      if(ls===null)return mkErr('sort: '+files[j]+': nessun file con questo nome');
+      if(ls==='bin')return mkErr(files[j]+': non è un file di testo (binario)');
+      lines=lines.concat(ls);
+    }
+  }
+  if(!lines.length)return mkOut('(vuoto)');
+  lines=lines.slice().sort(function(a,b){return a<b?-1:a>b?1:0});
+  if(rev)lines.reverse();
+  return mkOut(lines);
+},
+uniq:function(st,args,stdin){
+  var cnt=args.some(function(a){return a[0]==='-'&&a.indexOf('c')>=0});
+  var files=args.filter(function(a){return a[0]!=='-'});
+  var lines=stdin||[];
+  if(files.length){
+    lines=[];
+    for(var j=0;j<files.length;j++){
+      var ls=fileLines(st,files[j]);
+      if(ls===null)return mkErr('uniq: '+files[j]+': nessun file con questo nome');
+      if(ls==='bin')return mkErr(files[j]+': non è un file di testo (binario)');
+      lines=lines.concat(ls);
+    }
+  }
+  if(!lines.length)return {lines:[{text:'(vuoto)',cls:'dim'}],texts:[]};
+  var out=[],i=0;
+  while(i<lines.length){
+    var j=i;while(j+1<lines.length&&lines[j+1]===lines[i])j++;
+    out.push(cnt?String(j-i+1).padStart(7)+' '+lines[i]:lines[i]);
+    i=j+1;
+  }
+  return mkOut(out);
+},
 clear:function(){return {lines:[],clear:true}}
 };
 
-function exec(state,line){
-  line=(line||'').trim();
-  if(!line)return {lines:[]};
-  // pipe: solo "cat file | wc -l"
-  if(line.indexOf('|')>=0){
-    var pp=line.split('|').map(function(x){return x.trim()});
-    if(pp.length===2&&pp[1]==='wc -l'){
-      var catres=CMD.cat(state,pp[0].replace(/^cat\s+/,'').split(/\s+/));
-      if(catres.lines.some(function(l){return l.cls==='err'}))return catres;
-      return out(String(catres.lines.length));
-    }
-    return err('pipe: impara solo "cat file | wc -l"');
+
+/* ── grammatica della shell: tokenizzazione, pipe, catene, ridirezione ── */
+function tokenize(s){
+  var out=[],cur='',q=null;
+  for(var i=0;i<s.length;i++){var c=s.charAt(i);
+    if(q){if(c===q){q=null;continue}cur+=c;continue}
+    if(c==='"'||c==="'"){q=c;continue}
+    if(c===' '||c==='\t'){if(cur){out.push(cur);cur=''}continue}
+    cur+=c;}
+  if(cur)out.push(cur);
+  return out;
+}
+/* divide su un separatore solo se è FUORI da virgolette */
+function splitTop(s,sep){
+  var out=[],cur='',q=null;
+  for(var i=0;i<s.length;i++){var c=s.charAt(i);
+    if(q){cur+=c;if(c===q)q=null;continue}
+    if(c==='"'||c==="'"){q=c;cur+=c;continue}
+    if(s.substr(i,2)===sep||c===sep){out.push(cur);cur='';i+=(s.substr(i,2)===sep)?1:0;continue}
+    cur+=c;}
+  out.push(cur);
+  return out.map(function(x){return x.trim()}).filter(function(x){return x.length});
+}
+/* trova '>' o '>>' fuori da virgolette */
+function findRedirect(s){
+  var q=null;
+  for(var i=0;i<s.length;i++){var c=s.charAt(i);
+    if(q){if(c===q)q=null;continue}
+    if(c==='"'||c==="'"){q=c;continue}
+    if(c==='>')return {pos:i,dbl:s.charAt(i+1)==='>',rest:s.slice(s.charAt(i+1)==='>'?i+2:i+1)};}
+  return null;
+}
+function baseName(p){var a=p.split('/').filter(Boolean);return a.length?a[a.length-1]:'/'}
+function parentOf(p){var a=p.split('/').filter(Boolean);a.pop();return '/'+a.join('/')}
+function mkErr(t){return {lines:[{text:t,cls:'err'}],texts:[],failed:true}}
+function mkOut(t){var a=Array.isArray(t)?t:[t];return {lines:a.map(function(x){return {text:String(x),cls:'out'}})}}
+function runOne(state,text,stdin){
+  var t=tokenize(text);
+  if(!t.length)return {lines:[],texts:stdin||[]};
+  var c=t[0],args=t.slice(1);
+  if(!CMD[c])return mkErr(c+': comando non trovato. Prova help.');
+  var r=CMD[c](state,args,stdin);
+  if(!r.texts)r.texts=r.lines.filter(function(l){return l.cls!=='err'}).map(function(l){return l.text});
+  r.failed=!!(r.lines.length&&r.lines.every(function(l){return l.cls==='err'}));
+  return r;
+}
+function runPipeline(state,text,stdin){
+  var segs=splitTop(text,'|'),texts=stdin||[],last={lines:[],texts:[]};
+  var cleared=false;
+  for(var i=0;i<segs.length;i++){
+    last=runOne(state,segs[i],texts);
+    texts=last.texts;
+    if(last.clear)cleared=true;
+    if(last.failed)return {lines:last.lines,texts:texts,failed:true};
   }
-  var sp=line.split(/\s+/),c=sp[0],args=sp.slice(1);
-  if(!CMD[c])return err(c+': comando non trovato. Prova help.');
-  return CMD[c](state,args);
+  return {lines:last.lines,texts:texts,failed:false,clear:cleared};
+}
+function writeFile(state,file,texts,append){
+  var abs=normalize(state.cwd,file),name=baseName(abs),parent=at(parentOf(abs));
+  if(at(abs)!==null&&isDir(at(abs)))return mkErr(file+': è una cartella, non un file');
+  if(!parent||!isDir(parent))return mkErr(file+': cartella non trovata');
+  var cur=parent[name];
+  /* coerente con cat e con >>: su un file non testuale non si scrive, in nessuna delle due forme */
+  if(cur!==undefined&&!isText(cur))return mkErr(file+': non è un file di testo, non ci scrivo sopra');
+  if(append){
+    parent[name]=(cur?cur.replace(/\n$/,'')+'\n':'')+texts.join('\n')+'\n';
+  }else{
+    parent[name]=texts.join('\n')+'\n';
+  }
+  return {lines:[],texts:[],failed:false};
+}
+
+function exec(state,line){
+  line=String(line||'').trim();
+  if(!line)return {lines:[]};
+  var segs=splitTop(line,'&&'),screen=[],carry=null;
+  for(var i=0;i<segs.length;i++){
+    var seg=segs[i],red=findRedirect(seg);
+    var body=red?seg.slice(0,red.pos).trim():seg;
+    var r=runPipeline(state,body,carry);
+    carry=r.texts;
+    if(red){
+      var tgt=tokenize(red.rest)[0];
+      if(!tgt)return mkErr('sintassi: serve il nome del file dopo >');
+      var w=writeFile(state,tgt,r.texts,red.dbl);
+      if(w.failed)return w;
+    }else{
+      screen=screen.concat(r.lines);
+    }
+    if(r.clear)return {lines:screen,clear:true};
+    if(r.failed)return {lines:screen};
+  }
+  return {lines:screen};
 }
 function cloneFS(n){if(typeof n!=='object'||n===null)return n;var o={};for(var k in n)o[k]=cloneFS(n[k]);return o}
 function newState(){FS=cloneFS(BASE);return {cwd:HOME}}
