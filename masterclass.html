@@ -37,7 +37,7 @@ function won(){try{return JSON.parse(localStorage.getItem('cii_badges')||'{}')}c
 const W=won(),n=Object.keys(W).length;
 if(n>=20){
  document.getElementById('sheet').hidden=false;
- const L={m_inglesi:'🎓 DIZIONARIO VIVENTE',m_chifacosa:'🏠 PADRONE DI CASA',m_testo:'✍️ SCRIBA DIGITALE',m_pixel:'👑 RE DEI PIXEL',m_suono:'🎵 MAESTRO D\u2019ONDA',m_memoria:'🐘 MEMORIA DI FERRO',m_file:'🗂️ ARCHIVISTA SUPREMO',m_dentro:'🔧 CHIRURGO DEI CHIP',m_componenti:'🔤 CACCIATORE DI SIGLE',m_internet:'🌐 NAVIGATORE ESPERTO',m_click:'🍕 PIZZAIOLO DEL CODICE',m_variabili:'📦 MAGO DELLE SCATOLE',m_condizioni:'🔀 GIUDICE SUPREMO',m_cicli:'🔁 RE DELLA RIPETIZIONE',m_ordinare:'🫧 DOMATORE DI BOLLE'};
+ const L={m_inglesi:'🎓 DIZIONARIO VIVENTE',m_chifacosa:'🏠 PADRONE DI CASA',m_testo:'✍️ SCRIBA DIGITALE',m_pixel:'👑 RE DEI PIXEL',m_suono:'🎵 MAESTRO D’ONDA',m_memoria:'🐘 MEMORIA DI FERRO',m_file:'🗂️ ARCHIVISTA SUPREMO',m_dentro:'🔧 CHIRURGO DEI CHIP',m_componenti:'🔤 CACCIATORE DI SIGLE',m_internet:'🌐 NAVIGATORE ESPERTO',m_click:'🍕 PIZZAIOLO DEL CODICE',m_variabili:'📦 MAGO DELLE SCATOLE',m_condizioni:'🔀 GIUDICE SUPREMO',m_cicli:'🔁 RE DELLA RIPETIZIONE',m_ordinare:'🫧 DOMATORE DI BOLLE'};
  document.getElementById('list').innerHTML=Object.keys(L).map(k=>'✓ '+L[k]).join('<br>');
  const saved=localStorage.getItem('cii_name');if(saved)document.getElementById('name').textContent=saved;
  document.getElementById('set').onclick=()=>{const v=document.getElementById('inp').value.trim();if(v){document.getElementById('name').textContent=v;localStorage.setItem('cii_name',v)}};

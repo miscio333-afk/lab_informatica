@@ -227,7 +227,7 @@ function ask(){const q=QQ[qi];paint();hideSplash();const blo=$('a-bed'),bhi=$('a
  ORDER.forEach((oi,bi)=>{const b=document.createElement('button');b.innerHTML='<small>'+'ABCD'[bi]+' -</small>'+OPTS[qi][oi];b.style.visibility='hidden';b.disabled=true;b.onclick=()=>pick(bi);qo.appendChild(b)});
  const intro=play('mpos'+qi);const go=()=>{const a=play('mq'+qi);kar($('q'),a);if(a)a.onended=()=>letters();else letters()};if(intro)intro.onended=()=>go();else go()}
 function pick(bi){if(over)return;stopAll();sel=bi;document.querySelectorAll('#qo button').forEach((b,i)=>b.classList.toggle('sel',i===bi));
- $('fb').textContent='L\u2019accendiamo?';$('ok').hidden=false;const _l=play('a-lacc');const _t=play('a-tick');}
+ $('fb').textContent='L’accendiamo?';$('ok').hidden=false;const _l=play('a-lacc');const _t=play('a-tick');}
 $('ok').onclick=()=>{if(sel<0||over)return;const oi=ORDER[sel];stopAll();$('ok').hidden=true;
  document.querySelectorAll('#qo button').forEach(b=>b.disabled=true);
  if(oi===0){document.querySelectorAll('#qo button')[sel].classList.add('ok');play('a-stok');splash(PRIZES[qi]);
