@@ -1,6 +1,6 @@
 # Aula Informatica — corso base per le superiori
 
-15 moduli interattivi (zoom + quiz + voci), Milionario dei pixel, landing con bacheca trofei.
+20 moduli interattivi (zoom + quiz + voci), Milionario dei pixel, landing con bacheca trofei.
 
 ## Uso in classe
 Apri `index.html` (serve connessione per Three.js da CDN) oppure servila con `python3 -m http.server`.

@@ -45,11 +45,11 @@ footer{margin:50px 48px 0;font-family:'Courier New',monospace;font-size:13px;col
 <h1>Aula Informatica</h1>
 <div class="sub">zoom infinito · quiz · voci · montepremi — per le superiori, un modulo = un'ora</div>
 </header>
-<div id="progress"><div id="ptxt">Trofei: <b id="n">0</b> / 15</div><div id="barwrap"><div id="bar"></div></div><a id="resume" href="#">↻ Ricomincia da capo</a></div>
+<div id="progress"><div id="ptxt">Trofei: <b id="n">0</b> / 20</div><div id="barwrap"><div id="bar"></div></div><a id="resume" href="#">↻ Ricomincia da capo</a></div>
 <h2>— Il percorso —</h2><hr class="rule"><div class="grid" id="mods"></div>
 <h2>— Sfida finale —</h2><hr class="rule"><div class="grid"><a class="card" href="Milionario dei pixel.html"><div class="num">EXTRA · GIOCO</div><h3>🎰 Milionario dei pixel</h3><p>6 domande, 3 aiuti, Gerry conduce</p><span class="go">→</span></a></div>
 <h2>— Bacheca trofei —</h2><hr class="rule"><div id="cabinet"></div>
-<div id="mc"><a id="mclink" class="lock" href="masterclass.html">🏆 MASTER CLASS — completa i 15 moduli</a></div>
+<div id="mc"><a id="mclink" class="lock" href="masterclass.html">🏆 MASTER CLASS — completa i 20 moduli</a></div>
 <footer>Aula Informatica · i progressi restano su questo computer (localStorage) · audio: voci Fish Audio · <a href="demo-aula.html">demo zoom 3D</a></footer>
 </div>
 <script>
@@ -68,7 +68,12 @@ const MODS=[
 {f:'Le variabili — zoom con domande.html',t:'Le variabili',d:'Scatole, nomi, tipi',b:'m_variabili',e:'📦',bt:'MAGO DELLE SCATOLE'},
 {f:'Le condizioni — zoom con domande.html',t:'Le condizioni',d:'Se/allora, E/O, bit',b:'m_condizioni',e:'🔀',bt:'GIUDICE SUPREMO'},
 {f:'I cicli — zoom con domande.html',t:'I cicli',d:'Ripeti 100 volte',b:'m_cicli',e:'🔁',bt:'RE DELLA RIPETIZIONE'},
-{f:'Ordinare le cose — zoom con domande.html',t:'Ordinare le cose',d:'Bubble sort',b:'m_ordinare',e:'🫧',bt:'DOMATORE DI BOLLE'}];
+{f:'Ordinare le cose — zoom con domande.html',t:'Ordinare le cose',d:'Bubble sort',b:'m_ordinare',e:'🫧',bt:'DOMATORE DI BOLLE'},
+{f:'Impronta digitale — zoom con domande.html',t:'L\u2019impronta digitale',d:'Like, profilo, asta, bit',b:'m_impronta',e:'🕵️',bt:'CACCIATORE DI TRACCE'},
+{f:'Password e sicurezza — zoom con domande.html',t:'Password e sicurezza',d:'Hash, dizionario, 2 fattori',b:'m_password',e:'🔑',bt:'GUARDIA DELLE CHIAVI'},
+{f:'Virus e antivirus — zoom con domande.html',t:'Virus e antivirus',d:'Contagio, guardia, vaccino',b:'m_virus',e:'🦠',bt:'CACCIATORE DI VIRUS'},
+{f:'L\u2019IA che impara — zoom con domande.html',t:'L\u2019IA che impara',d:'Foto, modello, previsione',b:'m_ia',e:'🤖',bt:'ALLENATORE DI IA'},
+{f:'Fake news e fact-checking — zoom con domande.html',t:'Fake news e fact-checking',d:'Post, fonte, verifica',b:'m_fakenews',e:'📰',bt:'CACCIATORE DI BUFALE'}];
 function won(){try{return JSON.parse(localStorage.getItem('cii_badges')||'{}')}catch(e){return{}}}
 function renderAll(){
 const W=won(),g=document.getElementById('mods'),c=document.getElementById('cabinet');
@@ -76,12 +81,12 @@ g.innerHTML='';c.innerHTML='';
 let n=0,firstOpen=-1;
 MODS.forEach((m,i)=>{const w=!!W[m.b];if(w)n++;else if(firstOpen<0)firstOpen=i;
  const a=document.createElement('a');a.className='card'+(w?' done':'');a.href=m.f;
- a.innerHTML='<div class="num">MODULO '+(i+1)+' / 15</div><h3>'+m.e+' '+m.t+'</h3><p>'+m.d+'<br>🏆 '+m.bt+'</p><span class="go">→</span>';g.appendChild(a);
+ a.innerHTML='<div class="num">MODULO '+(i+1)+' / 20</div><h3>'+m.e+' '+m.t+'</h3><p>'+m.d+'<br>🏆 '+m.bt+'</p><span class="go">→</span>';g.appendChild(a);
  const s=document.createElement('div');s.className='slot'+(w?' won':'');s.innerHTML='<div class="em">'+(w?m.e:'·')+'</div><div>'+(w?m.bt:'???')+'</div>';c.appendChild(s)});
 document.getElementById('n').textContent=n;
-document.getElementById('bar').style.width=(n/15*100)+'%';
+document.getElementById('bar').style.width=(n/20*100)+'%';
 if(firstOpen>=0)document.getElementById('resume').href=MODS[firstOpen].f;else document.getElementById('resume').textContent='↻ Ricomincia dal modulo 1';
-if(n>=15){const m=document.getElementById('mclink');m.className='open';m.textContent='🏆 MASTER CLASS — ritira il diploma!'}}
+if(n>=20){const m=document.getElementById('mclink');m.className='open';m.textContent='🏆 MASTER CLASS — ritira il diploma!'}}
 renderAll();
 addEventListener('storage',e=>{if(e.key==='cii_badges')renderAll()});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)renderAll()});

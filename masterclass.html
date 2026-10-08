@@ -20,7 +20,7 @@ h1{font-size:clamp(30px,5vw,50px);margin:18px 0 4px;letter-spacing:.04em}
 #lock{max-width:600px;margin:80px auto;text-align:center;color:#f4efe4;font-family:'Courier New',monospace}
 #lock a{color:#facc15}
 </style></head><body>
-<div id="lock" hidden>🔒 Completa i <b>15 moduli</b> per sbloccare il diploma.<br><br><a href="index.html">← Torna al corso</a></div>
+<div id="lock" hidden>🔒 Completa i <b>20 moduli</b> per sbloccare il diploma.<br><br><a href="index.html">← Torna al corso</a></div>
 <div id="sheet" hidden>
 <div id="seal">🏆</div>
 <h1>MASTER CLASS<br>INFORMATICA</h1>
@@ -35,7 +35,7 @@ h1{font-size:clamp(30px,5vw,50px);margin:18px 0 4px;letter-spacing:.04em}
 <script>
 function won(){try{return JSON.parse(localStorage.getItem('cii_badges')||'{}')}catch(e){return{}}}
 const W=won(),n=Object.keys(W).length;
-if(n>=15){
+if(n>=20){
  document.getElementById('sheet').hidden=false;
  const L={m_inglesi:'🎓 DIZIONARIO VIVENTE',m_chifacosa:'🏠 PADRONE DI CASA',m_testo:'✍️ SCRIBA DIGITALE',m_pixel:'👑 RE DEI PIXEL',m_suono:'🎵 MAESTRO D\u2019ONDA',m_memoria:'🐘 MEMORIA DI FERRO',m_file:'🗂️ ARCHIVISTA SUPREMO',m_dentro:'🔧 CHIRURGO DEI CHIP',m_componenti:'🔤 CACCIATORE DI SIGLE',m_internet:'🌐 NAVIGATORE ESPERTO',m_click:'🍕 PIZZAIOLO DEL CODICE',m_variabili:'📦 MAGO DELLE SCATOLE',m_condizioni:'🔀 GIUDICE SUPREMO',m_cicli:'🔁 RE DELLA RIPETIZIONE',m_ordinare:'🫧 DOMATORE DI BOLLE'};
  document.getElementById('list').innerHTML=Object.keys(L).map(k=>'✓ '+L[k]).join('<br>');
