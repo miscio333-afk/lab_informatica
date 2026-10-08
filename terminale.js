@@ -41,7 +41,7 @@ var MAN={
   echo:'Ripete quello che scrivi. Serve per capire come trattano gli spazi.',
   mkdir:'Crea una cartella nuova. mkdir Prove.',
   touch:'Crea un file vuoto. touch pippo.txt.',
-  rm:'Cancella un file o una cartella vuota. Non si può annullare.',
+  rm:'Cancella un file o una cartella vuota. Non si può annullare. -r non esiste: una cartella con dentro non viene mai cancellata. Per liberarti di una, mv.',
   clear:'Pulisce il terminale.',
   man:'Spiega un comando. Prova: man ls',
   find:'Cerca per nome, anche dentro le sottocartelle. Prova: find . -name "*.txt"',
@@ -84,6 +84,14 @@ function fileLines(st,spec){
 }
 function isText(n){return typeof n==='string'&&n.charAt(0)!=='«'}
 function err(t){return {lines:[{text:t,cls:'err'}]}}
+/* il rifiuto di rm -r: dev'essere leggibile e dire il perché, non sembrare un errore */
+function rmrisk(flag){
+  return {lines:[
+    {text:'rm: '+flag+' non è disponibile in questo terminale.',cls:'err'},
+    {text:'Nessuna cartella con dentro viene mai cancellata, nemmeno con -rf.',cls:'err'},
+    {text:'Se sei davvero sicuro, spostala fuori con mv e guardala prima.',cls:'dim'}
+  ]};
+}
 function out(t,cls){return {lines:[{text:t,cls:cls||'out'}]}}
 
 // wildcard: nome che contiene *
@@ -184,13 +192,37 @@ touch:function(st,args){
 },
 rm:function(st,args){
   if(!args.length)return err('rm: serve un nome');
-  var abs=normalize(st.cwd,args[0]),n=at(abs),segs=parts(abs);
-  if(n===null)return err('rm: '+args[0]+': non esiste');
-  if(isDir(n)&&Object.keys(n).filter(function(k){return k!=='dir'}).length)
-    return err('rm: '+args[0]+': non vuota (usa rm -r, ma qui no)');
-  var parent=at('/'+segs.slice(0,-1).join('/'));
-  if(!parent)return err('rm: non puoi cancellare questo');
-  delete parent[segs[segs.length-1]];
+  /* i flag si interpretano davvero: -r e -rf vengono RESPINTI di proposito.
+     Prima non esistevano affatto: rm -rf lezioni rispondeva "rm: -rf: non esiste",
+     cioe' un rifiuto per sbaglio, trattando il flag come se fosse un nome di file.
+     Sarebbe il modo peggiore di insegnare la paura del pulsante rosso. */
+  var force=false,names=[],i=0;
+  for(;i<args.length;i++){
+    var a=args[i];
+    if(a==='--'){i++;break}
+    if(a.charAt(0)!=='-')break;
+    if(a.slice(0,2)==='--'){
+      if(a==='--recursive')return rmrisk('--recursive');
+      return err('rm: opzione sconosciuta '+a);
+    }
+    for(var k=1;k<a.length;k++){
+      var c=a.charAt(k);
+      if(c==='r'||c==='R')return rmrisk('-'+c);
+      else if(c==='f')force=true;
+      else return err('rm: opzione sconosciuta -'+c);
+    }
+  }
+  while(i<args.length)names.push(args[i++]);
+  if(!names.length)return err('rm: serve un nome');
+  for(var j=0;j<names.length;j++){
+    var abs=normalize(st.cwd,names[j]),n=at(abs),segs=parts(abs);
+    if(n===null){if(force)continue;return err('rm: '+names[j]+': non esiste')}
+    if(isDir(n)&&Object.keys(n).filter(function(q){return q!=='dir'}).length)
+      return err('rm: '+names[j]+': non vuota. Spostala fuori con mv, poi guarda cosa contiene.');
+    var parent=at('/'+segs.slice(0,-1).join('/'));
+    if(!parent)return err('rm: non puoi cancellare questo');
+    delete parent[segs[segs.length-1]];
+  }
   return {lines:[]};
 },
 man:function(st,args){
@@ -501,7 +533,12 @@ function labRun(line){
   if(r.clear){T$('screen').innerHTML='';labPrompt();return}
   for(var i=0;i<r.lines.length;i++)labPrint(labEl(r.lines[i].text,r.lines[i].cls));
   var bad=r.lines.some(function(x){return x.cls==='err'});
-  if(!labDone&&!bad&&taskI<TCFG.compiti.length&&TCFG.compiti[taskI].ok.test(line.trim())){
+  /* di norma un comando che sbaglia non conta come risposta. Ma un modulo
+     sull'irreversibilita' deve poter chiedere "premi il pulsante rosso" e
+     far avanzare il compito sul rifiuto: per questo ancheSeErrore, che di
+     default e' assente, quindi falso. */
+  var compito=taskI<TCFG.compiti.length?TCFG.compiti[taskI]:null;
+  if(!labDone&&compito&&(!bad||compito.ancheSeErrore)&&compito.ok.test(line.trim())){
     labPrint(labEl('  ✓ '+TCFG.compiti[taskI].q.replace(/<[^>]+>/g,''),'ok'));
     taskI++;
     if(taskI>=TCFG.compiti.length){labDone=true;labWin()}else labBanner();

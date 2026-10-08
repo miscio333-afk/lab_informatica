@@ -89,6 +89,7 @@ fra `index.html` e `lab.html`.
 | A1 | 🖥️ MAGO DEL TERMINALE | ⌨️ MANI D’ORO | La riga di comando | la finestra nera → il prompt (`matte@lab:~$`) → il comando (`ls` è un programma) → il percorso (`cd`, `/`, `~`) → la composizione (`*.txt`, `\|`) → **le mani: il comando è tuo** |
 | A2 | 🎨️ PRIMO CREATORE | 📄️ PRIMO FILE | Costruisci | l’idea → `mkdir` la cartella → `touch` il file vuoto → `>` scrive dentro → `>>` aggiunge senza cancellare → **rileggere con `cat`: ora è vero** |
 | A3 | 🔦️ SCAVATORE DI FILE | 🔎️ OCCHIO ACUTO | Cercare un file | 1000 file e non sai dove sia → `ls` non basta → `find` cerca per **nome** → `grep` cerca nel **contenuto** → `>` salva il risultato → **la domanda è tua: nessun computer indovina** |
+| A4 | 🖐️ MANO FERMA | 🎯️ SENZA RIMPIANTI | Il pulsante rosso | hai premuto invio → `rm` cancella senza chiedere → **senza ritorno**: qui non c’è il cestino → `-r` prenderebbe tutto, e qui non esiste → prima copia e verifica, poi cancelli → **decidi tu: la conferma la dai tu** |
 
 **A2 chiude la lacuna più grande del corso**: 21 moduli e nessuno aveva mai *creato* qualcosa.
 Con `>` e `>>` lo studente apre una scatola e ci scrive dentro — che è la lezione sulle variabili
@@ -102,9 +103,15 @@ advanced la chiusura è su **chi decide**: il modulo non termina con "un bit", t
 "Il mouse è nato per chi non ricordava i comandi; la riga di comando è rimasta per chi li
 ricorda". Stesso schema di rotazione, `PRIZES` chiude con `MANI` invece di `BIT`.
 
-**Nota sui prossimi moduli**: se il Blocco 7 proseguirà, applicare qui lo stesso criterio —
-chiudere su "cosa decidi tu" e non su "sono bit". Restano da decidere: 🗣️ DIFENSORE DEL GRUPPO
-(già impostato: chiude su `SCELTA`), ⚖️ L'IA SBAGLIA ANCHE, 🎨 COSTRUISCI.
+**Il percorso Advanced è completo: quattro moduli, A1 → A4.** Dopo IL PULSANTE ROSSO
+ci fermiamo: **SCRIPT resta fuori, per scelta.**
+
+**A4 è il punto in cui i due corsi si toccano.** Il corso base insegna che un file è un
+file e che le operazioni si rifanno. Qui si insegna che `rm` non chiede conferma e che
+`-r` non esiste: il rifiuto è **voluto**, e `man rm` lo dichiara invece di lasciarlo
+sembrare un bug. Il motore interpreta i flag proprio per poterli respingere in modo
+leggibile — prima `rm -rf lezioni` rispondeva «-rf: non esiste», cioè un rifiuto per
+sbaglio, che è la cosa peggiore da insegnare.
 
 ### Laboratorio — il terminale che funziona
 

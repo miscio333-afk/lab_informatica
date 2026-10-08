@@ -65,7 +65,7 @@ const r5=reg(1600,980,500,580);put(br,Bt,r5,'#a78bfa');
 const[Bv,bv]=BG(1600,900);tx(bv,'grep: dentro il contenuto',800,80,52,'#a78bfa');tx(bv,'il nome sta fuori dal file. la parola sta dentro',800,155,34,'#9db0dc');
 [['il NOME del file','leggiomi.txt','lo trova find'],['il CONTENUTO del file','Aula Informatica, 20 moduli...','lo trova grep']].forEach((r,i)=>{const y=225+i*125;bv.fillStyle=i?'#241a3d':'#151926';rr(bv,200,y,1200,110,14);bv.fill();bv.strokeStyle=i?'#a78bfa':'#2c3350';bv.lineWidth=4;bv.stroke();tx(bv,r[0],240,y+38,30,i?'#a78bfa':'#e9ecf5','left');tx(bv,r[1],240,y+80,28,'#9db0dc','left');tx(bv,r[2],1360,y+58,26,'#6b7694','right')});
 tx(bv,'due domande diverse, due comandi diversi',480,490,30,'#a78bfa');
-tx(bv,'lo stesso file puo rispondere a entrambe',800,858,30,'#a78bfa');
+tx(bv,'lo stesso file può rispondere a entrambe',800,858,30,'#a78bfa');
 const r4=reg(1600,980,500,580);put(bv,Br,r4,'#a78bfa');
 // ---- 2 · find: per nome
 const[Bi,bi]=BG(1600,900);tx(bi,'find: per nome, in tutto l\'albero',800,80,50,'#a78bfa');tx(bi,'non apri ogni cartella a mano: lui guarda al posto tuo',800,155,32,'#9db0dc');

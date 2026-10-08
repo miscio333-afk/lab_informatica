@@ -145,7 +145,7 @@ addEventListener('resize',size);size();new ResizeObserver(size).observe(st);
 // ---- quiz
 const QS=[
 {q:'La riga matte@lab:~$ cosa ti dice?',o:['Che il computer è pronto e ti ascolta','Che hai sbagliato il comando','Quanto manca alla fine della lezione','Che il computer è spento'],why:'Il prompt è la promessa del computer: ha capito chi sei e ti dice che puoi scrivere. Non è un errore: è l\'inizio di ogni comando.',h:'Il prompt è come: dimmi, sto qui.'},
-{q:'Il comando ls cosa fa?',o:['Elenca i file della cartella in cui sei','Cancella i file che non servono','Apre il browser a una pagina','Spegne il computer dopo un ora'],why:'ls è abbreviazione di list. Non è un comando magico: è il nome di un piccolo programma che guarda la cartella e scrive i nomi.',h:'ls viene da list: elenca.'},
+{q:'Il comando ls cosa fa?',o:['Elenca i file della cartella in cui sei','Cancella i file che non servono','Apre il browser a una pagina','Spegne il computer dopo un\'ora'],why:'ls è abbreviazione di list. Non è un comando magico: è il nome di un piccolo programma che guarda la cartella e scrive i nomi.',h:'ls viene da list: elenca.'},
 {q:'Il comando cd cambia cosa?',o:['La cartella in cui ti trovi','Il file che hai aperto','La velocità del computer','Il colore dello schermo'],why:'cd è change directory: il prompt mostra sempre dove sei. Dopo un cd, ls elenca un posto diverso.',h:'cd = change directory: cambi dove stai.'},
 {q:'Nel percorso, il simbolo ~ significa...',o:['La tua cartella home, quella con le tue cose','La cartella immediatamente sopra','Un file da cancellare subito','Il posto dove finiscono i file'],why:'~ è abbreviazione della tua home, la cartella personale. Con / si parte dalla radice del disco, con ~ si parte da casa.',h:'~ è il segno della home: è casa tua.'},
 {q:'Cosa fa il comando ls *.txt ?',o:['Elenca solo i file che finiscono con .txt','Elenca i file che iniziano con .txt','Rinomina tutti i file in .txt','Cancella i file .txt'],why:'L\'asterisco è il jolly: *.txt significa qualsiasi nome che finisce con .txt. Con il pipe | l\'output di un comando diventa l\'input di un altro.',h:'Il jolly * vuol dire qualsiasi: tutto quello che vuoi.'},
@@ -194,7 +194,7 @@ terminale({
  chips:['help','ls','pwd','cd','cat','tree','clear','man'],
  libero:['man ls','cat lezioni/20.txt','cd /','cat Foto/gita.jpg'],
  compiti:[
-  {q:'Digita <b>ls</b> e premi Invio: elenca cosa cè nella tua cartella.',ok:/^ls\s*$/i,tip:'Il comando è ls: tre lettere, L maiuscola e S piccola.'},
+  {q:'Digita <b>ls</b> e premi Invio: elenca cosa c\'è nella tua cartella.',ok:/^ls\s*$/i,tip:'Il comando è ls: tre lettere, L maiuscola e S piccola.'},
   {q:'Ora <b>pwd</b>: ti dice dove ti trovi.',ok:/^pwd\s*$/i,tip:'Tre lettere: p-w-d. Serve a capire in quale cartella sei.'},
   {q:'Entra in <b>Compiti</b>: <b>cd Compiti</b>.',ok:/^cd\s+compiti\/?\s*$/i,tip:'cd sta per change directory. Con uno spazio in mezzo scrivi: cd Compiti'},
   {q:'Elenca solo i file <b>.txt</b> con il jolly: <b>ls *.txt</b>.',ok:/^ls\s+\*\.txt\s*$/i,tip:'L’asterisco è il jolly: qualsiasi nome che finisce con .txt'},

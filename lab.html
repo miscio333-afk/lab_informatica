@@ -44,7 +44,7 @@ footer a{color:#15803d}
 <h1>Percorso Advanced</h1>
 <div class="sub">hands-on · il laboratorio · per chi ha finito il corso base</div>
 </header>
-<div id="progress"><div id="ptxt">Trofei: <b id="n">0</b> / 6</div><div id="barwrap"><div id="bar"></div></div><a id="resume" href="#">↻ Ricomincia da capo</a></div>
+<div id="progress"><div id="ptxt">Trofei: <b id="n">0</b> / 8</div><div id="barwrap"><div id="bar"></div></div><a id="resume" href="#">↻ Ricomincia da capo</a></div>
 <h2>— Il laboratorio —</h2><hr class="rule"><div class="grid" id="mods"></div>
 <h2>— Bacheca trofei —</h2><hr class="rule"><div id="cabinet"></div>
 <h2>— Prima di cominciare —</h2><hr class="rule">
@@ -56,18 +56,20 @@ footer a{color:#15803d}
 <footer><span>Percorso Advanced · progressi in <b>lab_badges</b>, separati dal corso base</span><a href="index.html">← Torna al corso base</a></footer>
 </div>
 <script>
-const TOTAL=6;
+const TOTAL=8;
 const MODS=[
  {f:'La riga di comando — zoom con domande.html',t:'La riga di comando',d:'Prompt, comandi, percorsi',b:'m_terminale',e:'🖥️',bt:'MAGO DEL TERMINALE'},
  {f:'Costruisci — zoom con domande.html',t:'Costruisci',d:'Crea cartelle, file, scrivi dentro',b:'m_costruisci',e:'🎨️',bt:'PRIMO CREATORE'},
- {f:'Cercare un file — zoom con domande.html',t:'Cercare un file',d:'find, grep, salvare i risultati',b:'m_cercare',e:'🔦️',bt:'SCAVATORE DI FILE'}];
+ {f:'Cercare un file — zoom con domande.html',t:'Cercare un file',d:'find, grep, salvare i risultati',b:'m_cercare',e:'🔦️',bt:'SCAVATORE DI FILE'}, {f:'Il pulsante rosso — zoom con domande.html',t:'Il pulsante rosso',d:'rm, -r che non esiste, mv',b:'m_pulsante',e:'🖐️',bt:'MANO FERMA'}];
 const TROPHIES=[
  {b:'m_terminale',      e:'🖥️',bt:'MAGO DEL TERMINALE'},
  {b:'m_terminale_lab',  e:'⌨️',bt:'MANI D’ORO'},
  {b:'m_costruisci',     e:'🎨️',bt:'PRIMO CREATORE'},
  {b:'m_costruisci_lab', e:'📄️',bt:'PRIMO FILE'},
  {b:'m_cercare',        e:'🔦️',bt:'SCAVATORE DI FILE'},
- {b:'m_cercare_lab',    e:'🔎️',bt:'OCCHIO ACUTO'}];
+ {b:'m_cercare_lab',    e:'🔎️',bt:'OCCHIO ACUTO'},
+ {b:'m_pulsante',     e:'🖐️',bt:'MANO FERMA'},
+ {b:'m_pulsante_lab', e:'🎯️',bt:'SENZA RIMPIANTI'}];
 function won(){try{return JSON.parse(localStorage.getItem('lab_badges')||'{}')}catch(e){return{}}}
 function renderAll(){
  const W=won(),g=document.getElementById('mods'),c=document.getElementById('cabinet');
@@ -75,7 +77,7 @@ function renderAll(){
  let n=0;
  MODS.forEach((m,i)=>{const w=!!W[m.b];
   const a=document.createElement('a');a.className='card'+(w?' done':'');a.href=m.f;
-  a.innerHTML='<div class="num">MODULO '+(i+1)+' / '+MODS.length+'</div><h3>'+m.e+' '+m.t+'</h3><p>'+m.d+'<br>🏆 '+m.bt+(W.m_terminale_lab?' · ⌨️ MANI D’ORO':'')+'</p><span class="go">→</span>';g.appendChild(a)});
+  a.innerHTML='<div class="num">MODULO '+(i+1)+' / '+MODS.length+'</div><h3>'+m.e+' '+m.t+'</h3><p>'+m.d+'<br>🏆 '+m.bt+(W[m.b+'_lab']?' · ⌨️ completato':'')+'</p><span class="go">→</span>';g.appendChild(a)});
  TROPHIES.forEach(t=>{const w=!!W[t.b];if(w)n++;
   const s=document.createElement('div');s.className='slot'+(w?' won':'');
   s.innerHTML='<div class="em">'+(w?t.e:'·')+'</div><div>'+(w?t.bt:'???')+'</div>';c.appendChild(s)});

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="utf-8">
+<title>Il pulsante rosso — zoom con domande</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;margin:0;background:#05060a;color:#e9ecf5;font-family:ui-monospace,Menlo,Consolas,monospace}
+body{display:flex;align-items:center;justify-content:center}
+#st{position:relative;aspect-ratio:16/9;width:min(100vw,177.78vh);min-height:240px;overflow:hidden;background:#000}
+canvas{display:block;width:100%!important;height:100%!important}
+#hud{position:absolute;left:3%;bottom:15%;padding:.8em 1em;background:rgba(5,6,10,.62);border:1px solid rgba(255,255,255,.18);border-radius:8px;backdrop-filter:blur(6px);font-size:clamp(10px,1.6vw,16px);min-width:14em}
+#hud b{display:block;font-size:1.25em}#hud span{color:#dc2626}#hud small{display:block;opacity:.65;margin-top:.3em}
+#zf{position:absolute;right:3%;top:5%;font-size:clamp(11px,2vw,22px);color:#dc2626;text-shadow:0 0 8px #000}
+#ctl{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:.9em;padding:.7em 3% 1em;background:linear-gradient(transparent,rgba(0,0,0,.7));font-size:clamp(10px,1.5vw,15px)}
+#pb{flex:none;width:2.6em;height:2.6em;border:0;border-radius:50%;background:#dc2626;color:#05060a;font:inherit;cursor:pointer}
+#slw{flex:1;position:relative;display:flex}
+.tk{position:absolute;top:50%;width:11px;height:11px;margin:-5px 0 0 -5px;border-radius:50%;background:#666;border:2px solid #05060a;pointer-events:none}.tk.ok{background:#dc2626}
+#sl{width:100%;accent-color:#dc2626;height:2em;cursor:pointer}
+#tm{flex:none;min-width:7.5em;text-align:right;opacity:.8}
+#lad{position:absolute;right:3%;bottom:17%;display:flex;flex-direction:column-reverse;gap:4px;font-size:clamp(9px,1.3vw,13px);max-height:38%;overflow:hidden}
+.rg{background:rgba(5,6,10,.7);border:1px solid #2c3a63;color:#8b93b0;border-radius:6px;padding:.35em .7em;text-align:center;white-space:nowrap;text-transform:uppercase;letter-spacing:.06em}
+.rg.cur{background:#dc2626;color:#111;font-weight:800;border-color:#dc2626;box-shadow:0 0 12px #dc2626}
+.rg.done{background:#2e1113;color:#dc2626;border-color:#dc2626}
+#qo button.reading{border-color:#dc2626;box-shadow:0 0 10px #dc2626}
+#qt .wkw.on,#qf .wkw.on{background:#dc2626;color:#111;border-radius:4px;padding:0 .15em}
+#q{position:absolute;left:3%;top:8%;width:min(44%,27em);padding:1em 1.1em;background:rgba(5,6,10,.55);border:1px solid rgba(220,38,38,.5);border-radius:10px;backdrop-filter:blur(8px);font:clamp(10px,1.45vw,15px) system-ui,sans-serif;max-height:78%;overflow-y:auto;overflow-wrap:break-word}
+#q[hidden]{display:none}
+#qn{color:#dc2626;font-family:ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase}
+#qt{margin:.5em 0 .8em;font-size:1.15em;line-height:1.35;overflow-wrap:break-word}
+#qo button{display:block;width:100%;text-align:left;margin:.35em 0;padding:.6em .8em;background:#151926;color:#e9ecf5;border:1px solid #2c3350;border-radius:8px;font:inherit;cursor:pointer}
+#qo button:hover:not(:disabled){border-color:#dc2626}
+#qo button.ok{background:#2e1113;border-color:#dc2626}
+#qo button.no{background:#3a1820;border-color:#ff6b6b;opacity:.7}
+#qf{margin:.6em 0 0;line-height:1.4}
+#qb{margin-top:.7em;background:#dc2626;color:#05060a;border:0;border-radius:6px;padding:.6em 1em;font:inherit;cursor:pointer}
+@media(max-width:640px){#ql{margin-left:0;margin-top:.5em;width:100%}#tprog{float:none;display:block}}
+@media(max-width:640px){#q{left:3%;right:3%;width:auto;top:auto;bottom:16%}.asking #hud{display:none}}
+</style></head><body>
+<div id="st"><div id="hud"><small id="n"></small><b id="t"></b><span id="s"></span></div><div id="zf"></div>
+<div id="q" hidden><small id="qn"></small><p id="qt"></p><div id="qo"></div><p id="qf"></p><button id="qb" hidden></button></div>
+<div id="lad"></div><div id="ctl"><button id="pb" aria-label="Play / pausa">▶</button><div id="slw"><input id="sl" type="range" min="0" max="1000" value="0" step="1" aria-label="Scorri l’animazione"></div><span id="tm"></span><button id="mb" aria-label="Audio on/off" style="flex:none;width:2.6em;height:2.6em;border:0;border-radius:50%;background:#dc2626;color:#05060a;font:inherit;cursor:pointer">🔊</button></div></div>
+<audio id="fx-whoosh" src="audio-pulsante/whoosh.mp3" preload="auto"></audio>
+<audio id="fx-pop" src="audio-pulsante/pop.mp3" preload="auto"></audio>
+<audio id="fx-fan" src="audio-pulsante/fanfare.mp3" preload="auto"></audio>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const A=16/9,mk=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c};
+const rr=(c,x,y,w,h,r)=>{c.beginPath();c.roundRect?c.roundRect(x,y,w,h,r):c.rect(x,y,w,h)};
+const reg=(W,x,y,w)=>{const H=W*9/16,h=w*9/16;return{x,y,w,h,k:w/W,c:[((x+w/2)/W-.5)*A,.5-(y+h/2)/H]}};
+const tx=(c,s,x,y,sz,col,al)=>{c.font='bold '+sz+'px ui-monospace,Menlo,Consolas,monospace';c.fillStyle=col;c.textAlign=al||'center';c.textBaseline='middle';c.fillText(s,x,y)};
+const put=(c,img,r,col)=>{c.save();c.globalAlpha=.62;c.drawImage(img,r.x,r.y,r.w,r.h);c.restore();c.strokeStyle=col||'rgba(255,255,255,.6)';c.lineWidth=Math.max(2,r.w/150);c.strokeRect(r.x,r.y,r.w,r.h)};
+const BG=(w,h)=>{const c=mk(w,h),x=c.getContext('2d');x.fillStyle='#0b0507';x.fillRect(0,0,w,h);return[c,x]};
+// ---- 5 · Decidi tu
+const[Bt,bt]=BG(1600,900);tx(bt,'decidi tu',800,80,56,'#dc2626');tx(bt,'il pulsante non sa cosa stai per perdere',800,155,36,'#9db0dc');
+[['leggi','man rm: cosa fa davvero'],['guarda','ls: cosa c\'è dentro'],['poi decidi','solo tu se era giusto']].forEach(function(r,i){
+  var x=180+i*480;bt.fillStyle=i===2?'#2e1113':'#151926';rr(bt,x,240,420,200,16);bt.fill();
+  bt.strokeStyle=i===2?'#dc2626':'#2c3350';bt.lineWidth=4;bt.stroke();
+  tx(bt,r[0],x+210,300,40,i===2?'#dc2626':'#e9ecf5');tx(bt,r[1],x+210,378,26,'#9db0dc')});
+tx(bt,'una lettera sbagliata e un file che non c\'è più',800,560,38,'#dc2626');
+bt.fillStyle='#151926';rr(bt,300,650,1000,110,16);bt.fill();bt.strokeStyle='#2c3350';bt.lineWidth=4;bt.stroke();
+tx(bt,'il computer esegue. tu avevi deciso di fidarti',800,705,30,'#dc2626');
+// ---- 4 · Prima, poi
+const[Br,br]=BG(1600,900);tx(br,'prima, poi',800,80,52,'#dc2626');tx(br,'cancellare si fa in tre mosse, non in una',800,155,34,'#9db0dc');
+[['cp leggiomi.txt copia.txt','1. copi'],['cat copia.txt','2. verifichi che la copia sia buona'],['rm copia.txt','3. e solo adesso cancelli']].forEach(function(r,i){
+  var y=205+i*125;br.fillStyle=i===2?'#2e1113':'#151926';rr(br,150,y,1300,110,14);br.fill();
+  br.strokeStyle=i===2?'#dc2626':'#2c3350';br.lineWidth=4;br.stroke();
+  tx(br,r[0],190,y+42,32,i===2?'#dc2626':'#e9ecf5','left');tx(br,r[1],190,y+84,26,'#9db0dc','left')});
+tx(br,'hai cancellato una copia. l’originale è ancora lì',800,858,32,'#dc2626');
+const r5=reg(1600,980,500,580);put(br,Bt,r5,'#dc2626');
+// ---- 3 · Tutto o nulla
+const[Bv,bv]=BG(1600,900);tx(bv,'tutto o nulla',800,80,52,'#dc2626');tx(bv,'-r non chiede: prende tutto quello che c\'è dentro',800,155,34,'#9db0dc');
+bv.fillStyle='#2e1113';rr(bv,300,225,1000,80,14);bv.fill();bv.strokeStyle='#dc2626';bv.lineWidth=4;bv.stroke();
+tx(bv,'rm -rf lezioni',800,265,34,'#dc2626');
+bv.fillStyle='#0b0507';rr(bv,220,335,1160,150,14);bv.fill();bv.strokeStyle='#2c3350';bv.lineWidth=4;bv.stroke();
+tx(bv,'30 file. 3 cartelle dentro. una lettera sola.',800,382,28,'#e9ecf5');
+tx(bv,'una cartella con dentro non viene MAI cancellata da rm',800,422,28,'#9db0dc');
+tx(bv,'nel terminale di scuola il pulsante rosso non ha -r: non puoi usarlo per sbaglio',480,490,26,'#9db0dc');
+tx(bv,'se vuoi liberarti di una cartella, spostala: mv lezioni backup',800,858,28,'#dc2626');
+const r4=reg(1600,980,500,580);put(bv,Br,r4,'#dc2626');
+// ---- 2 · Senza ritorno
+const[Bi,bi]=BG(1600,900);tx(bi,'senza ritorno',800,80,52,'#dc2626');tx(bi,'sulla scrivania c\'è il cestino. qui no',800,155,34,'#9db0dc');
+[['nel desktop','lo butti, poi torni indietro'],['nel terminale','lo cancelli, e non c\'è più']].forEach(function(r,i){
+  var y=230+i*130;bi.fillStyle=i?'#2e1113':'#151926';rr(bi,220,y,1160,115,14);bi.fill();
+  bi.strokeStyle=i?'#dc2626':'#2c3350';bi.lineWidth=4;bi.stroke();
+  tx(bi,r[0],260,y+42,32,i?'#dc2626':'#e9ecf5','left');tx(bi,r[1],260,y+86,26,'#9db0dc','left')});
+tx(bi,'per questo si fa prima una copia: se sbagli, la copia c\'è ancora',480,500,28,'#9db0dc');
+tx(bi,'mv non cancella niente: sposta. ed è la via che questo terminale ti lascia',800,858,28,'#dc2626');
+const r3=reg(1600,980,500,580);put(bi,Bv,r3,'#dc2626');
+// ---- 1 · Cancellare
+const[Bs,bs]=BG(1600,900);tx(bs,'rm è secco',800,80,52,'#dc2626');tx(bs,'nessuna domanda, nessun avviso, nessun “sei sicuro?”',800,155,32,'#9db0dc');
+bs.fillStyle='#151926';rr(bs,420,215,760,80,14);bs.fill();bs.strokeStyle='#dc2626';bs.lineWidth=4;bs.stroke();
+tx(bs,'rm leggiomi.txt',800,255,34,'#dc2626');
+bs.fillStyle='#0b0507';rr(bs,240,335,1120,150,14);bs.fill();bs.strokeStyle='#2c3350';bs.lineWidth=4;bs.stroke();
+tx(bs,'prima:  leggiomi.txt   gita.jpg   appunti.txt',800,382,26,'#9db0dc');
+tx(bs,'dopo:   gita.jpg   appunti.txt',800,432,26,'#e9ecf5');
+tx(bs,'non chiede conferma: il terminale fa quello che gli hai detto',480,505,26,'#9db0dc');
+tx(bs,'la conferma devi dartela tu, prima di premere invio',800,858,28,'#dc2626');
+const r2=reg(1600,980,500,580);put(bs,Bi,r2,'#dc2626');
+// ---- 0 · Il momento
+const P0=mk(1920,1080),p0=P0.getContext('2d');p0.fillStyle='#0b0507';p0.fillRect(0,0,1920,1080);
+p0.fillStyle='#1c0d0f';rr(p0,460,150,1000,420,24);p0.fill();p0.strokeStyle='#dc2626';p0.lineWidth=6;p0.stroke();
+tx(p0,'il momento',960,230,44,'#9db0dc');
+tx(p0,'hai premuto invio.',960,325,50,'#dc2626');
+tx(p0,'il file non c\'è più.',960,395,50,'#dc2626');
+tx(p0,'nessuno ti chiede se hai digitato bene.',960,485,32,'#9db0dc');
+tx(p0,'un file cancellato non torna. un file creato, sì.',960,975,34,'#e9ecf5');
+const r1=reg(1920,1010,600,580);put(p0,Bs,r1,'#dc2626');
+const NODE=[{cv:P0,par:-1},{cv:Bs,par:0,r:r1},{cv:Bi,par:1,r:r2},{cv:Bv,par:2,r:r3},{cv:Br,par:3,r:r4},{cv:Bt,par:4,r:r5}],N=6,depth=[0,1,2,3,4,5];
+const ren=new THREE.WebGLRenderer({antialias:true}),st=document.getElementById('st');st.prepend(ren.domElement);
+const sc=new THREE.Scene(),cam=new THREE.OrthographicCamera(-A/2,A/2,.5,-.5,-10,10),aniso=ren.capabilities.getMaxAnisotropy(),grp=[],Sx=[1],Cx=[[0,0]];
+NODE.forEach((n,j)=>{const tex=new THREE.CanvasTexture(n.cv);tex.anisotropy=aniso;
+ const mesh=new THREE.Mesh(new THREE.PlaneGeometry(A,1),new THREE.MeshBasicMaterial({map:tex,depthTest:false,depthWrite:false}));mesh.renderOrder=depth[j];mesh.frustumCulled=false;
+ const gp=new THREE.Group();gp.add(mesh);grp.push(gp);
+ if(j){const P=NODE[j].par;grp[P].add(gp);gp.position.set(n.r.c[0],n.r.c[1],0);gp.scale.setScalar(n.r.k);Sx[j]=Sx[P]*n.r.k;Cx[j]=[Cx[P][0]+Sx[P]*n.r.c[0],Cx[P][1]+Sx[P]*n.r.c[1]]}});
+sc.add(grp[0]);
+// ---- trajet continu (zoom/pan à la van Wijk)
+const RHO=1.41;
+function vw(c0,w0,c1,w1,g){const dx=c1[0]-c0[0],dy=c1[1]-c0[1],d=Math.hypot(dx,dy);
+ if(d<1e-12)return[c0,w0*Math.pow(w1/w0,g),Math.abs(Math.log(w1/w0))/RHO];
+ const q=RHO*RHO,b0=(w1*w1-w0*w0+q*q*d*d)/(2*w0*q*d),b1=(w1*w1-w0*w0-q*q*d*d)/(2*w1*q*d),r0=Math.log(Math.sqrt(b0*b0+1)-b0),r1=Math.log(Math.sqrt(b1*b1+1)-b1),S=(r1-r0)/RHO,s=g*S;
+ const u=w0/q*Math.cosh(r0)*Math.tanh(RHO*s+r0)-w0/q*Math.sinh(r0),w=w0*Math.cosh(r0)/Math.cosh(RHO*s+r0),f=u/d;return[[c0[0]+dx*f,c0[1]+dy*f],w,S]}
+const W=Sx.map(x=>x*A),DU=[],T0=[0];
+for(let j=0;j<N-1;j++){const S=vw(Cx[j],W[j],Cx[j+1],W[j+1],1)[2];DU.push(Math.max(3.6,Math.min(6,2+1.6*S)));T0.push(T0[j]+DU[j])}
+const DUR=T0[N-1],sm=x=>x*x*(3-2*x),$=i=>document.getElementById(i);
+const PRIZES=['IL MOMENTO','CANCELLARE','SENZA RITORNO','TUTTO O NULLA','PRIMA POI','DECIDI TU'];
+PRIZES.forEach(p=>{const d=document.createElement('div');d.className='rg';d.textContent=p;$('lad').appendChild(d)});
+let audioOn=true,audioUnlocked=false,qdPlayed={},lastCtx=null,karTimer=null;
+addEventListener('pointerdown',()=>{audioUnlocked=true},{once:false});
+function paintLad(){const n=a;document.querySelectorAll('.rg').forEach((r,i)=>{r.className='rg'+(i<n?' done':i===n?' cur':'')})}
+function stopKar(){if(karTimer){clearInterval(karTimer);karTimer=null}document.querySelectorAll('.wkw.on').forEach(x=>x.classList.remove('on'))}
+function wrapWords(el){const t=el.textContent;el.innerHTML='';t.split(/(\s+)/).forEach(w=>{if(!w)return;const s=document.createElement('span');if(/^\s+$/.test(w)){s.textContent=w}else{s.className='wkw';s.textContent=w}el.appendChild(s)})}
+function startKar(el,audio){stopKar();if(!el||!audio)return;wrapWords(el);const words=[...el.querySelectorAll('.wkw')];if(!words.length)return;karTimer=setInterval(()=>{const d=audio.duration;if(!d||!isFinite(d)||audio.paused||audio.ended)return;const i=Math.min(words.length-1,Math.floor(audio.currentTime/d*words.length));words.forEach((w,j)=>w.classList.toggle('on',j<=i))},120)}
+function stopAllQ(){stopKar();for(let i=0;i<6;i++){['q','ok','h'].forEach(p=>{const a2=$(p+i);if(a2)a2.pause()})}stopSeq()}
+let seqOn=false;
+function stopSeq(){seqOn=false;for(let i=0;i<4;i++){const s=$('sfx'+i);if(s){s.onended=null;try{s.pause()}catch(e){}}}document.querySelectorAll('#qo button.reading').forEach(x=>x.classList.remove('reading'))}
+function playSeq(id,order,btns){stopSeq();if(!audioOn||!audioUnlocked)return;seqOn=true;const items=[];order.forEach((o,bi)=>{items.push({el:$('sfx'+bi),btn:btns[bi]})});let k=0;const next=()=>{if(!seqOn||!audioOn||k>=items.length)return;const it=items[k++];if(!it.el){next();return}it.btn.classList.add('reading');it.el.onended=()=>{it.btn.classList.remove('reading');next()};try{it.el.currentTime=0;it.el.play().catch(()=>{next()})}catch(e){next()}};next()}
+function speak(i){if(!audioOn||!audioUnlocked||i===0)return;const a3=$('fx-whoosh');if(!a3)return;try{a3.currentTime=0;a3.play().catch(()=>{})}catch(e){}}
+function speakQ(p,i){if(!audioOn||!audioUnlocked)return;stopAllQ();if(p==='q'){const f=$('fx-pop');if(f){try{f.currentTime=0;f.play().catch(()=>{})}catch(e){}}}const a4=$(p+i);if(!a4)return;try{a4.currentTime=0;a4.play().catch(()=>{})}catch(e){}}
+function replayQ(){if(!lastCtx||shown<0||shown>5||lastCtx.id!==shown)return;stopAllQ();stopSeq();qdPlayed[shown]=true;speakQ('q',shown);startKar($('qt'),$('q'+shown));const qel=$('q'+shown);if(qel)qel.onended=()=>playSeq(shown,lastCtx.order,lastCtx.btns)}
+$('mb').onclick=()=>{audioOn=!audioOn;$('mb').textContent=audioOn?'🔊':'🔇';if(!audioOn){stopAllQ();stopSeq();['fx-whoosh','fx-pop','fx-fan'].forEach(f=>{const w=$(f);if(w)w.pause()})}};
+const labs=[['Il momento','premi, e non torna indietro'],['Cancellare','rm è secco'],['Senza ritorno','qui non c’è il cestino'],['Tutto o nulla','-r prenderebbe tutto'],['Prima, poi','copia, guarda, poi cancella'],['Decidi tu','leggi due volte']];
+let last=-1;
+function frame(tm){let j=0;while(j<N-2&&tm>=T0[j+1])j++;const tau=Math.max(0,Math.min(1,(tm-T0[j])/DU[j])),r=vw(Cx[j],W[j],Cx[j+1],W[j+1],sm(tau)),s=A/r[1];
+ grp[0].scale.setScalar(s);grp[0].position.set(-r[0][0]*s,-r[0][1]*s,0);ren.render(sc,cam);
+ const idx=tau<.5?j:j+1;if(idx!==last){last=idx;$('n').textContent='0'+(idx+1)+' / 0'+N;$('t').textContent=labs[idx][0];$('s').textContent=labs[idx][1];speak(idx)}
+ $('zf').textContent='×'+s.toLocaleString('it-IT',{maximumFractionDigits:s<10?1:0})}
+function size(){const w=Math.max(2,st.clientWidth);ren.setPixelRatio(Math.min(devicePixelRatio||1,2));ren.setSize(w,Math.round(w*9/16),false)}
+addEventListener('resize',size);size();new ResizeObserver(size).observe(st);
+// ---- quiz
+const QS=[
+{q:'Cosa fa il comando rm leggiomi.txt ?',o:['Cancella il file, senza chiedere conferma','Chiede: sei sicuro? e poi aspetta la risposta','Sposta il file nel cestino, come sul desktop'],why:'rm cancella e basta: nessuna domanda, nessun avviso. Sul desktop sbagli una lettera e recuperi dal cestino; qui la conferma devi dartela tu, prima di premere invio.',h:'rm cancella subito, senza chiedere.'},
+{q:'Cosa ti succede se sbagli a digitare il nome del file?',o:['Vai nel terminale col comando rm sbagliato, e lo fai sparire per sempre','Il terminale ti chiede il file giusto','Nessuna conseguenza: nel terminale non si sbaglia'],why:'Il terminale esegue alla lettera. Se il nome che scrivi non esiste, il comando fallisce; ma appena il nome esiste, lo cancella. Per questo il nome va letto prima di premere invio.',h:'Se il nome che scrivi esiste, rm lo cancella.'},
+{q:'Perché conviene fare una copia prima di cancellare?',o:['Perché se ti sei sbagliato, la copia c\'è ancora lì','Perché la copia occupa meno spazio del file originale','Perché senza copia rm non funziona'],why:'cp prima, cat per controllare che la copia sia buona, e solo poi rm: così cancelli una copia e l’originale resta. Il comando rm esiste per sbagliare sul nome, non per cancellare in fretta.',h:'Copia, controlla, e solo poi cancella.'},
+{q:'Prova rm -rf lezioni. Cosa ti risponde questo terminale?',o:['Che -r non è disponibile: una cartella con dentro non viene mai cancellata','Che la cartella lezioni non esiste','Che servono i permessi di amministratore'],why:'In questo terminale -r non esiste, e il rifiuto è voluto: nessuna cartella con dentro viene mai cancellata, nemmeno con -rf. È il modo per non perdere trenta file con una lettera sbagliata.',h:'Qui -r non esiste: il rifiuto è voluto.'},
+{q:'Se una cartella non ti serve più, che cosa fai?',o:['La sposti con mv, e così non cancelli nulla','La cancelli con rm, come un file qualsiasi','Non si può fare niente'],why:'mv sposta e non cancella: è la via che questo terminale ti lascia per liberarti di una cartella. Spostare è gratis e reversibile, cancellare no.',h:'mv sposta senza cancellare: è la via sicura.'},
+{q:'Cosa ti insegna un pulsante che non chiede conferma?',o:['Che la conferma devi darla tu, prima di premere','Che il computer non ti capisce','Che conviene non usare mai il terminale'],why:'Un comando che non chiede conferma sposta la responsabilità su chi lo preme. Il pulsante rosso non è pericoloso in sé: è pericoloso quando lo premi senza aver letto. La mano ferma è la lezione.',h:'La conferma la dai tu, prima di premere.'}];
+
+QS.forEach(q=>{q.o=q.o.map((x,i)=>({x,ok:i===0,oi:i}));for(let i=q.o.length-1;i>0;i--){const k=Math.random()*(i+1)|0;[q.o[i],q.o[k]]=[q.o[k],q.o[i]]}});
+let tm=0,playing=false,prev=null,a=0,first=[],shown=-2,review=false,watch=false;//REVIEW_PATCH
+function enterReview(){review=true;try{stopAllQ()}catch(e){}try{stopSeq()}catch(e){}qd.hidden=true;st.classList.remove('asking');shown=-2;tm=0;sl.value=0;playing=true;setPb();const qx=document.createElement('button');qx.id='qx';qx.textContent='✕ Esci dal ripasso';qx.style.cssText='position:absolute;left:3%;top:3%;z-index:50;background:#dc2626;color:#111;border:0;border-radius:8px;padding:.5em 1em;font:inherit;cursor:pointer';qx.onclick=()=>{review=false;playing=false;qx.remove();tm=DUR;shown=-2;sl.value=1000;setPb()};document.getElementById('st').appendChild(qx)}
+const sl=$('sl'),pb=$('pb'),tmx=$('tm'),qd=$('q'),qn=$('qn'),qt=$('qt'),qo=$('qo'),qf=$('qf'),qb=$('qb');
+T0.forEach(v=>{const e=document.createElement('i');e.className='tk';e.style.left=v/DUR*100+'%';$('slw').appendChild(e)});
+const paintTicks=()=>document.querySelectorAll('.tk').forEach((e,j)=>e.classList.toggle('ok',j<a));
+const lim=()=>(review||watch)?DUR:(a<N?T0[a]:DUR),fmt=x=>x.toFixed(1).replace('.',',');
+const setPb=()=>pb.textContent=playing?'❚❚':(a===N&&tm>=DUR-.01?'↻':'▶');
+function card(){if(review||watch){if(shown!==-2){shown=-2;qd.hidden=true;st.classList.remove('asking')}return}const vis=!playing&&tm>=lim()-.01,id=vis?a:-1;if(id===shown)return;shown=id;qd.hidden=id<0;st.classList.toggle('asking',id>=0);if(id<0)return;
+ qf.textContent='';qb.hidden=true;qo.innerHTML='';
+ function ciiModal(e,n){if(document.getElementById('ciimov'))return;const st=document.createElement('style');st.textContent='#ciimov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);z-index:99}#ciibox{background:#fffbeb;border:5px solid #b98a1d;border-radius:20px;padding:44px 52px;text-align:center;max-width:82%;animation:ciipop .5s cubic-bezier(.2,1.6,.4,1);font-family:system-ui,sans-serif;color:#1c1917}@keyframes ciipop{from{transform:scale(.4) rotate(-6deg);opacity:0}}#ciibox .em{font-size:84px}#ciibox h2{margin:10px 0 4px;font-size:34px;letter-spacing:.06em}#ciibox p{margin:0 0 20px;font-size:19px}#ciirev{background:#dc2626;color:#111;border:0;border-radius:12px;padding:14px 28px;font-size:18px;font-weight:800;cursor:pointer;margin-left:10px}#ciigo{background:#1c1917;color:#f4efe4;border:0;border-radius:12px;padding:14px 40px;font-size:20px;font-weight:800;cursor:pointer}';document.head.appendChild(st);const m=document.createElement('div');m.id='ciimov';m.innerHTML='<div id="ciibox"><div class="em">'+e+'</div><h2>TROFEO SBLOCCATO!</h2><p>'+n+'</p><button id="ciigo">Continua →</button> <button id="ciirev">▶ Rivedi la lezione</button></div>';document.getElementById('st').appendChild(m);document.getElementById('ciigo').onclick=()=>{location.href='lab.html'};document.getElementById('ciirev').onclick=()=>{document.getElementById('ciimov').remove();enterReview()}}
+const CIIBADGES={m_pulsante:['🖐️','MANO FERMA']};
+function ciiWin(k){try{const w=JSON.parse(localStorage.getItem('lab_badges')||'{}');w[k]=1;localStorage.setItem('lab_badges',JSON.stringify(w));const b=CIIBADGES[k];if(b)ciiModal(b[0],b[1])}catch(e){console.error('[ciiWin] ERROR:',e)}}
+ if(id===N){ciiWin('m_pulsante');qn.textContent='Completato · 🎰 HAI VINTO: '+PRIZES[Math.max(0,a-1)]+'!';qt.textContent='Hai risposto bene al primo tentativo a '+first.filter(Boolean).length+' domande su '+N+'. Ora sai che rm cancella senza chiedere, che -r qui non esiste e che mv sposta senza cancellare. E la cosa che conta di più: un file cancellato non torna indietro. La conferma la dai tu, prima di premere.';qb.textContent='↻ Ricomincia il quiz';qb.hidden=false;const fw=$('fx-fan');if(fw&&audioOn&&audioUnlocked){try{fw.currentTime=0;fw.play().catch(()=>{})}catch(e){}}qb.onclick=()=>{a=0;first=[];tm=0;shown=-2;review=false;qdPlayed={};lastCtx=null;paintLad();paintTicks();sl.value=0;const qx=document.getElementById('qx');if(qx)qx.remove()};return}
+ const q=QS[id];let tries=0;qn.textContent='Domanda '+(id+1)+' / '+N;qt.textContent=q.q;
+ const btns=[];q.o.forEach((o,bi)=>{const bt=document.createElement('button');bt.textContent='ABCD'[bi]+' - '+o.x;btns.push({b:bt,o});bt.onclick=()=>{tries++;stopSeq();stopKar();
+  if(o.ok){bt.className='ok';qo.querySelectorAll('button').forEach(x=>x.disabled=true);qf.textContent='✔ Esatto! '+q.why;first[id]=tries===1;speakQ('ok',id);startKar($('qf'),$('ok'+id));qb.textContent=id<N-1?'Continua ▶':'Concludi';qb.hidden=false;
+   qb.onclick=()=>{stopAllQ();stopSeq();a++;paintLad();paintTicks();if(id<N-1)playing=true;setPb()}}
+  else{bt.className='no';bt.disabled=true;qf.textContent='✘ Non proprio. '+q.h+' Riprova.';if(tries===1){speakQ('h',id);startKar($('qf'),$('h'+id))}}};qo.appendChild(bt)});lastCtx={id,order:q.o,btns:btns.map(x=>x.b)};if(!qdPlayed[id]){qdPlayed[id]=true;speakQ('q',id);startKar($('qt'),$('q'+id));const qel=$('q'+id);if(qel)qel.onended=()=>playSeq(id,q.o,btns.map(x=>x.b))}}
+function loop(now){if(prev===null)prev=now;const dt=Math.min(.1,(now-prev)/1000);prev=now;
+ if(playing){tm+=dt;const L=lim();if(tm>=L){tm=L;playing=false}sl.value=tm/DUR*1000}
+  setPb();card();
+ try{frame(tm)}catch(e){document.body.insertAdjacentHTML('beforeend','<pre style="position:fixed;top:0;left:0;color:#f88;font-size:12px;white-space:pre-wrap">Errore: '+e.message+'</pre>');return}
+ tmx.textContent=fmt(tm)+' s / '+fmt(DUR)+' s';requestAnimationFrame(loop)}
+sl.addEventListener('input',()=>{audioUnlocked=true;playing=false;tm=Math.min(sl.value/1000*DUR,lim());sl.value=tm/DUR*1000});
+pb.onclick=()=>{audioUnlocked=true;if(shown>=0&&shown<N){replayQ();return}if(a<N&&tm>=lim()-.01)return;if(a===N&&tm>=DUR-.01)tm=0;playing=!playing;setPb()};
+addEventListener('keydown',e=>{if(e.code==='Space'&&e.target!==sl&&e.target.tagName!=='BUTTON'){e.preventDefault();pb.click()}});
+const ws=document.createElement('div');ws.id='wstart';ws.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.72);z-index:99';ws.innerHTML='<div style="background:#fffbeb;border:5px solid #1c1917;border-radius:20px;padding:36px 44px;text-align:center;max-width:84%;font-family:system-ui,sans-serif;color:#1c1917"><div style="font-size:64px">🎬</div><h2 style="margin:10px 0 4px;font-size:30px">Come vuoi iniziare?</h2><p style="margin:0 0 18px;font-size:17px">Guarda la lezione, salta alle domande, o prova subito il terminale.</p><div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center"><button id="wwatch" style="background:#dc2626;color:#111;border:0;border-radius:12px;padding:14px 28px;font-size:18px;font-weight:800;cursor:pointer">▶ Guarda la lezione</button><button id="wquiz" style="background:#1c1917;color:#f4efe4;border:0;border-radius:12px;padding:14px 28px;font-size:18px;font-weight:800;cursor:pointer">❓ Vai alle domande</button></div></div>';document.getElementById('st').appendChild(ws);function showQw(){if(document.getElementById('qw'))return;const b=document.createElement('button');b.id='qw';b.textContent='❓ Inizia le domande';b.style.cssText='position:absolute;left:3%;top:3%;z-index:50;background:#dc2626;color:#05060a;border:0;border-radius:8px;padding:.5em 1em;font:inherit;cursor:pointer';try{const qx=document.getElementById('qx');if(qx)qx.remove()}catch(e){}b.onclick=()=>{watch=false;review=false;b.remove();a=0;first=[];tm=0;shown=-2;qdPlayed={};lastCtx=null;paintLad();paintTicks();sl.value=0;playing=true;setPb()};document.getElementById('st').appendChild(b)}document.getElementById('wwatch').onclick=()=>{audioUnlocked=true;watch=true;ws.remove();tm=0;sl.value=0;playing=true;setPb();showQw()};document.getElementById('wquiz').onclick=()=>{audioUnlocked=true;ws.remove();playing=true;setPb()};paintTicks();paintLad();requestAnimationFrame(loop);
+
+</script>
+<link rel="stylesheet" href="terminale.css">
+<script src="terminale.js"></script>
+<script>
+terminale({
+ modulo:'Il pulsante rosso',
+ header:'guarda, copia, e solo poi cancella',
+ acc:'#dc2626',
+ labKey:'m_pulsante_lab',
+ labNome:'SENZA RIMPIANTI',
+ home:'lab.html',
+ chips:['help','ls','cat','cp','mv','rm','man','clear'],
+ libero:['rm -rf lezioni','man rm','ls backup','cp lezioni backup -r','rm backup/leggiomi.txt'],
+ compiti:[
+  {q:'Prima di toccare qualsiasi cosa, <b>guarda</b>: <b>ls lezioni</b>.',ok:/^ls\s+lezioni\/?\s*$/i,tip:'Con uno spazio: ls lezioni'},
+  {q:'Ora fai la copia: <b>cp leggiomi.txt copia.txt</b>.',ok:/^cp\s+leggiomi\.txt\s+copia\.txt\s*$/i,tip:'cp sta per copia: cp leggiomi.txt copia.txt'},
+  {q:'Controlla che la copia sia buona: <b>cat copia.txt</b>.',ok:/^cat\s+copia\.txt\s*$/i,tip:'cat mostra il contenuto. Con lo spazio: cat copia.txt'},
+  {q:'Adesso puoi cancellare: <b>rm copia.txt</b>. Hai cancellato una <b>copia</b>.',ok:/^rm\s+copia\.txt\s*$/i,tip:'rm cancella. Con lo spazio: rm copia.txt'},
+  {q:'Premi il pulsante rosso e guarda cosa ti risponde: <b>rm -rf lezioni</b>.',ancheSeErrore:true,ok:/^rm\s+-[rRf]+\s+lezioni\/?\s*$/i,tip:'Questo terminale rifiuta -r di proposito. Scrivi: rm -rf lezioni e leggi cosa dice.'},
+  {q:'Il modo sicuro di liberarti di una cartella è spostarla: <b>mv lezioni backup</b>.',ok:/^mv\s+lezioni\s+backup\/?\s*$/i,tip:'mv sposta e non cancella: mv lezioni backup'}
+ ]});
+</script>
+</body></html>

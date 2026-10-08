@@ -101,8 +101,8 @@ const P0=mk(1920,1080),p0=P0.getContext('2d');p0.fillStyle='#0f0805';p0.fillRect
 p0.fillStyle='#1a0f07';rr(p0,460,150,1000,420,24);p0.fill();p0.strokeStyle='#fb923c';p0.lineWidth=6;p0.stroke();
 tx(p0,'foglio bianco',960,230,44,'#9db0dc');
 tx(p0,'cosa vuoi costruire?',960,330,54,'#fb923c');
-tx(p0,'un file puo essere vuoto,',960,410,32,'#9db0dc');
-tx(p0,'oppure puo dire qualcosa.',960,460,32,'#9db0dc');
+tx(p0,'un file può essere vuoto,',960,410,32,'#9db0dc');
+tx(p0,'oppure può dire qualcosa.',960,460,32,'#9db0dc');
 tx(p0,'fino a qui hai letto. da qui in poi scrivi.',960,975,34,'#e9ecf5');
 const r1=reg(1920,1010,600,580);put(p0,Bs,r1,'#fb923c');
 const NODE=[{cv:P0,par:-1},{cv:Bs,par:0,r:r1},{cv:Bi,par:1,r:r2},{cv:Bv,par:2,r:r3},{cv:Br,par:3,r:r4},{cv:Bt,par:4,r:r5}],N=6,depth=[0,1,2,3,4,5];
@@ -149,7 +149,7 @@ addEventListener('resize',size);size();new ResizeObserver(size).observe(st);
 // ---- quiz
 const QS=[
 {q:'A cosa serve il comando mkdir ?',o:['A creare una cartella vuota','A cancellare una cartella','A leggere i file dentro una cartella'],why:'mkdir sta per make directory: crea una cartella vuota, il contenitore in cui mettere i file. Le cartelle organizzano: senza, avresti trenta file sul tavolo.',h:'mkdir = make directory: crea la cartella.'},
-{q:'Il comando touch cosa fa?',o:['Crea un file vuoto, pronto per ricevere testo','Apre un file già pieno per leggerlo','Cancella un file che non ti serve'],why:'touch crea un file vuoto, o lo aggiorna se esiste già. È il modo più semplice per avere un file su cui scrivere.',h:'touch tocca il file: lo crea se non cè.'},
+{q:'Il comando touch cosa fa?',o:['Crea un file vuoto, pronto per ricevere testo','Apre un file già pieno per leggerlo','Cancella un file che non ti serve'],why:'touch crea un file vuoto, o lo aggiorna se esiste già. È il modo più semplice per avere un file su cui scrivere.',h:'touch tocca il file: lo crea se non c\'è.'},
 {q:'Cosa fa il comando echo ciao > nota.txt ?',o:['Scrive ciao dentro nota.txt, cancellando il contenuto precedente','Mostra ciao sullo schermo e lascia il file com\'era','Crea una cartella chiamata nota.txt'],why:'Il > è una freccia: butta il risultato di echo dentro il file. Attenzione, cancella tutto quello che c era prima. È come scrivere sopra un foglio di carta.',h:'La freccia > butta il testo dentro il file.'},
 {q:'E il comando echo ciao >> nota.txt ?',o:['Aggiunge ciao in fondo, senza cancellare niente','È identico al comando con la freccia singola','Cancella il file e lo ricrea vuoto'],why:'Con >> il testo si accoda e nulla viene perso: è quello che serve per un diario, dove ogni riga conta.',h:'Le due frecce >> aggiungono invece di sovrascrivere.'},
 {q:'Dopo aver scritto in un file, come fai a controllare di aver scritto bene?',o:['Con cat, che mostra il contenuto del file','Riguardo il video da capo','Non si può controllare'],why:'cat mostra quello che hai scritto: è il modo di verificare. Il terminale non mente: se cat non mostra niente, il file è davvero vuoto.',h:'cat è il comando che mostra il contenuto.'},
