@@ -565,41 +565,24 @@ function buildLab(){
     T$('chips').appendChild(b);
   });
 }
-/* pulsante sulla card finale del quiz */
-function labHookQuiz(){
-  var q=T$('q');if(!q||T$('ql'))return;
-  var b=document.createElement('button');b.id='ql';b.textContent='🖥️ Vai al laboratorio';
-  b.onclick=openLab;q.appendChild(b);
-}
-/* terza scelta nella modale iniziale */
-function labHookWelcome(){
-  var box=document.getElementById('wquiz');
-  if(!box||!box.parentNode)return;
-  /* se il pulsante c'e' gia' lo aggancio comunque: il pulsante esistente
-     senza handler e' il caso peggiore, sembra cliccabile e non fa niente */
-  var b=T$('wlab');
-  if(!b){
-    b=document.createElement('button');b.id='wlab';b.textContent='🖥️ Laboratorio';
-    box.parentNode.insertBefore(b,box.nextSibling);
-  }
-  b.onclick=function(){var w=T$('wstart');if(w)w.remove();openLab()};
-}
-/* deep-link: arrivo diretto al laboratorio */
-function labHookDeep(){
-  if(typeof location==='undefined')return;
-  if(!(location.hash==='#lab'||/[?&]lab\b/.test(location.search||'')))return;
-  var w=T$('wstart');if(w)w.remove();
-  var q=T$('qw');if(q)q.remove();
-  openLab();
-}
+/* I tre ingressi vivono in ingressi.js, condivisi con ogni altro motore.
+   Qui restano solo i nomi storici, perche' i test li chiamano. */
+var _ing=null;
+function labHookQuiz(){if(_ing)_ing.card()}
+function labHookWelcome(){if(_ing)_ing.benvenuto()}
+function labHookDeep(){if(_ing)_ing.profundo()}
 /* API pubblica */
 function terminale(cfg){
   TCFG=cfg;
   /* il colore d'accento vive nella config: ogni modulo lo sceglie, il CSS condiviso lo usa */
   if(cfg&&cfg.acc&&typeof document!=='undefined'&&document.documentElement&&document.documentElement.style)
     document.documentElement.style.setProperty('--labacc',cfg.acc);
-  labHookQuiz();labHookWelcome();
-  var _p=setInterval(function(){if(T$('wstart')){clearInterval(_p);labHookWelcome()}},120);
-  labHookDeep();
+  _ing=ingressi({
+    apri:openLab,
+    etichettaQuiz:'🖥️ Vai al laboratorio',
+    etichettaBenvenuto:'🖥️ Laboratorio',
+    card:'q',
+    hash:'lab'
+  });
 }
 if(typeof module!=='undefined'&&module.exports)module.exports={terminale:terminale,exec:exec,newState:newState,at:at,isDir:isDir,disp:disp};
