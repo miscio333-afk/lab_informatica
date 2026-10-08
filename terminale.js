@@ -537,10 +537,15 @@ function labHookQuiz(){
 /* terza scelta nella modale iniziale */
 function labHookWelcome(){
   var box=document.getElementById('wquiz');
-  if(!box||!box.parentNode||T$('wlab'))return;
-  var b=document.createElement('button');b.id='wlab';b.textContent='🖥️ Laboratorio';
+  if(!box||!box.parentNode)return;
+  /* se il pulsante c'e' gia' lo aggancio comunque: il pulsante esistente
+     senza handler e' il caso peggiore, sembra cliccabile e non fa niente */
+  var b=T$('wlab');
+  if(!b){
+    b=document.createElement('button');b.id='wlab';b.textContent='🖥️ Laboratorio';
+    box.parentNode.insertBefore(b,box.nextSibling);
+  }
   b.onclick=function(){var w=T$('wstart');if(w)w.remove();openLab()};
-  box.parentNode.insertBefore(b,box.nextSibling);
 }
 /* deep-link: arrivo diretto al laboratorio */
 function labHookDeep(){

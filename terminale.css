@@ -22,4 +22,11 @@
 #chips{display:flex;flex-wrap:wrap;gap:.35em;padding:.45em 1em;border-top:1px solid #16301f;background:#0a150e;flex:none}
 #chips button{background:#0d1f13;color:#7ddc9a;border:1px solid #1e4a2c;border-radius:5px;padding:.25em .65em;font:inherit;cursor:pointer}
 #chips button:active{background:var(--labacc,#4ade80);color:#05060a}
+/* pulsanti d'ingresso al laboratorio: uno stile solo, accento dalla config.
+   #wlab sta nella modale iniziale (lo crea labHookWelcome), #ql sulla card
+   finale del quiz (lo crea labHookQuiz): nessuno dei due era stilato. */
+#wlab{background:#0d1f13;color:var(--labacc,#4ade80);border:2px solid var(--labacc,#4ade80);border-radius:12px;padding:12px 24px;font-size:18px;font-weight:800;cursor:pointer}
+#wlab:hover{background:var(--labacc,#4ade80);color:#05060a}
+#ql{margin-top:.7em;background:transparent;color:var(--labacc,#4ade80);border:1px solid var(--labacc,#4ade80);border-radius:8px;padding:.5em 1em;font-size:1em;font-weight:700;cursor:pointer}
+#ql:hover{background:var(--labacc,#4ade80);color:#05060a}
 @media(max-width:640px){#ql{margin-left:0;margin-top:.5em;width:100%}#tprog{float:none;display:block}#lhead{flex-wrap:wrap}}
