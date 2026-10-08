@@ -1,0 +1,33 @@
+/* ── laboratorio dei numeri: il secondo motore ──────────────────────────
+   Stessa struttura di terminale.css, ma con il prefisso #b: un modulo che
+   caricasse entrambi i motori non deve che i loro id si pestino. */
+#blab{position:absolute;inset:0;z-index:60;background:#04101a;display:flex;flex-direction:column;font:clamp(10px,1.3vw,14px) ui-monospace,Menlo,Consolas,monospace}
+#blab[hidden]{display:none}
+#lbhead{display:flex;align-items:center;gap:.6em;padding:.5em 1em;border-bottom:1px solid #10344a;background:#071a26;flex:none}
+#lbhead b{color:var(--labacc,#22d3ee)}
+#lbhead small{color:#5e93a8;margin-right:auto}
+#lbhead small{margin-right:auto}
+#lbx{background:none;border:1px solid var(--labacc,#22d3ee);color:var(--labacc,#22d3ee);border-radius:6px;padding:.25em .8em;font:inherit;cursor:pointer}
+#lbhead #lbhome{color:#7fd8ff;text-decoration:none;border:1px solid #14455f;border-radius:6px;padding:.25em .7em}
+#lbhead #lbhome:active{background:var(--labacc,#22d3ee);color:#04101a}
+#btask{padding:.55em 1em;background:#08202f;border-bottom:1px solid #10344a;color:#a8c4d8;flex:none;line-height:1.5}
+#btask b{color:#facc15;font-weight:700}
+#tprog{color:var(--labacc,#22d3ee);float:right;margin-left:1em}
+#bscreen{flex:1;overflow-y:auto;padding:.7em 1em;white-space:pre-wrap;word-break:break-word;line-height:1.45}
+#bscreen .err{color:#ff8f8f}
+#bscreen .ok{color:var(--labacc,#22d3ee)}
+#bscreen .hi{color:#facc15}
+#bscreen .out{color:#e9ecf5}
+#bscreen .dim{color:#5e93a8}
+#binrow{display:flex;align-items:center;gap:.5em;padding:.45em 1em;border-top:1px solid #10344a;background:#071a26;flex:none}
+#bps{color:var(--labacc,#22d3ee);white-space:nowrap;flex:none}
+#bin{flex:1;min-width:0;background:transparent;border:0;outline:0;color:#e9ecf5;font:inherit;caret-color:var(--labacc,#22d3ee);padding:.2em 0}
+#bchips{display:flex;flex-wrap:wrap;gap:.35em;padding:.45em 1em;border-top:1px solid #10344a;background:#071a26;flex:none}
+#bchips button{background:#08202f;color:#7fd8ff;border:1px solid #14455f;border-radius:5px;padding:.25em .65em;font:inherit;cursor:pointer}
+#bchips button:active{background:var(--labacc,#22d3ee);color:#04101a}
+/* stessi ingressi di terminale.css, cosi i due motori si somigliano */
+#wlab{background:#04101a;color:var(--labacc,#22d3ee);border:2px solid var(--labacc,#22d3ee);border-radius:12px;padding:12px 24px;font-size:18px;font-weight:800;cursor:pointer}
+#wlab:hover{background:var(--labacc,#22d3ee);color:#04101a}
+#ql{margin-top:.7em;background:transparent;color:var(--labacc,#22d3ee);border:1px solid var(--labacc,#22d3ee);border-radius:8px;padding:.5em 1em;font-size:1em;font-weight:700;cursor:pointer}
+#ql:hover{background:var(--labacc,#22d3ee);color:#04101a}
+@media(max-width:640px){#ql{margin-left:0;margin-top:.5em;width:100%}#tprog{float:none;display:block}#lbhead{flex-wrap:wrap}}

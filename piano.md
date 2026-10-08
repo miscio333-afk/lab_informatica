@@ -90,6 +90,7 @@ fra `index.html` e `lab.html`.
 | A2 | 🎨️ PRIMO CREATORE | 📄️ PRIMO FILE | Costruisci | l’idea → `mkdir` la cartella → `touch` il file vuoto → `>` scrive dentro → `>>` aggiunge senza cancellare → **rileggere con `cat`: ora è vero** |
 | A3 | 🔦️ SCAVATORE DI FILE | 🔎️ OCCHIO ACUTO | Cercare un file | 1000 file e non sai dove sia → `ls` non basta → `find` cerca per **nome** → `grep` cerca nel **contenuto** → `>` salva il risultato → **la domanda è tua: nessun computer indovina** |
 | A4 | 🖐️ MANO FERMA | 🎯️ SENZA RIMPIANTI | Il pulsante rosso | hai premuto invio → `rm` cancella senza chiedere → **senza ritorno**: qui non c’è il cestino → `-r` prenderebbe tutto, e qui non esiste → prima copia e verifica, poi cancelli → **decidi tu: la conferma la dai tu** |
+| A5 | 🧮️ IL RIPORTO | 🔢️ IL TRADUTTORE | Contare in due | due soli simboli → la posizione (`1010` = 8+2) → l’addizione (la cifra 2 non esiste) → il riporto che attraversa tutte le colonne → l’esadecimale (`01000011` = 43 = C) → **chi legge: gli stessi bit valgono 67 o la lettera C** |
 
 **A2 chiude la lacuna più grande del corso**: 21 moduli e nessuno aveva mai *creato* qualcosa.
 Con `>` e `>>` lo studente apre una scatola e ci scrive dentro — che è la lezione sulle variabili
@@ -103,8 +104,18 @@ advanced la chiusura è su **chi decide**: il modulo non termina con "un bit", t
 "Il mouse è nato per chi non ricordava i comandi; la riga di comando è rimasta per chi li
 ricorda". Stesso schema di rotazione, `PRIZES` chiude con `MANI` invece di `BIT`.
 
-**Il percorso Advanced è completo: quattro moduli, A1 → A4.** Dopo IL PULSANTE ROSSO
-ci fermiamo: **SCRIPT resta fuori, per scelta.**
+**Il percorso Advanced è completo: cinque moduli, A1 → A5.** Dopo CONTARE IN DUE ci
+fermiamo: **SCRIPT resta fuori, per scelta.**
+
+**A5 è il primo modulo che non gira sopra il terminale.** Introduce un secondo motore
+condiviso, `binario.js`: un convertitore e un sommatore che mostra il riporto colonna
+per colonna. I tre ingressi al laboratorio non sono stati riscritti, sono in
+`ingressi.js`, che adesso serve entrambi i motori.
+
+**Il livello 5 non finisce sui bit, e non è un caso.** Gli stessi otto bit, `01000011`,
+valgono 67 come numero e sono la lettera C come carattere. La differenza non sta dentro
+i bit: sta dentro chi li legge. È la stessa tesi degli altri quattro moduli Advanced,
+detta con le parole del binario.
 
 **A4 è il punto in cui i due corsi si toccano.** Il corso base insegna che un file è un
 file e che le operazioni si rifanno. Qui si insegna che `rm` non chiede conferma e che
@@ -152,22 +163,26 @@ Il deep-link sta **in coda allo script**, non all'inizio: `openLab()` chiama `ne
 variabili del motore (`BASE`, `FS`) sono assegnate in ordine di esecuzione — chiamarlo prima
 troverebbe `BASE` ancora `undefined`.
 
-### Architettura: `terminale.js` condiviso
+### Architettura: due motori, un solo posto dove si entra
 
-Motore e laboratorio vivono in **due file condivisi**, non dentro i moduli:
+Motore e laboratorio vivono in **file condivisi**, non dentro i moduli:
 
-| file | cosa contiene |
-|---|---|
-| `terminale.js` | motore puro + interfaccia del laboratorio (~320 righe) |
-| `terminale.css` | stile del laboratorio, colore via `var(--labacc,#4ade80)` |
+| file | cosa contiene | dei moduli |
+|---|---|---|
+| `terminale.js` | motore della shell + laboratorio (filesystem virtuale) | 4 |
+| `terminale.css` | stile, colore via `var(--labacc,#4ade80)` | 4 |
+| `binario.js` | convertitore e sommatore con il riporto | 1 |
+| `binario.css` | stile, colore via `var(--labacc,#22d3ee)` | 1 |
+| `ingressi.js` | i **tre accessi** al pannello di laboratorio | 5 |
 
 Ogni modulo si limita a **una riga di markup e una chiamata di configurazione**:
 
 ```html
-<link rel="stylesheet" href="terminale.css">
-<script src="terminale.js"></script>
+<link rel="stylesheet" href="binario.css">
+<script src="ingressi.js"></script>
+<script src="binario.js"></script>
 <script>
-terminale({ modulo:'…', acc:'#4ade80', labKey:'…', labNome:'…', chips:[…], libero:[…], compiti:[…] });
+binario({ modulo:'…', acc:'#22d3ee', labKey:'…', labNome:'…', esempi:[…], compiti:[…] });
 </script>
 ```
 
@@ -177,23 +192,39 @@ falsy in `at()`, slash dei percorsi assoluti, `ls` coi wildcard, flag `i` sui co
 avrebbero dovuto essere corretti **5 volte** ciascuno. È la stessa trappola del `CIIBADGES`
 copiato in 20 file.
 
-`terminale(cfg)` fa tre cose: imposta `--labacc` dal campo `acc`, crea il bottone sulla card
-finale del quiz, aggiunge la terza scelta alla modale iniziale e gestisce il deep-link `#lab`.
-Il colore d'accento ha **una sola fonte di verità** (la config), non è duplicato nel CSS del modulo.
+**Perché due motori e non uno**: A5 (Contare in due) non è una shell, è un foglio per i
+numeri. Non aveva senso infilarlo in `terminale.js`. Il contratto è identico
+(`cfg` con `modulo`, `acc`, `labKey`, `labNome`, `compiti[]`) e i compiti funzionano
+allo stesso modo, quindi **la stessa suite di test li copre entrambi**: prende il
+motore, il marcatore di config e il nome della funzione di esecuzione come argomenti.
 
-**Attenzione all'ordine di caricamento**: `terminale.js` deve venire *dopo* gli script del
-modulo, perché il modulo crea la modale `wstart` a cui `terminale()` aggancia il bottone.
+**Perché `ingressi.js` è nato**: i tre accessi (bottone sulla card del quiz, terza scelta
+nella modale iniziale, deep-link `#lab`) servono a entrambi i motori. Copiarli voleva
+dire copiare anche la trappola che li aveva resi morti: se il pulsante esiste già, la
+vecchia guardia usciva, e il pulsante restava in pagina **senza handler** — sembrava
+cliccabile e non faceva niente. In `ingressi.js` la guardia aggancia il click
+**anche quando il pulsante c'è già**: idempotente vuol dire che non ne creo due,
+non che non lo tocco.
 
-Verificato in node: **55 test** sul motore (comandi, percorsi, errori, wildcards, pipe) e
-**60 test** sul laboratorio (avanzamento compiti, badge, cronologia, deep-link, colore).
+Il colore d'accento ha **una sola fonte di verità** (il campo `acc` in config, che
+imposta `--labacc` su `document.documentElement`), ed è per questo che i pulsanti
+non portano più uno stile scritto a mano nel modulo.
 
-**Attenzione ai nomi**: il filesystem è case-sensitive come un terminale Unix (`cd Compiti`
-sì, `cd compiti` no). I controlli dei compiti sono case-*insensitive* solo per non punire
-chi scrive in maiuscolo, ma un comando che il terminale rifiuta non conta mai come risposta.
+**Attenzione all'ordine di caricamento**: `ingressi.js` deve venire **prima** del motore,
+che lo chiama durante l'inizializzazione. Se arriva dopo, il pulsante del laboratorio
+sparisce — e senza dare errore. Il gate ha una regola apposta per questo.
+A sua volta il motore deve venire dopo lo script del modulo, perché è il modulo a
+creare la modale `wstart` a cui gli ingressi si agganciano.
 
-**Audio**: solo effetti sonori (`whoosh`, `pop`, `fanfare`), 3 file per modulo, sintetizzati con
-ffmpeg. Nessuna voce narrante → i tag `<audio>` delle voci non vengono creati, quindi nella pagina
-non gira nessun 404 (a differenza dei 5 moduli recenti, che ne hanno 22 morti ciascuno).
+**Il deep-link sta in coda allo script**, non all'inizio: il motore chiama
+`newState()`, e le variabili del filesystem (`BASE`, `FS`) sono assegnate in ordine
+di esecuzione — chiamarlo prima troverebbe `BASE` ancora `undefined`.
+
+Verificato in node: **229 test** sui due motori (55 shell di base, 114 sui comandi estesi, 60 sul binario),
+**129 test** sui laboratori dei cinque moduli, e un **gate strutturale da 125 controlli** che legge i sorgenti di
+ogni modulo e ne deduce il motore. Il gate è nato per nota: i controlli precedenti
+contavano solo quante domande e quanti badge, e non hanno visto che in due moduli la
+riga di chiusura del quiz era sparita.
 
 ## Ordine consigliato in classe
 
@@ -237,8 +268,28 @@ digitale** adatto anche a un secondo anno.
 - Audio legacy/orfano da valutare: `audio-lettere-ollio/`, `audio-lettere-stanlio/`,
   `audio-lettere-toto/`, `audio-letters/`, `audio-milionario15/`
 
+### Cosa non è mai stato verificato
+
+**Nessun modulo è stato guardato a schermo.** In tutta la costruzione dei 5 moduli Advanced
+la verifica è stata: sintassi degli script, logica del motore in node, DOM simulato con
+stub, suite sui compiti e sui casi negativi, HTTP 200 sui file. **Nessun pixel.**
+
+Non è una distrazione: i pulsanti degli ingressi al laboratorio hanno ricevuto uno stile in
+`terminale.css` e poi in `binario.css` senza che nessuno li abbia visti accanto ai pulsanti
+fratelli della modale. `binario.css` e il pannello dei numeri sono roba nuova, e se il
+`#blab` sta stretto, o se le colonne del riporto vanno a capo su un telefono, **nessuno lo sa**.
+
+Serve una passata a mano su `lab.html` e sui 5 moduli: almeno uno su telefono.
+
+**Il browser MCP non era collegato.** Per questo sopra si è simulato il DOM invece di
+usarlo. Se in futuro è disponibile, la verifica più utile è aprire i 5 moduli e fare i 6
+compiti a mano.
+
 ### Debiti noti (ereditati)
 
+- `binario.js` è usato da **un solo modulo** (A5): il costo di un secondo motore è
+  ancora tutto sul suo autore. Il contratto è però dimostrato su due motori, e la
+  suite dei laboratori gira su entrambi senza duplicarsi.
 - Three.js r128 da cdnjs: nessun fallback offline; valutare copia locale di three.min.js
 - `roundRect` con fallback a `rect` su browser vecchi
 - Slider durante `playing`: possibile salto di `tm` (manca flag "seeking")
