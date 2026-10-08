@@ -78,8 +78,8 @@ function renderAll(){
  const open=MODS.find(function(m){return !W[m.b]});
  const r=document.getElementById('resume');
  if(open)r.href=open.f;
- else if(!W.m_terminale_lab){r.textContent='⌨️ Apri il laboratorio';r.href=MODS[0].f}
- else r.textContent='↻ Ricomincia il laboratorio';
+ else{r.href=MODS[0].f+'#lab';
+  r.textContent=W.m_terminale_lab?'⌨️ Riapri il laboratorio':'⌨️ Apri il laboratorio';}
 }
 renderAll();
 addEventListener('storage',e=>{if(e.key==='lab_badges')renderAll()});

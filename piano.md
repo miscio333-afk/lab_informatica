@@ -124,6 +124,20 @@ il laboratorio fa fare.
 Su telefono i comandi sono anche **tocccabili** (8 chip sotto il prompt), così `ls` `pwd`
 `tree` `help` si possono eseguire senza digitare.
 
+**Come si entra nel laboratorio** — tre porte, perché l'accesso non deve mai essere un muro:
+- dalla card finale del quiz, col bottone `🖥️ Vai al laboratorio`
+- dalla modale iniziale, terza scelta `🖥️ Laboratorio` (accanto a "Guarda la lezione" / "Vai alle domande")
+- in deep-link diretto: `La riga di comando — zoom con domande.html#lab` salta modale, zoom e quiz
+  ed apre il terminale. È il collegamento che usa il bottone di `lab.html`
+
+Il laboratorio è **sempre aperto**, anche a chi non ha ancora superato il quiz: è uno strumento,
+non un premio. Il premio è `MANI D’ORO`, che si sblocca solo completando i 6 compiti.
+Nella testata del laboratorio c'è `✕ Esci` e `🏠 Corso` per tornare a `lab.html`.
+
+Il deep-link sta **in coda allo script**, non all'inizio: `openLab()` chiama `newState()`, e le
+variabili del motore (`BASE`, `FS`) sono assegnate in ordine di esecuzione — chiamarlo prima
+troverebbe `BASE` ancora `undefined`.
+
 Il motore è JavaScript puro senza DOM: está verificato in node con **55 test** (comandi,
 percorsi, errori, wildcards, pipe), il flusso del laboratorio con altri **44**.
 

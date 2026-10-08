@@ -41,7 +41,10 @@ canvas{display:block;width:100%!important;height:100%!important}
 #lhead{display:flex;align-items:center;gap:.6em;padding:.5em 1em;border-bottom:1px solid #16301f;background:#0a150e;flex:none}
 #lhead b{color:#4ade80}
 #lhead small{color:#5d8f6e}
-#lx{margin-left:auto;background:none;border:1px solid #4ade80;color:#4ade80;border-radius:6px;padding:.25em .8em;font:inherit;cursor:pointer}
+#lx{background:none;border:1px solid #4ade80;color:#4ade80;border-radius:6px;padding:.25em .8em;font:inherit;cursor:pointer}
+#lhead #lhome{color:#7ddc9a;text-decoration:none;border:1px solid #1e4a2c;border-radius:6px;padding:.25em .7em}
+#lhead #lhome:active{background:#4ade80;color:#05060a}
+#lhead small{margin-right:auto}
 #task{padding:.55em 1em;background:#0d1f13;border-bottom:1px solid #16301f;color:#9db0dc;flex:none;line-height:1.5}
 #task b{color:#facc15;font-weight:700}
 #tprog{color:#4ade80;float:right;margin-left:1em}
@@ -195,13 +198,14 @@ function ciiWin(k){try{const w=JSON.parse(localStorage.getItem('lab_badges')||'{
   else{bt.className='no';bt.disabled=true;qf.textContent='✘ Non proprio. '+q.h+' Riprova.';if(tries===1){speakQ('h',id);startKar($('qf'),$('h'+id))}}};qo.appendChild(bt)});lastCtx={id,order:q.o,btns:btns.map(x=>x.b)};if(!qdPlayed[id]){qdPlayed[id]=true;speakQ('q',id);startKar($('qt'),$('q'+id));const qel=$('q'+id);if(qel)qel.onended=()=>playSeq(id,q.o,btns.map(x=>x.b))}}
 function loop(now){if(prev===null)prev=now;const dt=Math.min(.1,(now-prev)/1000);prev=now;
  if(playing){tm+=dt;const L=lim();if(tm>=L){tm=L;playing=false}sl.value=tm/DUR*1000}
+ if(labOpen)return requestAnimationFrame(loop);
  setPb();card();
  try{frame(tm)}catch(e){document.body.insertAdjacentHTML('beforeend','<pre style="position:fixed;top:0;left:0;color:#f88;font-size:12px;white-space:pre-wrap">Errore: '+e.message+'</pre>');return}
  tmx.textContent=fmt(tm)+' s / '+fmt(DUR)+' s';requestAnimationFrame(loop)}
 sl.addEventListener('input',()=>{audioUnlocked=true;playing=false;tm=Math.min(sl.value/1000*DUR,lim());sl.value=tm/DUR*1000});
 pb.onclick=()=>{audioUnlocked=true;if(shown>=0&&shown<N){replayQ();return}if(a<N&&tm>=lim()-.01)return;if(a===N&&tm>=DUR-.01)tm=0;playing=!playing;setPb()};
 addEventListener('keydown',e=>{if(e.code==='Space'&&e.target!==sl&&e.target.tagName!=='BUTTON'){e.preventDefault();pb.click()}});
-const ws=document.createElement('div');ws.id='wstart';ws.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.72);z-index:99';ws.innerHTML='<div style="background:#fffbeb;border:5px solid #1c1917;border-radius:20px;padding:36px 44px;text-align:center;max-width:84%;font-family:system-ui,sans-serif;color:#1c1917"><div style="font-size:64px">🎬</div><h2 style="margin:10px 0 4px;font-size:30px">Come vuoi iniziare?</h2><p style="margin:0 0 18px;font-size:17px">Guarda prima tutta la lezione, oppure parti subito con le domande.</p><button id="wwatch" style="background:#4ade80;color:#111;border:0;border-radius:12px;padding:14px 28px;font-size:18px;font-weight:800;cursor:pointer;margin-right:10px">▶ Guarda la lezione</button><button id="wquiz" style="background:#1c1917;color:#f4efe4;border:0;border-radius:12px;padding:14px 28px;font-size:18px;font-weight:800;cursor:pointer">❓ Vai alle domande</button></div>';document.getElementById('st').appendChild(ws);function showQw(){if(document.getElementById('qw'))return;const b=document.createElement('button');b.id='qw';b.textContent='❓ Inizia le domande';b.style.cssText='position:absolute;left:3%;top:3%;z-index:50;background:#4ade80;color:#05060a;border:0;border-radius:8px;padding:.5em 1em;font:inherit;cursor:pointer';try{const qx=document.getElementById('qx');if(qx)qx.remove()}catch(e){}b.onclick=()=>{watch=false;review=false;b.remove();a=0;first=[];tm=0;shown=-2;qdPlayed={};lastCtx=null;paintLad();paintTicks();sl.value=0;playing=true;setPb()};document.getElementById('st').appendChild(b)}document.getElementById('wwatch').onclick=()=>{audioUnlocked=true;watch=true;ws.remove();tm=0;sl.value=0;playing=true;setPb();showQw()};document.getElementById('wquiz').onclick=()=>{audioUnlocked=true;ws.remove();playing=true;setPb()};paintTicks();paintLad();requestAnimationFrame(loop);
+const ws=document.createElement('div');ws.id='wstart';ws.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.72);z-index:99';ws.innerHTML='<div style="background:#fffbeb;border:5px solid #1c1917;border-radius:20px;padding:36px 44px;text-align:center;max-width:84%;font-family:system-ui,sans-serif;color:#1c1917"><div style="font-size:64px">🎬</div><h2 style="margin:10px 0 4px;font-size:30px">Come vuoi iniziare?</h2><p style="margin:0 0 18px;font-size:17px">Guarda la lezione, salta alle domande, o prova subito il terminale.</p><div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center"><button id="wwatch" style="background:#4ade80;color:#111;border:0;border-radius:12px;padding:14px 28px;font-size:18px;font-weight:800;cursor:pointer">▶ Guarda la lezione</button><button id="wquiz" style="background:#1c1917;color:#f4efe4;border:0;border-radius:12px;padding:14px 28px;font-size:18px;font-weight:800;cursor:pointer">❓ Vai alle domande</button><button id="wlab" style="background:#0d1f13;color:#4ade80;border:2px solid #4ade80;border-radius:12px;padding:12px 24px;font-size:18px;font-weight:800;cursor:pointer">🖥️ Laboratorio</button></div></div>';document.getElementById('st').appendChild(ws);function showQw(){if(document.getElementById('qw'))return;const b=document.createElement('button');b.id='qw';b.textContent='❓ Inizia le domande';b.style.cssText='position:absolute;left:3%;top:3%;z-index:50;background:#4ade80;color:#05060a;border:0;border-radius:8px;padding:.5em 1em;font:inherit;cursor:pointer';try{const qx=document.getElementById('qx');if(qx)qx.remove()}catch(e){}b.onclick=()=>{watch=false;review=false;b.remove();a=0;first=[];tm=0;shown=-2;qdPlayed={};lastCtx=null;paintLad();paintTicks();sl.value=0;playing=true;setPb()};document.getElementById('st').appendChild(b)}document.getElementById('wwatch').onclick=()=>{audioUnlocked=true;watch=true;ws.remove();tm=0;sl.value=0;playing=true;setPb();showQw()};document.getElementById('wquiz').onclick=()=>{audioUnlocked=true;ws.remove();playing=true;setPb()};document.getElementById('wlab').onclick=()=>{ws.remove();playing=false;setPb();openLab()};paintTicks();paintLad();requestAnimationFrame(loop);
 
 /* ═══════════════════════════════════════════════════════════════
    LABORATORIO — motore del terminale + compiti guidati
@@ -414,7 +418,7 @@ var TASKS=[
  {q:'Leggi il file con <b>cat matematica.txt</b>.',ok:/^cat\s+matematica\.txt\s*$/i,tip:'cat \u00e8 il comando che mostra il contenuto. Con uno spazio: cat matematica.txt'},
  {q:'Ultimo: disegna l\u2019albero delle cartelle con <b>tree</b>.',ok:/^tree\s*$/i,tip:'tree \u00e8 il comando che disegna la struttura. Quattro lettere.'}];
 
-var labSt=null,taskI=0,labDone=false,hist=[],histP=0;
+var labSt=null,taskI=0,labDone=false,hist=[],histP=0,labOpen=false;
 function labEl(t,c){return '<span class="'+(c||'')+'">'+t+'</span>\n'}
 function labPrint(t){var sc=$('screen');if(!sc)return;sc.insertAdjacentHTML('beforeend',t.replace(/\n/g,'<br>').replace(/  /g,'&nbsp;&nbsp;'));sc.scrollTop=sc.scrollHeight}
 function labPs(){return 'matte@lab:'+disp(labSt.cwd)+'$'}
@@ -432,6 +436,7 @@ function labBanner(){
   }
 }
 function openLab(){
+  labOpen=true;
   if(!labSt){labSt=newState();buildLab();}
   $('lab').hidden=false;$('q').hidden=true;
   $('lad').style.visibility='hidden';
@@ -443,6 +448,7 @@ function openLab(){
   labPrompt();$('in').focus();
 }
 function closeLab(){
+  labOpen=false;
   $('lab').hidden=true;$('lad').style.visibility='visible';
   if($('hud'))$('hud').style.visibility='visible';
   $('ctl').style.display='flex';
@@ -478,7 +484,7 @@ function labRun(line){
 }
 function buildLab(){
   var d=document.createElement('div');d.id='lab';d.hidden=true;
-  d.innerHTML='<div id="lhead"><b>laboratorio</b><small>terminale vero, dentro la pagina</small><button id="lx">\u2715 Esci</button></div>'+
+  d.innerHTML='<div id="lhead"><b>laboratorio</b><small>terminale vero, dentro la pagina</small><a id="lhome" href="lab.html">🏠 Corso</a><button id="lx">\u2715 Esci</button></div>'+
    '<div id="task"></div><div id="screen"></div>'+
    '<div id="inrow"><span id="ps"></span><input id="in" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="linea di comando"></div>'+
    '<div id="chips"></div>';
@@ -494,6 +500,13 @@ function buildLab(){
     b.onclick=function(){$('in').value=c+' ';$('in').focus()};
     $('chips').appendChild(b);
   });
+}
+
+/* deep-link: arrivo diretto al laboratorio, saltando modale, zoom e quiz */
+if(typeof location!=='undefined'&&(location.hash==='#lab'||/[?&]lab\b/.test(location.search||''))){
+  var _w=document.getElementById('wstart');if(_w)_w.remove();
+  try{var _q=document.getElementById('qw');if(_q)_q.remove()}catch(e){}
+  openLab();
 }
 
 </script></body></html>
