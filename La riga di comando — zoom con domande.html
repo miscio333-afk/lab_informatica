@@ -33,37 +33,11 @@ canvas{display:block;width:100%!important;height:100%!important}
 #qo button.no{background:#3a1820;border-color:#ff6b6b;opacity:.7}
 #qf{margin:.6em 0 0;line-height:1.4}
 #qb{margin-top:.7em;background:#4ade80;color:#05060a;border:0;border-radius:6px;padding:.6em 1em;font:inherit;cursor:pointer}
-#ql{margin-top:.7em;margin-left:.5em;background:#0d1f13;color:#4ade80;border:1px solid #4ade80;border-radius:6px;padding:.6em 1em;font:inherit;cursor:pointer}
-#ql[hidden]{display:none}
-/* ── laboratorio: terminale funzionante ── */
-#lab{position:absolute;inset:0;z-index:60;background:#050a07;display:flex;flex-direction:column;font:clamp(10px,1.3vw,14px) ui-monospace,Menlo,Consolas,monospace}
-#lab[hidden]{display:none}
-#lhead{display:flex;align-items:center;gap:.6em;padding:.5em 1em;border-bottom:1px solid #16301f;background:#0a150e;flex:none}
-#lhead b{color:#4ade80}
-#lhead small{color:#5d8f6e}
-#lx{background:none;border:1px solid #4ade80;color:#4ade80;border-radius:6px;padding:.25em .8em;font:inherit;cursor:pointer}
-#lhead #lhome{color:#7ddc9a;text-decoration:none;border:1px solid #1e4a2c;border-radius:6px;padding:.25em .7em}
-#lhead #lhome:active{background:#4ade80;color:#05060a}
-#lhead small{margin-right:auto}
-#task{padding:.55em 1em;background:#0d1f13;border-bottom:1px solid #16301f;color:#9db0dc;flex:none;line-height:1.5}
-#task b{color:#facc15;font-weight:700}
-#tprog{color:#4ade80;float:right;margin-left:1em}
-#screen{flex:1;overflow-y:auto;padding:.7em 1em;white-space:pre-wrap;word-break:break-word;line-height:1.45}
-#screen .err{color:#ff6b6b}
-#screen .ok{color:#4ade80}
-#screen .hi{color:#facc15}
-#screen .dim{color:#5d8f6e}
-#inrow{display:flex;align-items:center;gap:.5em;padding:.45em 1em;border-top:1px solid #16301f;background:#0a150e;flex:none}
-#ps{color:#4ade80;white-space:pre;flex:none}
-#in{flex:1;min-width:0;background:transparent;border:0;outline:0;color:#e9ecf5;font:inherit;caret-color:#4ade80;padding:.2em 0}
-#chips{display:flex;flex-wrap:wrap;gap:.35em;padding:.45em 1em;border-top:1px solid #16301f;background:#0a150e;flex:none}
-#chips button{background:#0d1f13;color:#7ddc9a;border:1px solid #1e4a2c;border-radius:5px;padding:.25em .65em;font:inherit;cursor:pointer}
-#chips button:active{background:#4ade80;color:#05060a}
 @media(max-width:640px){#ql{margin-left:0;margin-top:.5em;width:100%}#tprog{float:none;display:block}}
 @media(max-width:640px){#q{left:3%;right:3%;width:auto;top:auto;bottom:16%}.asking #hud{display:none}}
 </style></head><body>
 <div id="st"><div id="hud"><small id="n"></small><b id="t"></b><span id="s"></span></div><div id="zf"></div>
-<div id="q" hidden><small id="qn"></small><p id="qt"></p><div id="qo"></div><p id="qf"></p><button id="qb" hidden></button><button id="ql" hidden>🖥️ Vai al laboratorio</button></div>
+<div id="q" hidden><small id="qn"></small><p id="qt"></p><div id="qo"></div><p id="qf"></p><button id="qb" hidden></button></div>
 <div id="lad"></div><div id="ctl"><button id="pb" aria-label="Play / pausa">▶</button><div id="slw"><input id="sl" type="range" min="0" max="1000" value="0" step="1" aria-label="Scorri l’animazione"></div><span id="tm"></span><button id="mb" aria-label="Audio on/off" style="flex:none;width:2.6em;height:2.6em;border:0;border-radius:50%;background:#4ade80;color:#05060a;font:inherit;cursor:pointer">🔊</button></div></div>
 <audio id="fx-whoosh" src="audio-terminale/whoosh.mp3" preload="auto"></audio>
 <audio id="fx-pop" src="audio-terminale/pop.mp3" preload="auto"></audio>
@@ -190,7 +164,7 @@ function card(){if(review||watch){if(shown!==-2){shown=-2;qd.hidden=true;st.clas
  function ciiModal(e,n){if(document.getElementById('ciimov'))return;const st=document.createElement('style');st.textContent='#ciimov{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.55);z-index:99}#ciibox{background:#fffbeb;border:5px solid #b98a1d;border-radius:20px;padding:44px 52px;text-align:center;max-width:82%;animation:ciipop .5s cubic-bezier(.2,1.6,.4,1);font-family:system-ui,sans-serif;color:#1c1917}@keyframes ciipop{from{transform:scale(.4) rotate(-6deg);opacity:0}}#ciibox .em{font-size:84px}#ciibox h2{margin:10px 0 4px;font-size:34px;letter-spacing:.06em}#ciibox p{margin:0 0 20px;font-size:19px}#ciirev{background:#4ade80;color:#111;border:0;border-radius:12px;padding:14px 28px;font-size:18px;font-weight:800;cursor:pointer;margin-left:10px}#ciigo{background:#1c1917;color:#f4efe4;border:0;border-radius:12px;padding:14px 40px;font-size:20px;font-weight:800;cursor:pointer}';document.head.appendChild(st);const m=document.createElement('div');m.id='ciimov';m.innerHTML='<div id="ciibox"><div class="em">'+e+'</div><h2>TROFEO SBLOCCATO!</h2><p>'+n+'</p><button id="ciigo">Continua →</button> <button id="ciirev">▶ Rivedi la lezione</button></div>';document.getElementById('st').appendChild(m);document.getElementById('ciigo').onclick=()=>{location.href='lab.html'};document.getElementById('ciirev').onclick=()=>{document.getElementById('ciimov').remove();enterReview()}}
 const CIIBADGES={m_terminale:['🖥️','MAGO DEL TERMINALE']};
 function ciiWin(k){try{const w=JSON.parse(localStorage.getItem('lab_badges')||'{}');w[k]=1;localStorage.setItem('lab_badges',JSON.stringify(w));const b=CIIBADGES[k];if(b)ciiModal(b[0],b[1])}catch(e){console.error('[ciiWin] ERROR:',e)}}
- if(id===N){ciiWin('m_terminale');qn.textContent='Completato · 🎰 HAI VINTO: '+PRIZES[Math.max(0,a-1)]+'!';qt.textContent='Hai risposto bene al primo tentativo a '+first.filter(Boolean).length+' domande su '+N+'. Ora sai cosa sia un prompt, come muoverti tra le cartelle e perché la riga di comando è lo strumento più potente che hai: decidi tu cosa succede.';qb.textContent='↻ Ricomincia il quiz';qb.hidden=false;$('ql').hidden=false;$('ql').onclick=openLab;const fw=$('fx-fan');if(fw&&audioOn&&audioUnlocked){try{fw.currentTime=0;fw.play().catch(()=>{})}catch(e){}}qb.onclick=()=>{a=0;first=[];tm=0;shown=-2;review=false;qdPlayed={};lastCtx=null;paintLad();paintTicks();sl.value=0;const qx=document.getElementById('qx');if(qx)qx.remove()};return}
+ if(id===N){ciiWin('m_terminale');qn.textContent='Completato · 🎰 HAI VINTO: '+PRIZES[Math.max(0,a-1)]+'!';qt.textContent='Hai risposto bene al primo tentativo a '+first.filter(Boolean).length+' domande su '+N+'. Ora sai cosa sia un prompt, come muoverti tra le cartelle e perché la riga di comando è lo strumento più potente che hai: decidi tu cosa succede.';qb.textContent='↻ Ricomincia il quiz';qb.hidden=false;const fw=$('fx-fan');if(fw&&audioOn&&audioUnlocked){try{fw.currentTime=0;fw.play().catch(()=>{})}catch(e){}}qb.onclick=()=>{a=0;first=[];tm=0;shown=-2;review=false;qdPlayed={};lastCtx=null;paintLad();paintTicks();sl.value=0;const qx=document.getElementById('qx');if(qx)qx.remove()};return}
  const q=QS[id];let tries=0;qn.textContent='Domanda '+(id+1)+' / '+N;qt.textContent=q.q;
  const btns=[];q.o.forEach((o,bi)=>{const bt=document.createElement('button');bt.textContent='ABCD'[bi]+' - '+o.x;btns.push({b:bt,o});bt.onclick=()=>{tries++;stopSeq();stopKar();
   if(o.ok){bt.className='ok';qo.querySelectorAll('button').forEach(x=>x.disabled=true);qf.textContent='✔ Esatto! '+q.why;first[id]=tries===1;speakQ('ok',id);startKar($('qf'),$('ok'+id));qb.textContent=id<N-1?'Continua ▶':'Concludi';qb.hidden=false;
@@ -198,315 +172,34 @@ function ciiWin(k){try{const w=JSON.parse(localStorage.getItem('lab_badges')||'{
   else{bt.className='no';bt.disabled=true;qf.textContent='✘ Non proprio. '+q.h+' Riprova.';if(tries===1){speakQ('h',id);startKar($('qf'),$('h'+id))}}};qo.appendChild(bt)});lastCtx={id,order:q.o,btns:btns.map(x=>x.b)};if(!qdPlayed[id]){qdPlayed[id]=true;speakQ('q',id);startKar($('qt'),$('q'+id));const qel=$('q'+id);if(qel)qel.onended=()=>playSeq(id,q.o,btns.map(x=>x.b))}}
 function loop(now){if(prev===null)prev=now;const dt=Math.min(.1,(now-prev)/1000);prev=now;
  if(playing){tm+=dt;const L=lim();if(tm>=L){tm=L;playing=false}sl.value=tm/DUR*1000}
- if(labOpen)return requestAnimationFrame(loop);
- setPb();card();
+  setPb();card();
  try{frame(tm)}catch(e){document.body.insertAdjacentHTML('beforeend','<pre style="position:fixed;top:0;left:0;color:#f88;font-size:12px;white-space:pre-wrap">Errore: '+e.message+'</pre>');return}
  tmx.textContent=fmt(tm)+' s / '+fmt(DUR)+' s';requestAnimationFrame(loop)}
 sl.addEventListener('input',()=>{audioUnlocked=true;playing=false;tm=Math.min(sl.value/1000*DUR,lim());sl.value=tm/DUR*1000});
 pb.onclick=()=>{audioUnlocked=true;if(shown>=0&&shown<N){replayQ();return}if(a<N&&tm>=lim()-.01)return;if(a===N&&tm>=DUR-.01)tm=0;playing=!playing;setPb()};
 addEventListener('keydown',e=>{if(e.code==='Space'&&e.target!==sl&&e.target.tagName!=='BUTTON'){e.preventDefault();pb.click()}});
-const ws=document.createElement('div');ws.id='wstart';ws.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.72);z-index:99';ws.innerHTML='<div style="background:#fffbeb;border:5px solid #1c1917;border-radius:20px;padding:36px 44px;text-align:center;max-width:84%;font-family:system-ui,sans-serif;color:#1c1917"><div style="font-size:64px">🎬</div><h2 style="margin:10px 0 4px;font-size:30px">Come vuoi iniziare?</h2><p style="margin:0 0 18px;font-size:17px">Guarda la lezione, salta alle domande, o prova subito il terminale.</p><div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center"><button id="wwatch" style="background:#4ade80;color:#111;border:0;border-radius:12px;padding:14px 28px;font-size:18px;font-weight:800;cursor:pointer">▶ Guarda la lezione</button><button id="wquiz" style="background:#1c1917;color:#f4efe4;border:0;border-radius:12px;padding:14px 28px;font-size:18px;font-weight:800;cursor:pointer">❓ Vai alle domande</button><button id="wlab" style="background:#0d1f13;color:#4ade80;border:2px solid #4ade80;border-radius:12px;padding:12px 24px;font-size:18px;font-weight:800;cursor:pointer">🖥️ Laboratorio</button></div></div>';document.getElementById('st').appendChild(ws);function showQw(){if(document.getElementById('qw'))return;const b=document.createElement('button');b.id='qw';b.textContent='❓ Inizia le domande';b.style.cssText='position:absolute;left:3%;top:3%;z-index:50;background:#4ade80;color:#05060a;border:0;border-radius:8px;padding:.5em 1em;font:inherit;cursor:pointer';try{const qx=document.getElementById('qx');if(qx)qx.remove()}catch(e){}b.onclick=()=>{watch=false;review=false;b.remove();a=0;first=[];tm=0;shown=-2;qdPlayed={};lastCtx=null;paintLad();paintTicks();sl.value=0;playing=true;setPb()};document.getElementById('st').appendChild(b)}document.getElementById('wwatch').onclick=()=>{audioUnlocked=true;watch=true;ws.remove();tm=0;sl.value=0;playing=true;setPb();showQw()};document.getElementById('wquiz').onclick=()=>{audioUnlocked=true;ws.remove();playing=true;setPb()};document.getElementById('wlab').onclick=()=>{ws.remove();playing=false;setPb();openLab()};paintTicks();paintLad();requestAnimationFrame(loop);
+const ws=document.createElement('div');ws.id='wstart';ws.style.cssText='position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.72);z-index:99';ws.innerHTML='<div style="background:#fffbeb;border:5px solid #1c1917;border-radius:20px;padding:36px 44px;text-align:center;max-width:84%;font-family:system-ui,sans-serif;color:#1c1917"><div style="font-size:64px">🎬</div><h2 style="margin:10px 0 4px;font-size:30px">Come vuoi iniziare?</h2><p style="margin:0 0 18px;font-size:17px">Guarda la lezione, salta alle domande, o prova subito il terminale.</p><div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center"><button id="wwatch" style="background:#4ade80;color:#111;border:0;border-radius:12px;padding:14px 28px;font-size:18px;font-weight:800;cursor:pointer">▶ Guarda la lezione</button><button id="wquiz" style="background:#1c1917;color:#f4efe4;border:0;border-radius:12px;padding:14px 28px;font-size:18px;font-weight:800;cursor:pointer">❓ Vai alle domande</button><button id="wlab" style="background:#0d1f13;color:#4ade80;border:2px solid #4ade80;border-radius:12px;padding:12px 24px;font-size:18px;font-weight:800;cursor:pointer">🖥️ Laboratorio</button></div></div>';document.getElementById('st').appendChild(ws);function showQw(){if(document.getElementById('qw'))return;const b=document.createElement('button');b.id='qw';b.textContent='❓ Inizia le domande';b.style.cssText='position:absolute;left:3%;top:3%;z-index:50;background:#4ade80;color:#05060a;border:0;border-radius:8px;padding:.5em 1em;font:inherit;cursor:pointer';try{const qx=document.getElementById('qx');if(qx)qx.remove()}catch(e){}b.onclick=()=>{watch=false;review=false;b.remove();a=0;first=[];tm=0;shown=-2;qdPlayed={};lastCtx=null;paintLad();paintTicks();sl.value=0;playing=true;setPb()};document.getElementById('st').appendChild(b)}document.getElementById('wwatch').onclick=()=>{audioUnlocked=true;watch=true;ws.remove();tm=0;sl.value=0;playing=true;setPb();showQw()};document.getElementById('wquiz').onclick=()=>{audioUnlocked=true;ws.remove();playing=true;setPb()};paintTicks();paintLad();requestAnimationFrame(loop);
 
-/* ═══════════════════════════════════════════════════════════════
-   LABORATORIO — motore del terminale + compiti guidati
-   ═══════════════════════════════════════════════════════════════ */
-// ==== MOTORE DEL TERMINALE — puro, senza DOM (testabile in node) ====
-var HOME='/home/matte';
-var BASE={dir:true,home:{dir:true,matte:{dir:true,
-  'leggiomi.txt':'Aula Informatica — 20 moduli interattivi.\nOgni lezione è un file HTML: zoom continuo + 6 domande.\nIl percorso Advanced è in lab.html.\nVedi index.html per il corso base.',
-  'appunti.txt':'APPUNTI DEL TERMINALE\n\nIl prompt matte@lab:~$ dice: sono matte, sul computer lab,\nnella tua cartella: ti ascolto.\n\nComandi che ti servono:\n  ls        elenca i file\n  cd        cambia cartella\n  pwd       dove sei\n  cat       leggi un file\n  man CMD   spiega un comando\n\nSegno: ~ = la tua cartella home. / = la radice.\nSei dentro ~/Compiti: digita cd .. per tornare indietro.',
-  lezioni:{dir:true,
-    '1.txt':'1. Le parole inglesi',
-    '2.txt':'2. Chi fa cosa',
-    '3.txt':'3. Dal testo al bit',
-    '4.txt':'4. Dal pixel al bit',
-    '5.txt':'5. Dal suono al bit',
-    '6.txt':'6. La memoria',
-    '7.txt':'7. File e cartelle',
-    '8.txt':'8. Dentro il computer',
-    '9.txt':'9. Le parole dei componenti',
-    '10.txt':'10. Da internet al pacchetto',
-    '11.txt':'11. Dal click al programma',
-    '12.txt':'12. Le variabili',
-    '13.txt':'13. Le condizioni',
-    '14.txt':'14. I cicli',
-    '15.txt':'15. Ordinare le cose',
-    '16.txt':'16. L’impronta digitale',
-    '17.txt':'17. Password e sicurezza',
-    '18.txt':'18. Virus e antivirus',
-    '19.txt':'19. L’IA che impara',
-    '20.txt':'20. Fake news e fact-checking'},
-  Compiti:{dir:true,
-    'matematica.txt':'ESERCIZIO 3 — Derivate\n\nf(x) = 4x^3 - 3x + 1\nf\'(x) = 12x^2 - 3\n\nCompito per venerdì. Portare il libro.',
-    'inglese.txt':'HOMEWORK — Present Perfect\n\nI have lived in Milan since 2019.\nShe has just left.\n\nRemember: ever/never, for/since, already/yet.'},
-  Foto:{dir:true,'gita.jpg':'«binario: 2c ff d8 ff e0 ... 89504e47 ...»'},
-  Musica:{dir:true}}},
-  etc:{dir:true,hosts:'127.0.0.1  localhost\n::1        localhost'}};
-
-var MAN={
-  help:'Elenca tutti i comandi del terminale.',
-  ls:'Elenca i file e le cartelle. Con un nome, mostra il contenuto di quella cartella.',
-  pwd:'Stampa il percorso della cartella in cui ti trovi.',
-  cd:'Cambia cartella. cd .. sale di un livello, cd ~ torna a casa, cd / va alla radice.',
-  cat:'Mostra il contenuto di un file di testo. Funziona solo sui file di testo.',
-  tree:'Disegna l’albero delle cartelle, a partire da dove sei.',
-  echo:'Ripete quello che scrivi. Serve per capire come trattano gli spazi.',
-  mkdir:'Crea una cartella nuova. mkdir Prove.',
-  touch:'Crea un file vuoto. touch pippo.txt.',
-  rm:'Cancella un file o una cartella vuota. Non si può annullare.',
-  clear:'Pulisce il terminale.',
-  man:'Spiega un comando. Prova: man ls'};
-
-function isDir(n){return n&&n.dir===true}
-function parts(p){return p.split('/').filter(Boolean)}
-function at(abs){var n=FS;for(var i=0;i<parts(abs).length;i++){var k=parts(abs)[i];if(!isDir(n)||!(k in n))return null;n=n[k]}return (n===null||n===undefined)?null:n}
-function normalize(cwd,p){
-  p=(p||'').trim();
-  if(!p)p='~';
-  if(p==='~')p=HOME;
-  else if(p==='~/'||p==='~')p=HOME;
-  else if(p[0]=='/'||p[0]=='~'){if(p[0]=='~')p=HOME+p.slice(1)}
-  else p=cwd+'/'+p;
-  var out=[],segs=p.split('/');
-  for(var i=0;i<segs.length;i++){
-    var s=segs[i];
-    if(!s||s==='.')continue;
-    if(s==='..')out.pop();
-    else out.push(s);
-  }
-  return '/'+out.join('/');
-}
-function disp(abs){return abs===HOME?'~':(abs.indexOf(HOME+'/')===0?'~'+abs.slice(HOME.length):abs)}
-function isText(n){return typeof n==='string'&&n.charAt(0)!=='«'}
-function err(t){return {lines:[{text:t,cls:'err'}]}}
-function out(t,cls){return {lines:[{text:t,cls:cls||'out'}]}}
-
-// wildcard: nome che contiene *
-function match(pat,name){
-  if(pat.indexOf('*')<0)return pat===name;
-  var re=new RegExp('^'+pat.split('*').map(function(x){return x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}).join('.*')+'$');
-  return re.test(name);
-}
-function resolveTargets(cwd,arg,wantDir){
-  if(!arg)return {node:at(cwd),abs:cwd};
-  var abs0=arg[0]==='/';var seg=arg.split('/'),acc=[];
-  for(var i=0;i<seg.length;i++){if(!seg[i])continue;acc.push(seg[i]);if(i<seg.length-1){
-    var sub=acc.join('/');if(abs0)sub='/'+sub;var a=normalize(cwd,sub);if(!isDir(at(a)))return null;}}
-  var abs=normalize(cwd,arg),node=at(abs);
-  if(node===null)return null;
-  return {node:node,abs:abs};
-}
-
-var CMD={
-help:function(st,args){
-  var ks=Object.keys(MAN).sort(),out=[];
-  out.push('comandi disponibili:');
-  ks.forEach(function(k){out.push('  '+k)});
-  out.push('');
-  out.push('man <comando>  spiega un comando.  clear  pulisce.');
-  return {lines:out.map(function(t){return {text:t,cls:'out'}})};
-},
-ls:function(st,args){
-  var pat=args[0]||null;
-  var hasWild=!!pat&&pat.indexOf('*')>=0;
-  var t=hasWild?{node:at(st.cwd),abs:st.cwd}:resolveTargets(st.cwd,pat,true);
-  if(!t||!isDir(t.node))return err('ls: '+pat+': cartella non trovata');
-  var ks=Object.keys(t.node).filter(function(k){return k!=='dir'});
-  var dirs=hasWild?[]:ks.filter(function(k){return isDir(t.node[k])}).sort();
-  var files=ks.filter(function(k){return !isDir(t.node[k])})
-             .filter(function(k){return !pat||match(pat,k)}).sort();
-  var lines=[],all=dirs.map(function(d){return d+'/'}).concat(files);
-  if(!all.length)return out('(vuoto)');
-  for(var i=0;i<all.length;i+=4)lines.push(all.slice(i,i+4).map(function(s){return '  '+s}).join(''));
-  return {lines:lines.map(function(s){return {text:s,cls:'out'}})};
-},
-pwd:function(st){return out(st.cwd)},
-cd:function(st,args){
-  var abs=normalize(st.cwd,args[0]||'~'),n=at(abs);
-  if(!n)return err('cd: '+args[0]+': cartella non trovata');
-  if(!isDir(n))return err('cd: '+args[0]+': non è una cartella');
-  st.cwd=abs;return {lines:[]};
-},
-cat:function(st,args){
-  if(!args.length)return err('cat: devi dire quale file leggere');
-  var lines=[],bad=false;
-  args.forEach(function(a){
-    var t=resolveTargets(st.cwd,a,false);
-    if(!t){lines.push({text:'cat: '+a+': nessun file con questo nome',cls:'err'});bad=true;return}
-    if(isDir(t.node)){lines.push({text:'cat: '+a+': è una cartella, non un file',cls:'err'});bad=true;return}
-    if(!isText(t.node)){lines.push({text:a+': non è un file di testo (binario)',cls:'err'});bad=true;return}
-    t.node.split('\n').forEach(function(l){lines.push({text:l,cls:'out'})});
-  });
-  return {lines:lines};
-},
-tree:function(st,args){
-  var start=resolveTargets(st.cwd,args[0],true);
-  if(!start||!isDir(start.node))return err('tree: '+args[0]+': cartella non trovata');
-  var lines=[{text:disp(start.abs),cls:'out'}];
-  (function walk(node,prefix,depth){
-    if(depth>3)return;
-    var ks=Object.keys(node).filter(function(k){return k!=='dir'}).sort();
-    ks.forEach(function(k,i){
-      var last=i===ks.length-1;
-      lines.push({text:prefix+(last?'└── ':'├── ')+k+(isDir(node[k])?'/':''),cls:'out'});
-      if(isDir(node[k]))walk(node[k],prefix+(last?'    ':'│   '),depth+1);
-    });
-  })(start.node,'',1);
-  return {lines:lines};
-},
-echo:function(st,args){return out(args.join(' '))},
-mkdir:function(st,args){
-  if(!args.length)return err('mkdir: serve un nome');
-  var abs=normalize(st.cwd,args[0]),n=at(abs);
-  if(n)return err('mkdir: '+args[0]+': esiste già');
-  st.root=st.root;var segs=parts(abs),parent=at('/'+segs.slice(0,-1).join('/'));
-  if(!parent||!isDir(parent))return err('mkdir: '+args[0]+': cartella non trovata');
-  parent[segs[segs.length-1]]={dir:true};return {lines:[]};
-},
-touch:function(st,args){
-  if(!args.length)return err('touch: serve un nome');
-  var abs=normalize(st.cwd,args[0]),n=at(abs),segs=parts(abs);
-  var parent=at('/'+segs.slice(0,-1).join('/'));
-  if(n)return {lines:[]};
-  if(!parent||!isDir(parent))return err('touch: '+args[0]+': cartella non trovata');
-  parent[segs[segs.length-1]]='';return {lines:[]};
-},
-rm:function(st,args){
-  if(!args.length)return err('rm: serve un nome');
-  var abs=normalize(st.cwd,args[0]),n=at(abs),segs=parts(abs);
-  if(n===null)return err('rm: '+args[0]+': non esiste');
-  if(isDir(n)&&Object.keys(n).filter(function(k){return k!=='dir'}).length)
-    return err('rm: '+args[0]+': non vuota (usa rm -r, ma qui no)');
-  var parent=at('/'+segs.slice(0,-1).join('/'));
-  if(!parent)return err('rm: non puoi cancellare questo');
-  delete parent[segs[segs.length-1]];
-  return {lines:[]};
-},
-man:function(st,args){
-  if(!args.length)return err('man: che comando vuoi sapere? prova: man ls');
-  var c=args[0];
-  if(!MAN[c])return err('man: nessun comando chiamato '+c);
-  return out(MAN[c]);
-},
-clear:function(){return {lines:[],clear:true}}
-};
-
-function exec(state,line){
-  line=(line||'').trim();
-  if(!line)return {lines:[]};
-  // pipe: solo "cat file | wc -l"
-  if(line.indexOf('|')>=0){
-    var pp=line.split('|').map(function(x){return x.trim()});
-    if(pp.length===2&&pp[1]==='wc -l'){
-      var catres=CMD.cat(state,pp[0].replace(/^cat\s+/,'').split(/\s+/));
-      if(catres.lines.some(function(l){return l.cls==='err'}))return catres;
-      return out(String(catres.lines.length));
-    }
-    return err('pipe: impara solo "cat file | wc -l"');
-  }
-  var sp=line.split(/\s+/),c=sp[0],args=sp.slice(1);
-  if(!CMD[c])return err(c+': comando non trovato. Prova help.');
-  return CMD[c](state,args);
-}
-function cloneFS(n){if(typeof n!=='object'||n===null)return n;var o={};for(var k in n)o[k]=cloneFS(n[k]);return o}
-function newState(){FS=cloneFS(BASE);return {cwd:HOME}}
-var TASKS=[
- {q:'Digita <b>ls</b> e premi Invio: elenca cosa c\u00e8 nella tua cartella.',ok:/^ls\s*$/i,tip:'Il comando \u00e8 ls: tre lettere, L maiuscola e S piccola.'},
- {q:'Ora <b>pwd</b>: ti dice dove ti trovi.',ok:/^pwd\s*$/i,tip:'Tre lettere: p-w-d. Serve a capire in quale cartella sei.'},
- {q:'Entra in <b>Compiti</b>: <b>cd Compiti</b>.',ok:/^cd\s+compiti\/?\s*$/i,tip:'cd sta per change directory. Con uno spazio in mezzo scrivi: cd Compiti'},
- {q:'Elenca solo i file <b>.txt</b> con il jolly: <b>ls *.txt</b>.',ok:/^ls\s+\*\.txt\s*$/i,tip:'L\u2019asterisco \u00e8 il jolly: qualsiasi nome che finisce con .txt'},
- {q:'Leggi il file con <b>cat matematica.txt</b>.',ok:/^cat\s+matematica\.txt\s*$/i,tip:'cat \u00e8 il comando che mostra il contenuto. Con uno spazio: cat matematica.txt'},
- {q:'Ultimo: disegna l\u2019albero delle cartelle con <b>tree</b>.',ok:/^tree\s*$/i,tip:'tree \u00e8 il comando che disegna la struttura. Quattro lettere.'}];
-
-var labSt=null,taskI=0,labDone=false,hist=[],histP=0,labOpen=false;
-function labEl(t,c){return '<span class="'+(c||'')+'">'+t+'</span>\n'}
-function labPrint(t){var sc=$('screen');if(!sc)return;sc.insertAdjacentHTML('beforeend',t.replace(/\n/g,'<br>').replace(/  /g,'&nbsp;&nbsp;'));sc.scrollTop=sc.scrollHeight}
-function labPs(){return 'matte@lab:'+disp(labSt.cwd)+'$'}
-function labPrompt(){
-  $('ps').textContent=labPs();
-  labPrint(labEl(labPs(),'ok')+(!labDone&&taskI<TASKS.length?labEl('   compito '+(taskI+1)+' di '+TASKS.length,'dim'):''));
-}
-function labBanner(){
-  if(labDone){
-    $('task').innerHTML='<span id="tprog">6 / 6</span><b>Laboratorio libero.</b> Il comando \u00e8 tuo. Prova <b>man ls</b>, <b>cat lezioni/20.txt</b>, <b>cd /</b>, <b>cat Foto/gita.jpg</b>.';
-  }else if(taskI>=TASKS.length){
-    $('task').innerHTML='<span id="tprog">6 / 6</span><b>Laboratorio completato</b> \u2014 trofeo <b>MANI D\u2019ORO</b> sbloccato.';
-  }else{
-    $('task').innerHTML='<span id="tprog">'+taskI+' / 6</span>'+TASKS[taskI].q;
-  }
-}
-function openLab(){
-  labOpen=true;
-  if(!labSt){labSt=newState();buildLab();}
-  $('lab').hidden=false;$('q').hidden=true;
-  $('lad').style.visibility='hidden';
-  if($('hud'))$('hud').style.visibility='hidden';
-  $('ctl').style.display='none';
-  labBanner();
-  labPrint(labEl('Aula Informatica \u2014 laboratorio del terminale','hi'));
-  labPrint(labEl('Digita un comando e premi Invio. help elenca i comandi, man <nome> li spiega.','dim'));
-  labPrompt();$('in').focus();
-}
-function closeLab(){
-  labOpen=false;
-  $('lab').hidden=true;$('lad').style.visibility='visible';
-  if($('hud'))$('hud').style.visibility='visible';
-  $('ctl').style.display='flex';
-}
-function labWin(){
-  try{
-    var w=JSON.parse(localStorage.getItem('lab_badges')||'{}');
-    if(w.m_terminale_lab)return;
-    w.m_terminale_lab=1;localStorage.setItem('lab_badges',JSON.stringify(w));
-  }catch(e){}
-  labPrint(labEl(''));
-  labPrint(labEl('  \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550','hi'));
-  labPrint(labEl('  \u2554  TROFEO: MANI D\u2019ORO   \u255a','hi'));
-  labPrint(labEl('  \u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550','hi'));
-  labPrint(labEl('  Hai finito i 6 compiti. Il comando \u00e8 tuo.','ok'));
-  labBanner();
-}
-function labRun(line){
-  line=line||'';
-  if(!line.trim()){labPrompt();return}
-  hist.push(line);histP=hist.length;
-  labPrint(labEl(labPs()+' '+line,'hi'));
-  var r=exec(labSt,line);
-  if(r.clear){$('screen').innerHTML='';labPrompt();return}
-  for(var i=0;i<r.lines.length;i++)labPrint(labEl(r.lines[i].text,r.lines[i].cls));
-  var bad=r.lines.some(function(x){return x.cls==='err'});
-  if(!labDone&&!bad&&taskI<TASKS.length&&TASKS[taskI].ok.test(line.trim())){
-    labPrint(labEl('  \u2713 '+TASKS[taskI].q.replace(/<[^>]+>/g,''),'ok'));
-    taskI++;
-    if(taskI>=TASKS.length){labDone=true;labWin()}else labBanner();
-  }
-  labPrompt();
-}
-function buildLab(){
-  var d=document.createElement('div');d.id='lab';d.hidden=true;
-  d.innerHTML='<div id="lhead"><b>laboratorio</b><small>terminale vero, dentro la pagina</small><a id="lhome" href="lab.html">🏠 Corso</a><button id="lx">\u2715 Esci</button></div>'+
-   '<div id="task"></div><div id="screen"></div>'+
-   '<div id="inrow"><span id="ps"></span><input id="in" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="linea di comando"></div>'+
-   '<div id="chips"></div>';
-  document.getElementById('st').appendChild(d);
-  $('lx').onclick=closeLab;
-  $('in').addEventListener('keydown',function(e){
-    if(e.key==='Enter'){var v=$('in').value;$('in').value='';labRun(v);e.preventDefault()}
-    else if(e.key==='ArrowUp'){if(histP>0){histP--;$('in').value=hist[histP]}e.preventDefault()}
-    else if(e.key==='ArrowDown'){if(histP<hist.length-1){histP++;$('in').value=hist[histP]}else{histP=hist.length;$('in').value=''}e.preventDefault()}
-  });
-  ['help','ls','pwd','cd','cat','tree','clear','man'].forEach(function(c){
-    var b=document.createElement('button');b.textContent=c;
-    b.onclick=function(){$('in').value=c+' ';$('in').focus()};
-    $('chips').appendChild(b);
-  });
-}
-
-/* deep-link: arrivo diretto al laboratorio, saltando modale, zoom e quiz */
-if(typeof location!=='undefined'&&(location.hash==='#lab'||/[?&]lab\b/.test(location.search||''))){
-  var _w=document.getElementById('wstart');if(_w)_w.remove();
-  try{var _q=document.getElementById('qw');if(_q)_q.remove()}catch(e){}
-  openLab();
-}
-
-</script></body></html>
+</script>
+<link rel="stylesheet" href="terminale.css">
+<script src="terminale.js"></script>
+<script>
+terminale({
+ modulo:'La riga di comando',
+ header:'terminale vero, dentro la pagina',
+ acc:'#4ade80',
+ labKey:'m_terminale_lab',
+ labNome:'MANI D\u2019ORO',
+ home:'lab.html',
+ chips:['help','ls','pwd','cd','cat','tree','clear','man'],
+ libero:['man ls','cat lezioni/20.txt','cd /','cat Foto/gita.jpg'],
+ compiti:[
+  {q:'Digita <b>ls</b> e premi Invio: elenca cosa c\u00e8 nella tua cartella.',ok:/^ls\s*$/i,tip:'Il comando \u00e8 ls: tre lettere, L maiuscola e S piccola.'},
+  {q:'Ora <b>pwd</b>: ti dice dove ti trovi.',ok:/^pwd\s*$/i,tip:'Tre lettere: p-w-d. Serve a capire in quale cartella sei.'},
+  {q:'Entra in <b>Compiti</b>: <b>cd Compiti</b>.',ok:/^cd\s+compiti\/?\s*$/i,tip:'cd sta per change directory. Con uno spazio in mezzo scrivi: cd Compiti'},
+  {q:'Elenca solo i file <b>.txt</b> con il jolly: <b>ls *.txt</b>.',ok:/^ls\s+\*\.txt\s*$/i,tip:'L\u2019asterisco \u00e8 il jolly: qualsiasi nome che finisce con .txt'},
+  {q:'Leggi il file con <b>cat matematica.txt</b>.',ok:/^cat\s+matematica\.txt\s*$/i,tip:'cat \u00e8 il comando che mostra il contenuto. Con uno spazio: cat matematica.txt'},
+  {q:'Ultimo: disegna l\u2019albero delle cartelle con <b>tree</b>.',ok:/^tree\s*$/i,tip:'tree \u00e8 il comando che disegna la struttura. Quattro lettere.'}
+ ]});
+</script>
+</body></html>

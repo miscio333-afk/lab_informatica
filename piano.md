@@ -138,8 +138,40 @@ Il deep-link sta **in coda allo script**, non all'inizio: `openLab()` chiama `ne
 variabili del motore (`BASE`, `FS`) sono assegnate in ordine di esecuzione — chiamarlo prima
 troverebbe `BASE` ancora `undefined`.
 
-Il motore è JavaScript puro senza DOM: está verificato in node con **55 test** (comandi,
-percorsi, errori, wildcards, pipe), il flusso del laboratorio con altri **44**.
+### Architettura: `terminale.js` condiviso
+
+Motore e laboratorio vivono in **due file condivisi**, non dentro i moduli:
+
+| file | cosa contiene |
+|---|---|
+| `terminale.js` | motore puro + interfaccia del laboratorio (~320 righe) |
+| `terminale.css` | stile del laboratorio, colore via `var(--labacc,#4ade80)` |
+
+Ogni modulo si limita a **una riga di markup e una chiamata di configurazione**:
+
+```html
+<link rel="stylesheet" href="terminale.css">
+<script src="terminale.js"></script>
+<script>
+terminale({ modulo:'…', acc:'#4ade80', labKey:'…', labNome:'…', chips:[…], libero:[…], compiti:[…] });
+</script>
+```
+
+**Perché**: il primo modulo aveva ~320 righe di motore inline. Con 5 moduli da copiare
+sarebbero state **1.600 righe duplicate** — e i 4 bug trovati nel motore (stringa vuota
+falsy in `at()`, slash dei percorsi assoluti, `ls` coi wildcard, flag `i` sui compiti)
+avrebbero dovuto essere corretti **5 volte** ciascuno. È la stessa trappola del `CIIBADGES`
+copiato in 20 file.
+
+`terminale(cfg)` fa tre cose: imposta `--labacc` dal campo `acc`, crea il bottone sulla card
+finale del quiz, aggiunge la terza scelta alla modale iniziale e gestisce il deep-link `#lab`.
+Il colore d'accento ha **una sola fonte di verità** (la config), non è duplicato nel CSS del modulo.
+
+**Attenzione all'ordine di caricamento**: `terminale.js` deve venire *dopo* gli script del
+modulo, perché il modulo crea la modale `wstart` a cui `terminale()` aggancia il bottone.
+
+Verificato in node: **55 test** sul motore (comandi, percorsi, errori, wildcards, pipe) e
+**60 test** sul laboratorio (avanzamento compiti, badge, cronologia, deep-link, colore).
 
 **Attenzione ai nomi**: il filesystem è case-sensitive come un terminale Unix (`cd Compiti`
 sì, `cd compiti` no). I controlli dei compiti sono case-*insensitive* solo per non punire
